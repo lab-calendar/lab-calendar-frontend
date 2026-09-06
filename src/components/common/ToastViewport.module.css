@@ -1,0 +1,60 @@
+.viewport {
+  position: fixed;
+  right: var(--space-4);
+  bottom: var(--space-4);
+  z-index: var(--z-modal);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: min(24rem, calc(100vw - var(--space-8)));
+}
+
+.toast {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-3);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-left: 3px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+/* 색만으로 구분되지 않도록 문구 자체가 결과를 말하게 쓴다 (KAN-64) */
+.toast[data-tone='success'] {
+  border-left-color: var(--color-primary);
+}
+
+.toast[data-tone='error'] {
+  border-left-color: var(--color-danger);
+}
+
+.message {
+  flex: 1;
+  color: var(--color-text);
+}
+
+.close {
+  flex-shrink: 0;
+  padding: 0 var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+  background: none;
+  border: none;
+}
+
+.close:hover {
+  color: var(--color-text);
+}
+
+@media (max-width: 767px) {
+  .viewport {
+    right: var(--space-3);
+    bottom: var(--space-3);
+    left: var(--space-3);
+    max-width: none;
+  }
+}

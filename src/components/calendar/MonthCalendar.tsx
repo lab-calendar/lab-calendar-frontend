@@ -28,6 +28,8 @@ import {
   type DateRange,
 } from '../../types/domain'
 import { addDays } from '../../utils/date'
+import ErrorState from '../common/ErrorState'
+import { emptyNoteFor } from './calendarStatus'
 import { datesFromCalendarRange } from './eventDates'
 import EventDetailDialog from './EventDetailDialog'
 import { formatEventLabel } from './eventLabel'
@@ -68,7 +70,13 @@ function MonthCalendar() {
 
   // FullCalendar 가 알려주는 표시 기간. 뷰를 옮기면 갱신되고 그때마다 다시 조회한다.
   const [range, setRange] = useState<DateRange | null>(null)
-  const { data: events, isError } = useEvents(range)
+  const {
+    data: events,
+    isError,
+    error,
+    isFetching,
+    refetch,
+  } = useEvents(range)
 
   // 상세 팝업에서 보여줄 일정. 목록이 바뀌어 사라지면 자동으로 닫힌다.
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null)
@@ -148,14 +156,30 @@ function MonthCalendar() {
     [events, selected],
   )
 
+  const emptyNote = emptyNoteFor(events, visibleEvents.length)
+
   return (
     <div className={styles.calendar}>
-      {/* 로딩·에러 상태의 본격적인 처리는 KAN-63에서 다룬다 */}
-      {isError ? (
-        <p className={styles.status} role="alert">
-          일정을 불러오지 못했습니다.
-        </p>
+      {isFetching ? (
+        <>
+          <div className={styles.loadingBar} aria-hidden="true" />
+          <span className="sr-only" role="status">
+            일정을 불러오는 중입니다
+          </span>
+        </>
       ) : null}
+
+      {isError ? (
+        <ErrorState
+          title="일정을 불러오지 못했습니다."
+          error={error}
+          onRetry={() => void refetch()}
+          isRetrying={isFetching}
+          compact
+        />
+      ) : null}
+
+      {emptyNote ? <p className={styles.emptyNote}>{emptyNote}</p> : null}
 
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}

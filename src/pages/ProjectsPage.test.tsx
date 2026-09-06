@@ -7,6 +7,7 @@ import {
   fetchProjects,
   updateProject,
 } from '../api/projects'
+import { ApiError } from '../api/errors'
 import { renderWithRouter } from '../test/renderWithRouter'
 import type { Project, ProjectInput } from '../types/domain'
 import ProjectsPage from './ProjectsPage'
@@ -195,5 +196,81 @@ describe('ProjectsPage', () => {
     expect(
       await screen.findByText(/등록된 과제가 없습니다/),
     ).toBeInTheDocument()
+  })
+})
+
+describe('ProjectsPage 로딩 · 에러 · 알림', () => {
+  it('불러오는 동안 자리 표시를 보여준다', () => {
+    vi.mocked(fetchProjects).mockReturnValue(new Promise(() => {}))
+    renderWithRouter(<ProjectsPage />)
+
+    expect(
+      screen.getByRole('status', { busy: true }),
+    ).toBeInTheDocument()
+  })
+
+  it('조회에 실패하면 원인과 다시 시도 버튼을 보여준다', async () => {
+    vi.mocked(fetchProjects).mockRejectedValue(
+      new ApiError('SERVER', '서버에 문제가 발생했습니다.'),
+    )
+    renderWithRouter(<ProjectsPage />)
+
+    expect(
+      await screen.findByText('과제를 불러오지 못했습니다.'),
+    ).toBeInTheDocument()
+    expect(screen.getByText('서버에 문제가 발생했습니다.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '다시 시도' })).toBeInTheDocument()
+  })
+
+  it('다시 시도를 누르면 목록을 다시 불러온다', async () => {
+    const user = userEvent.setup()
+    vi.mocked(fetchProjects)
+      .mockRejectedValueOnce(new ApiError('NETWORK', '연결할 수 없습니다.'))
+      .mockResolvedValue([ACTIVE])
+    renderWithRouter(<ProjectsPage />)
+
+    await user.click(await screen.findByRole('button', { name: '다시 시도' }))
+
+    expect(await screen.findByText('BRL 과제')).toBeInTheDocument()
+  })
+
+  it('저장에 성공하면 알림을 보여준다', async () => {
+    const user = userEvent.setup()
+    renderWithRouter(<ProjectsPage />)
+
+    await user.type(screen.getByLabelText('과제명'), '신규 과제')
+    await user.click(screen.getByRole('button', { name: '등록' }))
+
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      '과제를 등록했습니다.',
+    )
+  })
+
+  it('저장에 실패하면 원인을 담은 알림을 보여준다', async () => {
+    const user = userEvent.setup()
+    vi.mocked(createProject).mockRejectedValue(
+      new ApiError('SERVER', '서버에 문제가 발생했습니다.'),
+    )
+    renderWithRouter(<ProjectsPage />)
+
+    await user.type(screen.getByLabelText('과제명'), '신규 과제')
+    await user.click(screen.getByRole('button', { name: '등록' }))
+
+    const alert = await screen.findByRole('alert')
+    expect(alert).toHaveTextContent('과제를 저장하지 못했습니다.')
+    expect(alert).toHaveTextContent('서버에 문제가 발생했습니다.')
+  })
+
+  it('삭제에 성공하면 알림을 보여준다', async () => {
+    const user = userEvent.setup()
+    renderWithRouter(<ProjectsPage />)
+
+    const card = await cardOf('BRL 과제')
+    await user.click(within(card).getByRole('button', { name: '삭제' }))
+    await user.click(within(card).getByRole('button', { name: '삭제' }))
+
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      '과제를 삭제했습니다.',
+    )
   })
 })

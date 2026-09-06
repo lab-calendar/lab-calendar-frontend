@@ -258,12 +258,6 @@ function EventForm() {
       >
         {saveEvent.isPending ? '저장 중…' : editingEvent ? '수정' : '등록'}
       </button>
-
-      {saveEvent.isError ? (
-        <p className={styles.submitError} role="alert">
-          저장하지 못했습니다. 잠시 후 다시 시도해 주세요.
-        </p>
-      ) : null}
     </form>
   )
 }

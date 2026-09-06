@@ -1,5 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { messageFromError } from '../api/errorMessage'
 import { createProject, deleteProject, updateProject } from '../api/projects'
+import { useToast } from '../contexts/ToastContext'
 import type { ProjectInput } from '../types/domain'
 import { queryKeys } from './queryKeys'
 
@@ -21,20 +23,34 @@ function useInvalidateProjectData() {
 /** 과제를 만들거나 고친다. */
 export function useSaveProject() {
   const invalidate = useInvalidateProjectData()
+  const { showToast } = useToast()
 
   return useMutation({
     mutationFn: ({ id, input }: { id: string | null; input: ProjectInput }) =>
       id === null ? createProject(input) : updateProject(id, input),
-    onSuccess: invalidate,
+    onSuccess: (_project, { id }) => {
+      invalidate()
+      showToast(id === null ? '과제를 등록했습니다.' : '과제를 수정했습니다.')
+    },
+    onError: (error) => {
+      showToast(`과제를 저장하지 못했습니다. ${messageFromError(error)}`, 'error')
+    },
   })
 }
 
 /** 과제를 지운다. */
 export function useDeleteProject() {
   const invalidate = useInvalidateProjectData()
+  const { showToast } = useToast()
 
   return useMutation({
     mutationFn: (id: string) => deleteProject(id),
-    onSuccess: invalidate,
+    onSuccess: () => {
+      invalidate()
+      showToast('과제를 삭제했습니다.')
+    },
+    onError: (error) => {
+      showToast(`과제를 삭제하지 못했습니다. ${messageFromError(error)}`, 'error')
+    },
   })
 }

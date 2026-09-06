@@ -1,4 +1,5 @@
 import type { Category } from '../types/domain'
+import { simulateRead } from './dummyDb'
 
 /**
  * 카테고리 목록 조회.
@@ -11,6 +12,8 @@ import type { Category } from '../types/domain'
  * 화면과 쿼리 훅은 손대지 않는다.
  */
 export async function fetchCategories(): Promise<Category[]> {
+  await simulateRead('categories')
+
   return DUMMY_CATEGORIES
 }
 

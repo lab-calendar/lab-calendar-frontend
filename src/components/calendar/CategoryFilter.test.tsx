@@ -35,7 +35,9 @@ describe('CategoryFilter', () => {
   it('불러오는 동안 안내를 보여준다', () => {
     renderWithRouter(<CategoryFilter />)
 
-    expect(screen.getByText('카테고리를 불러오는 중입니다…')).toBeInTheDocument()
+    expect(
+      screen.getByText('카테고리를 불러오는 중입니다'),
+    ).toBeInTheDocument()
   })
 
   it('조회에 실패하면 안내를 보여준다', async () => {

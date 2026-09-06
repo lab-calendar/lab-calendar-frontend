@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render } from '@testing-library/react'
 import type { ReactElement, ReactNode } from 'react'
 import { MemoryRouter } from 'react-router-dom'
+import ToastProvider from '../components/common/ToastProvider'
 
 /** 테스트마다 캐시를 격리하고 재시도를 끈다. */
 function createTestQueryClient() {
@@ -19,6 +20,8 @@ function createTestQueryClient() {
  *
  * 컨텍스트는 `wrapper` 로 넘긴다. JSX 로 직접 감싸면 `rerender` 가 래퍼를
  * 함께 갈아치워 컨텍스트가 사라진다.
+ *
+ * 저장·삭제 훅이 결과 알림을 내므로 실제 앱과 같이 ToastProvider 도 감싼다.
  */
 export function renderWithRouter(
   ui: ReactElement,
@@ -29,7 +32,9 @@ export function renderWithRouter(
   function Wrapper({ children }: { children: ReactNode }) {
     return (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[route]}>{children}</MemoryRouter>
+        <MemoryRouter initialEntries={[route]}>
+          <ToastProvider>{children}</ToastProvider>
+        </MemoryRouter>
       </QueryClientProvider>
     )
   }

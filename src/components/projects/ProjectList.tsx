@@ -5,6 +5,7 @@ import {
   useSaveProject,
 } from '../../queries/useProjectMutations'
 import type { Project } from '../../types/domain'
+import EmptyState from '../common/EmptyState'
 import { formatEventPeriod } from '../../utils/date'
 import { formatDDay } from './dDay'
 import styles from './ProjectList.module.css'
@@ -30,10 +31,10 @@ function ProjectList({
 
   if (projects.length === 0) {
     return (
-      <p className={styles.empty}>
-        등록된 과제가 없습니다. 마감일과 준비 기간을 등록하면 캘린더에 준비 기간
-        일정이 자동으로 생깁니다.
-      </p>
+      <EmptyState
+        title="등록된 과제가 없습니다."
+        description="마감일과 준비 기간을 등록하면 캘린더에 준비 기간 일정이 자동으로 생깁니다."
+      />
     )
   }
 

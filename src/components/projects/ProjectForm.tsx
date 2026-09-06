@@ -222,12 +222,6 @@ function ProjectForm({ editingProject, onDone }: ProjectFormProps) {
       >
         {saveProject.isPending ? '저장 중…' : editingProject ? '수정' : '등록'}
       </button>
-
-      {saveProject.isError ? (
-        <p className={styles.submitError} role="alert">
-          저장하지 못했습니다. 잠시 후 다시 시도해 주세요.
-        </p>
-      ) : null}
     </form>
   )
 }
