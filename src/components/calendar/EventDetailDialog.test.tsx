@@ -96,7 +96,7 @@ describe('EventDetailDialog', () => {
     expect(screen.getByText('제출 단계')).toBeInTheDocument()
   })
 
-  it('구글 연동 일정임을 알려준다', () => {
+  it('구글 연동 일정이면 어디서 고쳐야 하는지 알려준다', () => {
     renderWithRouter(
       <EventDetailDialog
         event={event({ source: 'GOOGLE_SYNC' })}
@@ -105,8 +105,108 @@ describe('EventDetailDialog', () => {
     )
 
     expect(
-      screen.getByText('구글 공유 문서에서 동기화된 일정입니다.'),
+      screen.getByText(/구글 공유 문서에서 동기화된 일정입니다/),
     ).toBeInTheDocument()
+    expect(screen.getByText(/원본 문서를 수정해 주세요/)).toBeInTheDocument()
+  })
+
+  describe('수정 · 삭제', () => {
+    it('직접 만든 일정에는 수정과 삭제를 보여준다', () => {
+      renderWithRouter(
+        <EventDetailDialog
+          event={event()}
+          onClose={() => {}}
+          onEdit={() => {}}
+          onDelete={() => {}}
+        />,
+      )
+
+      expect(screen.getByRole('button', { name: '수정' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: '삭제' })).toBeInTheDocument()
+    })
+
+    it.each(['AUTO_GENERATED', 'GOOGLE_SYNC'] as const)(
+      '%s 일정에는 수정·삭제를 노출하지 않는다',
+      (source) => {
+        renderWithRouter(
+          <EventDetailDialog
+            event={event({ source })}
+            onClose={() => {}}
+            onEdit={() => {}}
+            onDelete={() => {}}
+          />,
+        )
+
+        expect(
+          screen.queryByRole('button', { name: '수정' }),
+        ).not.toBeInTheDocument()
+        expect(
+          screen.queryByRole('button', { name: '삭제' }),
+        ).not.toBeInTheDocument()
+      },
+    )
+
+    it('삭제는 한 번 더 확인받는다', async () => {
+      const user = userEvent.setup()
+      const onDelete = vi.fn()
+      renderWithRouter(
+        <EventDetailDialog
+          event={event()}
+          onClose={() => {}}
+          onDelete={onDelete}
+        />,
+      )
+
+      await user.click(screen.getByRole('button', { name: '삭제' }))
+
+      expect(screen.getByText('삭제할까요?')).toBeInTheDocument()
+      expect(onDelete).not.toHaveBeenCalled()
+
+      await user.click(screen.getByRole('button', { name: '삭제' }))
+      expect(onDelete).toHaveBeenCalledOnce()
+    })
+
+    it('확인 단계에서 취소할 수 있다', async () => {
+      const user = userEvent.setup()
+      const onDelete = vi.fn()
+      renderWithRouter(
+        <EventDetailDialog
+          event={event()}
+          onClose={() => {}}
+          onDelete={onDelete}
+        />,
+      )
+
+      await user.click(screen.getByRole('button', { name: '삭제' }))
+      await user.click(screen.getByRole('button', { name: '취소' }))
+
+      expect(screen.queryByText('삭제할까요?')).not.toBeInTheDocument()
+      expect(onDelete).not.toHaveBeenCalled()
+    })
+
+    it('다른 일정을 열면 확인 단계가 초기화된다', async () => {
+      const user = userEvent.setup()
+      const { rerender } = renderWithRouter(
+        <EventDetailDialog
+          event={event()}
+          onClose={() => {}}
+          onDelete={() => {}}
+        />,
+      )
+
+      await user.click(screen.getByRole('button', { name: '삭제' }))
+      expect(screen.getByText('삭제할까요?')).toBeInTheDocument()
+
+      rerender(
+        <EventDetailDialog
+          event={event({ id: '2', title: '다른 일정' })}
+          onClose={() => {}}
+          onDelete={() => {}}
+        />,
+      )
+
+      expect(screen.queryByText('삭제할까요?')).not.toBeInTheDocument()
+    })
   })
 
   // close 이벤트는 버블링하지 않아 React 의 onClose prop 으로는 잡히지 않는다.

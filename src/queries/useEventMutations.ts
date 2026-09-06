@@ -1,5 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { createEvent, updateEvent, type EventInput } from '../api/events'
+import {
+  createEvent,
+  deleteEvent,
+  updateEvent,
+  type EventInput,
+} from '../api/events'
 import { queryKeys } from './queryKeys'
 
 /**
@@ -14,6 +19,18 @@ export function useSaveEvent() {
   return useMutation({
     mutationFn: ({ id, input }: { id: string | null; input: EventInput }) =>
       id === null ? createEvent(input) : updateEvent(id, input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: queryKeys.events.all })
+    },
+  })
+}
+
+/** 일정을 지운다. 성공하면 저장과 마찬가지로 기간별 쿼리를 전부 무효화한다. */
+export function useDeleteEvent() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (id: string) => deleteEvent(id),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: queryKeys.events.all })
     },

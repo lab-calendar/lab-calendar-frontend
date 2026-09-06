@@ -42,3 +42,13 @@ export type DateRange = {
   from: string
   to: string
 }
+
+/**
+ * 사람이 고칠 수 있는 일정인지.
+ *
+ * 자동 생성 일정은 배치가(KAN-49), 구글 연동 일정은 동기화가(KAN-58) 다시 만들어
+ * 덮어쓴다. 고쳐도 되돌아가므로 아예 막고, 어디서 바꿔야 하는지 안내한다.
+ */
+export function isEditableEvent(event: CalendarEvent): boolean {
+  return event.source === 'MANUAL'
+}
