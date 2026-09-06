@@ -1,0 +1,126 @@
+/*
+ * FullCalendar 기본 스타일을 디자인 토큰에 맞춘다.
+ * 라이브러리가 생성하는 클래스라 :global 로 지정한다.
+ */
+.calendar {
+  height: 100%;
+}
+
+.calendar :global(.fc) {
+  height: 100%;
+  font-family: var(--font-sans);
+}
+
+/* ── 툴바 ─────────────────────────────────── */
+.calendar :global(.fc .fc-toolbar) {
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.calendar :global(.fc .fc-toolbar-title) {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+.calendar :global(.fc .fc-button-primary) {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: none;
+}
+
+.calendar :global(.fc .fc-button-primary:hover) {
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+  border-color: var(--color-border-strong);
+}
+
+.calendar :global(.fc .fc-button-primary:disabled) {
+  color: var(--color-text-subtle);
+  background: var(--color-surface-muted);
+  border-color: var(--color-border);
+  opacity: 1;
+}
+
+.calendar :global(.fc .fc-button-primary:focus-visible) {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* ── 그리드 ───────────────────────────────── */
+.calendar :global(.fc-theme-standard .fc-scrollgrid),
+.calendar :global(.fc-theme-standard td),
+.calendar :global(.fc-theme-standard th) {
+  border-color: var(--color-border);
+}
+
+.calendar :global(.fc .fc-col-header-cell) {
+  padding-block: var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+}
+
+.calendar :global(.fc .fc-daygrid-day-number) {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.calendar :global(.fc .fc-day-other .fc-daygrid-day-number) {
+  color: var(--color-text-subtle);
+}
+
+.calendar :global(.fc .fc-day-today) {
+  background: var(--color-primary-soft);
+}
+
+.calendar :global(.fc .fc-day-today .fc-daygrid-day-number) {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.calendar :global(.fc .fc-daygrid-more-link) {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* 기본 이벤트 컨테이너를 비우고 아래 커스텀 칩으로 대체한다 */
+.calendar :global(.fc .fc-daygrid-event) {
+  margin-block: 1px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.calendar :global(.fc .fc-daygrid-event-harness) {
+  margin-inline: 2px;
+}
+
+/* ── 커스텀 이벤트 칩 ─────────────────────── */
+.event {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding: 2px var(--space-2);
+  overflow: hidden;
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+  color: var(--category-color);
+  background: var(--category-soft);
+  border-left: 3px solid var(--category-color);
+  border-radius: var(--radius-sm);
+}
+
+.eventTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

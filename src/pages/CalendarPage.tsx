@@ -1,4 +1,4 @@
-import Placeholder from '../components/common/Placeholder'
+import MonthCalendar from '../components/calendar/MonthCalendar'
 import styles from './Page.module.css'
 
 /** 메인 캘린더 화면 (기획서 2.1 우측 출력 영역). */
@@ -12,12 +12,13 @@ function CalendarPage() {
         </p>
       </div>
 
-      <div className={styles.surface}>
-        <Placeholder
-          title="월별 그리드 캘린더"
-          description="FullCalendar 도입 후 실제 일정 데이터를 연동합니다"
-          issue="KAN-31 · KAN-42"
-        />
+      {/* KAN-42에서 실제 조회 API를 연동하면서 제거한다 */}
+      <p className={styles.notice}>
+        임시 데이터로 표시 중입니다. 실제 일정 연동은 KAN-42에서 진행합니다.
+      </p>
+
+      <div className={styles.fillSurface}>
+        <MonthCalendar />
       </div>
     </div>
   )
