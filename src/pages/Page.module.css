@@ -34,6 +34,29 @@
   box-shadow: var(--shadow-sm);
 }
 
+/* 캘린더처럼 영역 전체를 채우는 콘텐츠용 */
+.fillSurface {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 480px;
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* 임시 데이터 사용 중임을 알리는 안내. 실제 연동 시 제거한다. */
+.notice {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+}
+
 .centered {
   display: flex;
   flex-direction: column;
