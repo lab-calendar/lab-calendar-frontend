@@ -22,3 +22,31 @@
   text-transform: uppercase;
   letter-spacing: 0.6px;
 }
+
+/* 태블릿 이하에서는 드로어로 전환한다 */
+@media (max-width: 1023px) {
+  .sidebar {
+    position: fixed;
+    inset: var(--layout-header-height) auto 0 0;
+    z-index: var(--z-drawer);
+    width: min(var(--layout-sidebar-width), 85vw);
+    /* visibility 로 닫아 두면 닫힌 상태에서 탭 이동 대상에서도 빠진다 */
+    visibility: hidden;
+    transform: translateX(-100%);
+    transition:
+      transform 200ms ease,
+      visibility 200ms ease;
+    box-shadow: var(--shadow-md);
+  }
+
+  .open {
+    visibility: visible;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar {
+    transition: none;
+  }
+}

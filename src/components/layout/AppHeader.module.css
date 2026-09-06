@@ -50,3 +50,48 @@
 .slotEnd {
   margin-left: auto;
 }
+
+/* 데스크톱에서는 사이드바가 항상 보이므로 토글 버튼이 필요 없다 */
+.menuButton {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-left: calc(var(--space-2) * -1);
+  color: var(--color-text-muted);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+}
+
+.menuButton:hover {
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+}
+
+@media (max-width: 1023px) {
+  .header {
+    gap: var(--space-4);
+  }
+
+  .menuButton {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 767px) {
+  .header {
+    gap: var(--space-3);
+    padding-inline: var(--space-4);
+  }
+
+  .brand {
+    font-size: var(--font-size-md);
+  }
+
+  .navLink {
+    padding-inline: var(--space-2);
+    font-size: var(--font-size-sm);
+  }
+}
