@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useCategories } from '../../queries/useCategories'
-import type { CalendarEvent } from '../../types/domain'
+import { isEditableEvent, type CalendarEvent } from '../../types/domain'
 import { formatEventPeriod } from '../../utils/date'
 import styles from './EventDetailDialog.module.css'
 
@@ -10,6 +10,9 @@ type EventDetailDialogProps = {
   onClose: () => void
   /** 넘기지 않으면 수정 버튼을 보여주지 않는다 */
   onEdit?: (event: CalendarEvent) => void
+  /** 넘기지 않으면 삭제 버튼을 보여주지 않는다 */
+  onDelete?: (event: CalendarEvent) => void
+  isDeleting?: boolean
 }
 
 /** 카드/경비는 '사용 목적', 나머지는 카테고리별 의미가 다르다 (기획서 2.2) */
@@ -19,9 +22,12 @@ const DETAIL_LABELS: Record<CalendarEvent['categoryKey'], string> = {
   card: '사용 목적',
 }
 
+/** 사람이 못 고치는 일정은 어디서 바꿔야 하는지까지 알려준다 */
 const SOURCE_NOTICES: Partial<Record<CalendarEvent['source'], string>> = {
-  AUTO_GENERATED: '과제 종료일에서 역산해 자동 생성된 일정입니다.',
-  GOOGLE_SYNC: '구글 공유 문서에서 동기화된 일정입니다.',
+  AUTO_GENERATED:
+    '과제 종료일에서 역산해 자동 생성된 일정입니다. 여기서 고쳐도 다음 배치에서 되돌아가므로, 과제 관리에서 종료일이나 리드타임을 바꿔 주세요.',
+  GOOGLE_SYNC:
+    '구글 공유 문서에서 동기화된 일정입니다. 여기서 고쳐도 다음 동기화에서 되돌아가므로, 원본 문서를 수정해 주세요.',
 }
 
 /**
@@ -34,8 +40,22 @@ function EventDetailDialog({
   event,
   onClose,
   onEdit,
+  onDelete,
+  isDeleting = false,
 }: EventDetailDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
+
+  // 삭제는 되돌릴 수 없으니 같은 자리에서 한 번 더 확인받는다.
+  // 중첩 모달 대신 버튼 자리를 바꾸는 방식이라 포커스가 튀지 않는다.
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
+  const [confirmingEventId, setConfirmingEventId] = useState<string | null>(null)
+
+  if (confirmingEventId !== (event?.id ?? null)) {
+    setConfirmingEventId(event?.id ?? null)
+    setIsConfirmingDelete(false)
+  }
+
+  const canModify = event ? isEditableEvent(event) : false
 
   useEffect(() => {
     const dialog = dialogRef.current
@@ -149,16 +169,49 @@ function EventDetailDialog({
             <p className={styles.autoNotice}>{SOURCE_NOTICES[event.source]}</p>
           ) : null}
 
-          {onEdit ? (
+          {canModify && (onEdit || onDelete) ? (
             <div className={styles.actions}>
-              <button
-                type="button"
-                className={styles.editButton}
-                onClick={() => onEdit(event)}
-              >
-                수정
-              </button>
-              {/* 삭제 버튼은 KAN-46 */}
+              {isConfirmingDelete ? (
+                <>
+                  <span className={styles.confirmText}>삭제할까요?</span>
+                  <button
+                    type="button"
+                    className={styles.secondaryButton}
+                    onClick={() => setIsConfirmingDelete(false)}
+                  >
+                    취소
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.dangerButton}
+                    disabled={isDeleting}
+                    onClick={() => onDelete?.(event)}
+                  >
+                    {isDeleting ? '삭제 중…' : '삭제'}
+                  </button>
+                </>
+              ) : (
+                <>
+                  {onDelete ? (
+                    <button
+                      type="button"
+                      className={styles.secondaryButton}
+                      onClick={() => setIsConfirmingDelete(true)}
+                    >
+                      삭제
+                    </button>
+                  ) : null}
+                  {onEdit ? (
+                    <button
+                      type="button"
+                      className={styles.editButton}
+                      onClick={() => onEdit(event)}
+                    >
+                      수정
+                    </button>
+                  ) : null}
+                </>
+              )}
             </div>
           ) : null}
         </div>

@@ -61,6 +61,26 @@ export async function updateEvent(
 }
 
 /**
+ * 일정 삭제.
+ *
+ * TODO(KAN-39 완료 후): 실제 API 호출로 교체한다.
+ *   await apiClient.delete(`/api/events/${id}`)
+ */
+export async function deleteEvent(id: string): Promise<void> {
+  const index = DUMMY_EVENTS.findIndex((event) => event.id === id)
+  if (index === -1) {
+    throw new ApiError('NOT_FOUND', '삭제할 일정을 찾을 수 없습니다.')
+  }
+  DUMMY_EVENTS.splice(index, 1)
+}
+
+/** 도메인 일정에서 생성·수정 입력값만 뽑는다. */
+export function toEventInput(event: CalendarEvent): EventInput {
+  const { id: _id, source: _source, ...input } = event
+  return input
+}
+
+/**
  * 실제 API 연동 시 삭제한다.
  * 날짜는 항상 이번 달에 보이도록 오늘을 기준으로 만든다.
  */

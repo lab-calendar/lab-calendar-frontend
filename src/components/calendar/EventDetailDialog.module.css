@@ -110,8 +110,44 @@
 .actions {
   display: flex;
   gap: var(--space-2);
+  align-items: center;
   justify-content: flex-end;
   padding-top: var(--space-1);
+}
+
+.confirmText {
+  margin-right: auto;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.secondaryButton {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+}
+
+.secondaryButton:hover {
+  color: var(--color-text);
+  background: var(--color-surface-muted);
+}
+
+.dangerButton {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-inverse);
+  background: var(--color-danger);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+}
+
+.dangerButton:disabled {
+  cursor: default;
+  opacity: 0.6;
 }
 
 .editButton {
