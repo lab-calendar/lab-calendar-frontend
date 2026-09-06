@@ -1,3 +1,4 @@
+import CategoryFilter from '../calendar/CategoryFilter'
 import Placeholder from '../common/Placeholder'
 import styles from './Sidebar.module.css'
 
@@ -10,11 +11,7 @@ function Sidebar() {
     <aside className={styles.sidebar} aria-label="제어 영역">
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>카테고리 필터</h2>
-        <Placeholder
-          title="카테고리별 선택 조회"
-          description="과제/연구 · 랩실 일정 · 카드/경비"
-          issue="KAN-43"
-        />
+        <CategoryFilter />
       </section>
 
       <section className={styles.section}>
