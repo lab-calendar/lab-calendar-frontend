@@ -8,6 +8,21 @@ afterEach(() => {
   cleanup()
 })
 
+// jsdom(29 기준)은 dialog.showModal/close 를 구현하지 않는다.
+// 열림 상태만 흉내 낸다. 포커스 트랩과 ESC 는 브라우저가 처리하므로 여기서 검증하지 않는다.
+if (
+  typeof HTMLDialogElement !== 'undefined' &&
+  !HTMLDialogElement.prototype.showModal
+) {
+  HTMLDialogElement.prototype.showModal = function showModal() {
+    this.open = true
+  }
+  HTMLDialogElement.prototype.close = function close() {
+    this.open = false
+    this.dispatchEvent(new Event('close'))
+  }
+}
+
 // jsdom 에는 matchMedia 가 없다. useMediaQuery 가 데스크톱으로 동작하도록 채운다.
 if (!window.matchMedia) {
   window.matchMedia = (query: string): MediaQueryList => ({

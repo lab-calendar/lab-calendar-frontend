@@ -1,5 +1,25 @@
 import { describe, expect, it } from 'vitest'
-import { addDays, overlaps } from './date'
+import { addDays, formatEventPeriod, overlaps } from './date'
+
+describe('formatEventPeriod', () => {
+  it('하루짜리는 요일과 함께 한 날짜만 쓴다', () => {
+    expect(formatEventPeriod('2026-09-10', '2026-09-10')).toBe(
+      '2026년 9월 10일 (목)',
+    )
+  })
+
+  it('같은 해 기간은 끝 날짜의 연도를 생략한다', () => {
+    expect(formatEventPeriod('2026-09-08', '2026-09-26')).toBe(
+      '2026년 9월 8일 (화) ~ 9월 26일 (토)',
+    )
+  })
+
+  it('해가 바뀌면 끝 날짜에도 연도를 붙인다', () => {
+    expect(formatEventPeriod('2026-12-28', '2027-01-05')).toBe(
+      '2026년 12월 28일 (월) ~ 2027년 1월 5일 (화)',
+    )
+  })
+})
 
 describe('addDays', () => {
   it('하루를 더한다', () => {

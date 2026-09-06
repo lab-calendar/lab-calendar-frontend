@@ -1,4 +1,9 @@
-import type { DatesSetArg, EventContentArg, EventInput } from '@fullcalendar/core'
+import type {
+  DatesSetArg,
+  EventClickArg,
+  EventContentArg,
+  EventInput,
+} from '@fullcalendar/core'
 import koLocale from '@fullcalendar/core/locales/ko'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import FullCalendar from '@fullcalendar/react'
@@ -9,6 +14,7 @@ import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { useEvents } from '../../queries/useEvents'
 import type { CalendarEvent, DateRange } from '../../types/domain'
 import { addDays } from '../../utils/date'
+import EventDetailDialog from './EventDetailDialog'
 import { formatEventLabel } from './eventLabel'
 import styles from './MonthCalendar.module.css'
 
@@ -46,6 +52,17 @@ function MonthCalendar() {
   // FullCalendar 가 알려주는 표시 기간. 뷰를 옮기면 갱신되고 그때마다 다시 조회한다.
   const [range, setRange] = useState<DateRange | null>(null)
   const { data: events, isError } = useEvents(range)
+
+  // 상세 팝업에서 보여줄 일정. 목록이 바뀌어 사라지면 자동으로 닫힌다.
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null)
+  const selectedEvent =
+    events?.find((event) => event.id === selectedEventId) ?? null
+
+  const handleEventClick = useCallback((arg: EventClickArg) => {
+    setSelectedEventId(arg.event.id)
+  }, [])
+
+  const closeDetail = useCallback(() => setSelectedEventId(null), [])
 
   const handleDatesSet = useCallback((arg: DatesSetArg) => {
     setRange({
@@ -86,11 +103,14 @@ function MonthCalendar() {
         datesSet={handleDatesSet}
         events={visibleEvents}
         eventContent={renderEventContent}
+        eventClick={handleEventClick}
         fixedWeekCount={false}
         // 셀이 좁은 모바일에서는 표시 개수를 줄이고 나머지는 "+N개"로 접는다
         dayMaxEvents={isMobile ? 2 : 3}
         expandRows
       />
+
+      <EventDetailDialog event={selectedEvent} onClose={closeDetail} />
     </div>
   )
 }
