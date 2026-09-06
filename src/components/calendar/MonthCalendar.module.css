@@ -124,3 +124,39 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ── 모바일 ───────────────────────────────── */
+@media (max-width: 767px) {
+  .calendar :global(.fc .fc-toolbar) {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .calendar :global(.fc .fc-toolbar-title) {
+    font-size: var(--font-size-md);
+  }
+
+  .calendar :global(.fc .fc-button-primary) {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--font-size-xs);
+  }
+
+  .calendar :global(.fc .fc-col-header-cell) {
+    padding-block: var(--space-1);
+  }
+
+  .calendar :global(.fc .fc-daygrid-day-number) {
+    padding: 2px var(--space-1);
+    font-size: var(--font-size-xs);
+  }
+
+  .calendar :global(.fc .fc-daygrid-event-harness) {
+    margin-inline: 1px;
+  }
+
+  .event {
+    padding: 1px var(--space-1);
+    border-left-width: 2px;
+  }
+}
