@@ -18,13 +18,27 @@ export type EventSource = 'MANUAL' | 'AUTO_GENERATED' | 'GOOGLE_SYNC'
 
 export type CalendarEvent = {
   id: string
+  /** 주 제목 — 과제명 / 업무명 / 카드 종류 */
   title: string
   /** YYYY-MM-DD */
   startDate: string
   /** YYYY-MM-DD. 하루짜리 일정은 startDate 와 같다 (표시 마지막 날, 배타적 아님) */
   endDate: string
   categoryKey: CategoryKey
+  /**
+   * 제목 옆에 덧붙는 값. 카테고리에 따라 의미가 다르다 (기획서 2.2 표시 데이터 양식).
+   * - project: 제출 단계
+   * - lab: 담당 연구원
+   * - card: 지출 목적
+   */
+  detail?: string
   memo?: string
   participants: string[]
   source: EventSource
+}
+
+/** 조회 기간. 양끝을 포함한다. */
+export type DateRange = {
+  from: string
+  to: string
 }
