@@ -97,10 +97,6 @@
   opacity: 0.6;
 }
 
-.submitError {
-  font-size: var(--font-size-xs);
-  color: var(--color-danger);
-}
 
 @media (max-width: 767px) {
   .input {

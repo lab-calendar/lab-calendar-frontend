@@ -1,5 +1,10 @@
 import type { Project, ProjectInput } from '../types/domain'
-import { decorateProject, projectRecords } from './dummyDb'
+import {
+  decorateProject,
+  projectRecords,
+  simulateRead,
+  simulateWrite,
+} from './dummyDb'
 import { ApiError } from './errors'
 
 /**
@@ -13,6 +18,8 @@ import { ApiError } from './errors'
  * 목록을 여는 목적이 "다음에 뭘 준비해야 하나" 이기 때문이다.
  */
 export async function fetchProjects(): Promise<Project[]> {
+  await simulateRead('projects')
+
   return projectRecords
     .map(decorateProject)
     .sort((a, b) => {
@@ -32,6 +39,8 @@ export async function fetchProjects(): Promise<Project[]> {
  * 과제 목록뿐 아니라 일정 쿼리도 함께 무효화해야 한다 — `useProjectMutations` 참고.
  */
 export async function createProject(input: ProjectInput): Promise<Project> {
+  await simulateWrite('projects')
+
   const record = { ...input, id: `local-${crypto.randomUUID()}` }
   projectRecords.push(record)
   return decorateProject(record)
@@ -48,6 +57,8 @@ export async function updateProject(
   id: string,
   input: ProjectInput,
 ): Promise<Project> {
+  await simulateWrite('projects')
+
   const index = projectRecords.findIndex((project) => project.id === id)
   if (index === -1) {
     throw new ApiError('NOT_FOUND', '수정할 과제를 찾을 수 없습니다.')
@@ -65,6 +76,8 @@ export async function updateProject(
  *   await apiClient.delete(`/api/projects/${id}`)
  */
 export async function deleteProject(id: string): Promise<void> {
+  await simulateWrite('projects')
+
   const index = projectRecords.findIndex((project) => project.id === id)
   if (index === -1) {
     throw new ApiError('NOT_FOUND', '삭제할 과제를 찾을 수 없습니다.')

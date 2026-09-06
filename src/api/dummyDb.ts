@@ -8,6 +8,7 @@
  */
 import type { CalendarEvent, Project, ProjectInput } from '../types/domain'
 import { addDays, todayIso } from '../utils/date'
+import { ApiError } from './errors'
 
 /** 날짜가 항상 이번 달에 보이도록 오늘을 기준으로 만든다. */
 function dayOfThisMonth(day: number): string {
@@ -152,3 +153,50 @@ export const eventRecords: CalendarEvent[] = [
     source: 'GOOGLE_SYNC',
   },
 ]
+
+/**
+ * 지연과 실패를 흉내 내는 개발용 스위치.
+ *
+ * 더미 어댑터는 값을 즉시 돌려주기 때문에 로딩·에러 화면을 볼 방법이 없다.
+ * `.env.local` 에 아래를 넣고 dev 서버를 다시 띄우면 그 화면들을 확인할 수 있다.
+ *
+ *   VITE_DUMMY_DELAY_MS=1500
+ *   VITE_DUMMY_FAIL=events
+ *   VITE_DUMMY_FAIL_WRITE=projects
+ *
+ * 실제 API 를 붙이면 이 파일과 함께 사라진다. 자세한 값은 `.env.example` 참고.
+ */
+export type DummyResource = 'categories' | 'events' | 'projects'
+
+const DELAY_MS = Number(import.meta.env.VITE_DUMMY_DELAY_MS ?? 0)
+
+function parseResources(raw: unknown): Set<string> {
+  return new Set(
+    String(raw ?? '')
+      .split(',')
+      .map((value) => value.trim())
+      .filter(Boolean),
+  )
+}
+
+const FAILING_READS = parseResources(import.meta.env.VITE_DUMMY_FAIL)
+const FAILING_WRITES = parseResources(import.meta.env.VITE_DUMMY_FAIL_WRITE)
+
+async function simulate(resource: DummyResource, failing: Set<string>) {
+  if (DELAY_MS > 0) {
+    await new Promise((resolve) => setTimeout(resolve, DELAY_MS))
+  }
+  if (failing.has(resource) || failing.has('all')) {
+    throw new ApiError('SERVER', '서버에 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.')
+  }
+}
+
+/** 조회 어댑터 앞에 둔다. */
+export function simulateRead(resource: DummyResource): Promise<void> {
+  return simulate(resource, FAILING_READS)
+}
+
+/** 생성·수정·삭제 어댑터 앞에 둔다. */
+export function simulateWrite(resource: DummyResource): Promise<void> {
+  return simulate(resource, FAILING_WRITES)
+}

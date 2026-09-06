@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import ErrorState from '../components/common/ErrorState'
+import LoadingState from '../components/common/LoadingState'
 import ProjectForm from '../components/projects/ProjectForm'
 import ProjectList from '../components/projects/ProjectList'
 import { useProjects } from '../queries/useProjects'
@@ -7,7 +9,14 @@ import styles from './Page.module.css'
 
 /** 연구 과제 관리 화면 (기획서 3.1). */
 function ProjectsPage() {
-  const { data: projects } = useProjects()
+  const {
+    data: projects,
+    isPending,
+    isError,
+    error,
+    refetch,
+    isFetching,
+  } = useProjects()
   const [editingId, setEditingId] = useState<string | null>(null)
 
   // 목록을 다시 받아도 수정 중인 과제를 잃지 않도록 id 로 다시 찾는다.
@@ -38,12 +47,28 @@ function ProjectsPage() {
 
         <section className={styles.panel}>
           <h2 className={styles.panelTitle}>등록된 과제</h2>
-          <ProjectList
-            projects={projects ?? []}
-            editingId={editingId}
-            onEdit={(project: Project) => setEditingId(project.id)}
-            onEditingRemoved={() => setEditingId(null)}
-          />
+
+          {isPending ? (
+            <LoadingState
+              label="과제를 불러오는 중입니다"
+              lines={3}
+              lineHeight="6rem"
+            />
+          ) : isError ? (
+            <ErrorState
+              title="과제를 불러오지 못했습니다."
+              error={error}
+              onRetry={() => void refetch()}
+              isRetrying={isFetching}
+            />
+          ) : (
+            <ProjectList
+              projects={projects}
+              editingId={editingId}
+              onEdit={(project: Project) => setEditingId(project.id)}
+              onEditingRemoved={() => setEditingId(null)}
+            />
+          )}
         </section>
       </div>
     </div>

@@ -123,3 +123,27 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* 레이아웃 바깥에서 단독으로 서는 오류 화면 */
+.crash {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--space-6);
+  background: var(--color-bg);
+}
+
+.retryButton {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-inverse);
+  background: var(--color-primary);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+}
+
+.retryButton:hover {
+  background: var(--color-primary-hover);
+}

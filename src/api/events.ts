@@ -1,6 +1,6 @@
 import type { CalendarEvent, DateRange } from '../types/domain'
 import { overlaps } from '../utils/date'
-import { eventRecords, preparationEvents } from './dummyDb'
+import { eventRecords, preparationEvents, simulateRead, simulateWrite } from './dummyDb'
 import { ApiError } from './errors'
 
 /**
@@ -20,6 +20,8 @@ import { ApiError } from './errors'
  * 실제 서비스에서는 KAN-49 배치가 만들어 두므로 서버가 함께 내려준다.
  */
 export async function fetchEvents(range: DateRange): Promise<CalendarEvent[]> {
+  await simulateRead('events')
+
   return [...eventRecords, ...preparationEvents()].filter((event) =>
     overlaps(event, range),
   )
@@ -36,6 +38,8 @@ export type EventInput = Omit<CalendarEvent, 'id' | 'source'>
  *   return toCalendarEvent(data.data)
  */
 export async function createEvent(input: EventInput): Promise<CalendarEvent> {
+  await simulateWrite('events')
+
   const created: CalendarEvent = {
     ...input,
     id: `local-${crypto.randomUUID()}`,
@@ -59,6 +63,8 @@ export async function updateEvent(
   id: string,
   input: EventInput,
 ): Promise<CalendarEvent> {
+  await simulateWrite('events')
+
   const index = eventRecords.findIndex((event) => event.id === id)
   if (index === -1) {
     throw new ApiError('NOT_FOUND', '수정할 일정을 찾을 수 없습니다.')
@@ -76,6 +82,8 @@ export async function updateEvent(
  *   await apiClient.delete(`/api/events/${id}`)
  */
 export async function deleteEvent(id: string): Promise<void> {
+  await simulateWrite('events')
+
   const index = eventRecords.findIndex((event) => event.id === id)
   if (index === -1) {
     throw new ApiError('NOT_FOUND', '삭제할 일정을 찾을 수 없습니다.')

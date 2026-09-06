@@ -3,18 +3,58 @@
  * 라이브러리가 생성하는 클래스라 :global 로 지정한다.
  */
 .calendar {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
   height: 100%;
 }
 
-/* 조회 실패 안내. 본격적인 처리는 KAN-63. */
-.status {
+/* 다시 불러오는 동안 화면을 밀지 않도록 얇은 막대만 겹쳐 둔다 */
+.loadingBar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  overflow: hidden;
+  background: var(--color-surface-muted);
+  border-radius: var(--radius-full);
+}
+
+.loadingBar::after {
+  content: "";
+  display: block;
+  width: 40%;
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  animation: slide 1.1s ease-in-out infinite;
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(250%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loadingBar::after {
+    width: 100%;
+    animation: none;
+  }
+}
+
+/* 표시할 일정이 없을 때의 안내 */
+.emptyNote {
   padding: var(--space-2) var(--space-3);
   font-size: var(--font-size-sm);
-  color: var(--color-danger);
-  background: var(--category-project-soft);
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
   border-radius: var(--radius-md);
 }
 
