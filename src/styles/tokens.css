@@ -1,0 +1,113 @@
+/*
+ * Lab Calendar — 디자인 토큰
+ *
+ * 컴포넌트에서는 색상/간격/폰트 값을 직접 쓰지 않고 여기 정의된 변수만 참조한다.
+ * 카테고리 색상은 기획서 2.2 기준이며 확정값이 아니므로 이 파일에서만 바꾸면 된다.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* ── 표면 & 경계 ───────────────────────────── */
+  --color-bg: #f5f6f8;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f1f3f6;
+  --color-border: #dfe3e8;
+  --color-border-strong: #c3cad3;
+
+  /* ── 텍스트 ────────────────────────────────── */
+  --color-text: #1b2126;
+  --color-text-muted: #5a6672;
+  --color-text-subtle: #8b949e;
+  --color-text-inverse: #ffffff;
+
+  /* ── 강조 & 상태 ───────────────────────────── */
+  --color-primary: #2f6fed;
+  --color-primary-hover: #2459c6;
+  --color-primary-soft: #e9f0fe;
+  --color-danger: #d64545;
+  --color-focus-ring: rgb(47 111 237 / 45%);
+
+  /* ── 카테고리 (기획서 2.2) ─────────────────── */
+  /* 과제/연구 관리 — Red */
+  --category-project: #d64545;
+  --category-project-soft: #fdeded;
+  --category-project-border: #f3bcbc;
+  /* 랩실 주기적 일정 — Green */
+  --category-lab: #2f9e5f;
+  --category-lab-soft: #e8f6ee;
+  --category-lab-border: #abdcc0;
+  /* 카드/경비 사용 — Blue */
+  --category-card: #2f6fed;
+  --category-card-soft: #e9f0fe;
+  --category-card-border: #b5ccf8;
+
+  /* ── 타이포그래피 ──────────────────────────── */
+  --font-sans: system-ui, -apple-system, 'Segoe UI', 'Apple SD Gothic Neo',
+    'Malgun Gothic', 'Noto Sans KR', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+
+  /* ── 간격 (4px 스케일) ─────────────────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  /* ── 모서리 & 그림자 ───────────────────────── */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-full: 999px;
+
+  --shadow-sm: 0 1px 2px rgb(16 24 40 / 6%);
+  --shadow-md: 0 4px 12px rgb(16 24 40 / 8%);
+
+  /* ── 레이아웃 ──────────────────────────────── */
+  --layout-header-height: 56px;
+  --layout-sidebar-width: 320px;
+
+  /* ── z-index ───────────────────────────────── */
+  --z-header: 10;
+  --z-modal: 100;
+}
+
+/*
+ * 카테고리 색상 매핑.
+ * 요소에 data-category 속성만 지정하면 하위에서 --category-* 변수를 그대로 쓸 수 있다.
+ * 예) <span data-category="project" className={styles.chip} />
+ */
+[data-category='project'] {
+  --category-color: var(--category-project);
+  --category-soft: var(--category-project-soft);
+  --category-border: var(--category-project-border);
+}
+
+[data-category='lab'] {
+  --category-color: var(--category-lab);
+  --category-soft: var(--category-lab-soft);
+  --category-border: var(--category-lab-border);
+}
+
+[data-category='card'] {
+  --category-color: var(--category-card);
+  --category-soft: var(--category-card-soft);
+  --category-border: var(--category-card-border);
+}
