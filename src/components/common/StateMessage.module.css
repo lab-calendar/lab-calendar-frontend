@@ -1,0 +1,98 @@
+/* 로딩 · 에러 · 빈 상태 공통 표시 */
+.state {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+}
+
+.title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.description {
+  max-width: 32rem;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-muted);
+}
+
+.retry {
+  margin-top: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+}
+
+.retry:hover:not(:disabled) {
+  background: var(--color-surface-muted);
+}
+
+.retry:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+/* 로딩 스켈레톤 */
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-2);
+}
+
+.bar {
+  height: var(--skeleton-height, 1rem);
+  background: linear-gradient(
+    90deg,
+    var(--color-surface-muted) 25%,
+    var(--color-border) 37%,
+    var(--color-surface-muted) 63%
+  );
+  background-size: 400% 100%;
+  border-radius: var(--radius-sm);
+  animation: shimmer 1.4s ease infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 50%;
+  }
+
+  to {
+    background-position: 0 50%;
+  }
+}
+
+/* 움직임을 줄이도록 설정한 사용자에게는 반짝임 없이 자리만 잡아 준다 */
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    background: var(--color-surface-muted);
+    animation: none;
+  }
+}
+
+
+/* 사이드바처럼 좁은 자리에 들어갈 때 */
+.compact {
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+}
+
+.compact .title {
+  font-size: var(--font-size-sm);
+}
+
+.compact .description {
+  font-size: var(--font-size-xs);
+}

@@ -27,14 +27,17 @@
   accent-color: var(--category-color);
 }
 
-/* 색상 외에도 구분되도록 라벨 텍스트를 함께 노출한다 (KAN-64) */
+/*
+ * 카테고리 표식 (KAN-64).
+ *
+ * 달력 칩에 붙는 것과 같은 글리프라, 이 목록이 곧 "어떤 모양이 어떤 분류인지"를
+ * 알려주는 범례가 된다. 색을 못 가려내도 모양으로 읽을 수 있다.
+ */
 .badge {
   flex-shrink: 0;
-  width: 10px;
-  height: 10px;
-  background: var(--category-soft);
-  border: 2px solid var(--category-color);
-  border-radius: var(--radius-sm);
+  font-size: var(--font-size-xs);
+  line-height: 1;
+  color: var(--category-color);
 }
 
 .label {

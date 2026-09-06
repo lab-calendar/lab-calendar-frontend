@@ -4,6 +4,7 @@ import { useEventForm } from '../../contexts/EventFormContext'
 import { useCategories } from '../../queries/useCategories'
 import { useSaveEvent } from '../../queries/useEventMutations'
 import type { CalendarEvent } from '../../types/domain'
+import { todayIso } from '../../utils/date'
 import styles from './EventForm.module.css'
 import {
   parseParticipants,
@@ -19,12 +20,6 @@ const DETAIL_FIELDS: Record<CategoryKey, { label: string; hint: string }> = {
   card: { label: '사용 목적', hint: '예: 다과비' },
 }
 
-function todayIso(): string {
-  const now = new Date()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-  return `${now.getFullYear()}-${month}-${day}`
-}
 
 function emptyValues(): EventFormValues {
   const today = todayIso()
@@ -199,6 +194,9 @@ function EventForm() {
             }
             value={values.startDate}
             aria-invalid={Boolean(errors.startDate)}
+            aria-describedby={
+              errors.startDate ? `${fieldId}-start-error` : undefined
+            }
             onChange={(changeEvent) =>
               update('startDate', changeEvent.target.value)
             }
@@ -217,6 +215,9 @@ function EventForm() {
             }
             value={values.endDate}
             aria-invalid={Boolean(errors.endDate)}
+            aria-describedby={
+              errors.endDate ? `${fieldId}-end-error` : undefined
+            }
             onChange={(changeEvent) =>
               update('endDate', changeEvent.target.value)
             }
@@ -224,8 +225,16 @@ function EventForm() {
         </div>
       </div>
 
-      {errors.startDate ? <p className={styles.error}>{errors.startDate}</p> : null}
-      {errors.endDate ? <p className={styles.error}>{errors.endDate}</p> : null}
+      {errors.startDate ? (
+        <p id={`${fieldId}-start-error`} className={styles.error}>
+          {errors.startDate}
+        </p>
+      ) : null}
+      {errors.endDate ? (
+        <p id={`${fieldId}-end-error`} className={styles.error}>
+          {errors.endDate}
+        </p>
+      ) : null}
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor={`${fieldId}-participants`}>
@@ -236,12 +245,15 @@ function EventForm() {
           className={styles.input}
           value={values.participants}
           placeholder="홍길동, 김철수"
+          aria-describedby={`${fieldId}-participants-hint`}
           onChange={(changeEvent) =>
             update('participants', changeEvent.target.value)
           }
         />
         {/* 연구원 목록에서 고르는 방식은 KAN-41 이후 */}
-        <p className={styles.hint}>쉼표로 구분해 입력합니다.</p>
+        <p id={`${fieldId}-participants-hint`} className={styles.hint}>
+          쉼표로 구분해 입력합니다.
+        </p>
       </div>
 
       <div className={styles.field}>
@@ -263,12 +275,6 @@ function EventForm() {
       >
         {saveEvent.isPending ? '저장 중…' : editingEvent ? '수정' : '등록'}
       </button>
-
-      {saveEvent.isError ? (
-        <p className={styles.submitError} role="alert">
-          저장하지 못했습니다. 잠시 후 다시 시도해 주세요.
-        </p>
-      ) : null}
     </form>
   )
 }

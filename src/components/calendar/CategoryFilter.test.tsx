@@ -27,15 +27,17 @@ describe('CategoryFilter', () => {
   it('서버가 준 이름으로 카테고리를 노출한다', async () => {
     renderWithRouter(<CategoryFilter />)
 
-    expect(await screen.findByLabelText('과제/연구 관리')).toBeInTheDocument()
-    expect(screen.getByLabelText('랩실 주기적 일정')).toBeInTheDocument()
-    expect(screen.getByLabelText('카드/경비 사용')).toBeInTheDocument()
+    expect(await screen.findByRole('checkbox', { name: '과제/연구 관리' })).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: '랩실 주기적 일정' })).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: '카드/경비 사용' })).toBeInTheDocument()
   })
 
   it('불러오는 동안 안내를 보여준다', () => {
     renderWithRouter(<CategoryFilter />)
 
-    expect(screen.getByText('카테고리를 불러오는 중입니다…')).toBeInTheDocument()
+    expect(
+      screen.getByText('카테고리를 불러오는 중입니다'),
+    ).toBeInTheDocument()
   })
 
   it('조회에 실패하면 안내를 보여준다', async () => {
@@ -51,7 +53,7 @@ describe('CategoryFilter', () => {
 
   it('기본값은 전체 선택이다', async () => {
     renderWithRouter(<CategoryFilter />)
-    await screen.findByLabelText('과제/연구 관리')
+    await screen.findByRole('checkbox', { name: '과제/연구 관리' })
 
     for (const checkbox of screen.getAllByRole('checkbox')) {
       expect(checkbox).toBeChecked()
@@ -62,26 +64,26 @@ describe('CategoryFilter', () => {
   it('URL 의 선택 상태를 반영한다', async () => {
     renderWithRouter(<CategoryFilter />, { route: '/?categories=lab' })
 
-    expect(await screen.findByLabelText('랩실 주기적 일정')).toBeChecked()
-    expect(screen.getByLabelText('과제/연구 관리')).not.toBeChecked()
-    expect(screen.getByLabelText('카드/경비 사용')).not.toBeChecked()
+    expect(await screen.findByRole('checkbox', { name: '랩실 주기적 일정' })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: '과제/연구 관리' })).not.toBeChecked()
+    expect(screen.getByRole('checkbox', { name: '카드/경비 사용' })).not.toBeChecked()
   })
 
   it('클릭하면 해당 카테고리가 해제된다', async () => {
     const user = userEvent.setup()
     renderWithRouter(<CategoryFilter />)
 
-    await user.click(await screen.findByLabelText('과제/연구 관리'))
+    await user.click(await screen.findByRole('checkbox', { name: '과제/연구 관리' }))
 
-    expect(screen.getByLabelText('과제/연구 관리')).not.toBeChecked()
-    expect(screen.getByLabelText('랩실 주기적 일정')).toBeChecked()
-    expect(screen.getByLabelText('카드/경비 사용')).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: '과제/연구 관리' })).not.toBeChecked()
+    expect(screen.getByRole('checkbox', { name: '랩실 주기적 일정' })).toBeChecked()
+    expect(screen.getByRole('checkbox', { name: '카드/경비 사용' })).toBeChecked()
   })
 
   it('전체를 해제하면 안내 문구를 보여준다', async () => {
     const user = userEvent.setup()
     renderWithRouter(<CategoryFilter />)
-    await screen.findByLabelText('과제/연구 관리')
+    await screen.findByRole('checkbox', { name: '과제/연구 관리' })
 
     for (const checkbox of screen.getAllByRole('checkbox')) {
       await user.click(checkbox)

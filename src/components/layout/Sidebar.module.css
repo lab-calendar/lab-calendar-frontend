@@ -39,9 +39,15 @@
     box-shadow: var(--shadow-md);
   }
 
+  /*
+   * 열 때는 visibility 를 전환 대상에서 뺀다.
+   * 닫을 때만 지연시켜야 슬라이드가 끝난 뒤 사라지고, 열 때 함께 전환하면
+   * 잠깐 감춰진 상태로 계산돼 포커스를 넣을 수 없다 (KAN-64 포커스 이동).
+   */
   .open {
     visibility: visible;
     transform: translateX(0);
+    transition: transform 200ms ease;
   }
 }
 
@@ -49,4 +55,11 @@
   .sidebar {
     transition: none;
   }
+}
+
+/* 제어할 것이 없는 화면에서의 안내 */
+.note {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-muted);
 }

@@ -1,3 +1,6 @@
+import { CATEGORY_MARKS } from '../../constants/categories'
+import ErrorState from '../common/ErrorState'
+import LoadingState from '../common/LoadingState'
 import { useCategoryFilter } from '../../hooks/useCategoryFilter'
 import { useCategories } from '../../queries/useCategories'
 import styles from './CategoryFilter.module.css'
@@ -11,15 +14,31 @@ import styles from './CategoryFilter.module.css'
  */
 function CategoryFilter() {
   const { selected, toggle } = useCategoryFilter()
-  const { data: categories, isPending, isError } = useCategories()
+  const {
+    data: categories,
+    isPending,
+    isError,
+    error,
+    refetch,
+    isFetching,
+  } = useCategories()
 
-  // 로딩·에러 상태의 본격적인 처리는 KAN-63에서 다룬다
   if (isPending) {
-    return <p className={styles.status}>카테고리를 불러오는 중입니다…</p>
+    return (
+      <LoadingState label="카테고리를 불러오는 중입니다" lines={3} lineHeight="1.25rem" />
+    )
   }
 
   if (isError) {
-    return <p className={styles.status}>카테고리를 불러오지 못했습니다.</p>
+    return (
+      <ErrorState
+        title="카테고리를 불러오지 못했습니다."
+        error={error}
+        onRetry={() => void refetch()}
+        isRetrying={isFetching}
+        compact
+      />
+    )
   }
 
   return (
@@ -34,7 +53,9 @@ function CategoryFilter() {
                 checked={selected.includes(category.key)}
                 onChange={() => toggle(category.key)}
               />
-              <span className={styles.badge} aria-hidden="true" />
+              <span className={styles.badge} aria-hidden="true">
+                {CATEGORY_MARKS[category.key]}
+              </span>
               <span className={styles.label}>{category.name}</span>
             </label>
           </li>

@@ -1,7 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import AppHeader from '../components/layout/AppHeader'
 import Sidebar from '../components/layout/Sidebar'
+import { useFocusTrap } from '../hooks/useFocusTrap'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 import {
   EventFormContext,
   type EventFormContextValue,
@@ -25,6 +27,15 @@ function AppLayout() {
     setRenderedPathname(pathname)
     setIsSidebarOpen(false)
   }
+
+  /*
+   * 드로어가 열려 있는 동안 포커스를 그 안에 가둔다.
+   * 데스크톱에서는 사이드바가 화면을 덮지 않으므로 가두면 안 된다 — 드로어
+   * 폭에서 열어 둔 채 창을 넓힌 경우까지 고려해 매체 질의로 함께 판단한다.
+   */
+  const sidebarRef = useRef<HTMLElement>(null)
+  const isDrawer = useMediaQuery('(max-width: 1023px)')
+  useFocusTrap(sidebarRef, isSidebarOpen && isDrawer)
 
   const closeSidebar = useCallback(() => setIsSidebarOpen(false), [])
   const toggleSidebar = useCallback(
@@ -65,13 +76,18 @@ function AppLayout() {
   return (
     <EventFormContext value={eventForm}>
       <div className={styles.layout}>
+        {/* 사이드바에 제어가 많아 키보드로 본문까지 가는 길이 길다 */}
+        <a href="#main" className={styles.skipLink}>
+          본문으로 건너뛰기
+        </a>
+
         <AppHeader
           isSidebarOpen={isSidebarOpen}
           onToggleSidebar={toggleSidebar}
         />
 
         <div className={styles.body}>
-          <Sidebar open={isSidebarOpen} />
+          <Sidebar ref={sidebarRef} open={isSidebarOpen} />
 
           {isSidebarOpen ? (
             <button
@@ -82,7 +98,7 @@ function AppLayout() {
             />
           ) : null}
 
-          <main className={styles.main}>
+          <main id="main" tabIndex={-1} className={styles.main}>
             <Outlet />
           </main>
         </div>

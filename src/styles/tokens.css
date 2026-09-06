@@ -8,37 +8,43 @@
 :root {
   color-scheme: light;
 
+  /*
+   * 색상 값은 명도 대비를 맞춰 고른 것이다 (KAN-64).
+   * 본문 글자 4.5:1, 입력 테두리 같은 UI 경계 3:1 을 기준으로 잡았다.
+   * 밝게 되돌리면 기준이 깨지므로 바꿀 때 대비를 다시 확인한다.
+   */
+
   /* ── 표면 & 경계 ───────────────────────────── */
   --color-bg: #f5f6f8;
   --color-surface: #ffffff;
   --color-surface-muted: #f1f3f6;
   --color-border: #dfe3e8;
-  --color-border-strong: #c3cad3;
+  --color-border-strong: #90959c;
 
   /* ── 텍스트 ────────────────────────────────── */
   --color-text: #1b2126;
   --color-text-muted: #5a6672;
-  --color-text-subtle: #8b949e;
+  --color-text-subtle: #686f77;
   --color-text-inverse: #ffffff;
 
   /* ── 강조 & 상태 ───────────────────────────── */
-  --color-primary: #2f6fed;
+  --color-primary: #2b66da;
   --color-primary-hover: #2459c6;
   --color-primary-soft: #e9f0fe;
-  --color-danger: #d64545;
+  --color-danger: #c74040;
   --color-focus-ring: rgb(47 111 237 / 45%);
 
   /* ── 카테고리 (기획서 2.2) ─────────────────── */
   /* 과제/연구 관리 — Red */
-  --category-project: #d64545;
+  --category-project: #c33f3f;
   --category-project-soft: #fdeded;
   --category-project-border: #f3bcbc;
   /* 랩실 주기적 일정 — Green */
-  --category-lab: #2f9e5f;
+  --category-lab: #267e4c;
   --category-lab-soft: #e8f6ee;
   --category-lab-border: #abdcc0;
   /* 카드/경비 사용 — Blue */
-  --category-card: #2f6fed;
+  --category-card: #2b66da;
   --category-card-soft: #e9f0fe;
   --category-card-border: #b5ccf8;
 
