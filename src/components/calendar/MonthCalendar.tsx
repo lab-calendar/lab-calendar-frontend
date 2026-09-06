@@ -2,7 +2,9 @@ import type { EventContentArg } from '@fullcalendar/core'
 import koLocale from '@fullcalendar/core/locales/ko'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import FullCalendar from '@fullcalendar/react'
+import { useMemo } from 'react'
 import type { CategoryKey } from '../../constants/categories'
+import { useCategoryFilter } from '../../hooks/useCategoryFilter'
 import styles from './MonthCalendar.module.css'
 import { SAMPLE_EVENTS } from './sampleEvents'
 
@@ -27,6 +29,18 @@ function renderEventContent(arg: EventContentArg) {
  * 실제 일정 조회 연동은 KAN-42에서 다룬다.
  */
 function MonthCalendar() {
+  const { selected } = useCategoryFilter()
+
+  // 임시 데이터라 클라이언트에서 거른다. KAN-42에서 조회 API의
+  // categoryIds 파라미터로 옮기면서 이 필터링은 제거한다.
+  const events = useMemo(
+    () =>
+      SAMPLE_EVENTS.filter((event) =>
+        selected.includes(event.extendedProps.category),
+      ),
+    [selected],
+  )
+
   return (
     <div className={styles.calendar}>
       <FullCalendar
@@ -39,7 +53,7 @@ function MonthCalendar() {
           center: 'title',
           right: '',
         }}
-        events={SAMPLE_EVENTS}
+        events={events}
         eventContent={renderEventContent}
         fixedWeekCount={false}
         dayMaxEvents={3}
