@@ -48,3 +48,11 @@ export function overlaps(
 ): boolean {
   return event.startDate <= range.to && event.endDate >= range.from
 }
+
+/** 오늘 날짜를 로컬 기준 `YYYY-MM-DD` 로 반환한다. 폼 기본값에 쓴다. */
+export function todayIso(): string {
+  const now = new Date()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  return `${now.getFullYear()}-${month}-${day}`
+}

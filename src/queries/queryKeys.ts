@@ -7,6 +7,8 @@ import type { DateRange } from '../types/domain'
 export const queryKeys = {
   categories: ['categories'] as const,
 
+  projects: ['projects'] as const,
+
   events: {
     all: ['events'] as const,
     list: (range: DateRange | null) => ['events', 'list', range] as const,

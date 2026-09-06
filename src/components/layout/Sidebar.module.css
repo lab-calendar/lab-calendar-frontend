@@ -50,3 +50,10 @@
     transition: none;
   }
 }
+
+/* 제어할 것이 없는 화면에서의 안내 */
+.note {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-muted);
+}

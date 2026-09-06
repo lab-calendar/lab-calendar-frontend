@@ -4,6 +4,7 @@ import { useEventForm } from '../../contexts/EventFormContext'
 import { useCategories } from '../../queries/useCategories'
 import { useSaveEvent } from '../../queries/useEventMutations'
 import type { CalendarEvent } from '../../types/domain'
+import { todayIso } from '../../utils/date'
 import styles from './EventForm.module.css'
 import {
   parseParticipants,
@@ -19,12 +20,6 @@ const DETAIL_FIELDS: Record<CategoryKey, { label: string; hint: string }> = {
   card: { label: '사용 목적', hint: '예: 다과비' },
 }
 
-function todayIso(): string {
-  const now = new Date()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const day = String(now.getDate()).padStart(2, '0')
-  return `${now.getFullYear()}-${month}-${day}`
-}
 
 function emptyValues(): EventFormValues {
   const today = todayIso()
