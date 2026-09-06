@@ -1,0 +1,22 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/*
+ * 기획서 2.1 화면 레이아웃 — 좌측 제어 영역 / 우측 출력 영역 2분할.
+ * 모바일·태블릿 대응(사이드바 접기)은 KAN-62에서 다룬다.
+ */
+.body {
+  display: grid;
+  grid-template-columns: var(--layout-sidebar-width) minmax(0, 1fr);
+  flex: 1;
+  min-height: 0;
+}
+
+.main {
+  min-width: 0;
+  padding: var(--space-6);
+  overflow: auto;
+}
