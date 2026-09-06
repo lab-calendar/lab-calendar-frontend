@@ -50,3 +50,10 @@
   font-size: var(--font-size-xs);
   color: var(--color-text-subtle);
 }
+
+/* 로딩 · 에러 안내. 본격적인 처리는 KAN-63. */
+.status {
+  padding: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
