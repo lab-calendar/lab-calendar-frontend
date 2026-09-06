@@ -3,7 +3,19 @@
  * 라이브러리가 생성하는 클래스라 :global 로 지정한다.
  */
 .calendar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
   height: 100%;
+}
+
+/* 조회 실패 안내. 본격적인 처리는 KAN-63. */
+.status {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
+  background: var(--category-project-soft);
+  border-radius: var(--radius-md);
 }
 
 .calendar :global(.fc) {

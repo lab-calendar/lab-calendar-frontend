@@ -12,9 +12,9 @@ function CalendarPage() {
         </p>
       </div>
 
-      {/* KAN-42에서 실제 조회 API를 연동하면서 제거한다 */}
+      {/* 백엔드 연동(KAN-40)이 끝나면 제거한다 */}
       <p className={styles.notice}>
-        임시 데이터로 표시 중입니다. 실제 일정 연동은 KAN-42에서 진행합니다.
+        백엔드 연동 전이라 임시 데이터를 표시합니다.
       </p>
 
       <div className={styles.fillSurface}>

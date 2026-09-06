@@ -1,4 +1,4 @@
-import type { CategoryKey } from '../constants/categories'
+import type { DateRange } from '../types/domain'
 
 /**
  * 쿼리 키를 한곳에 모아 둔다.
@@ -9,7 +9,6 @@ export const queryKeys = {
 
   events: {
     all: ['events'] as const,
-    list: (params: { from: string; to: string; categories: CategoryKey[] }) =>
-      ['events', 'list', params] as const,
+    list: (range: DateRange | null) => ['events', 'list', range] as const,
   },
 } as const

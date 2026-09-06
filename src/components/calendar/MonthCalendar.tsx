@@ -1,50 +1,78 @@
-import type { EventContentArg } from '@fullcalendar/core'
+import type { DatesSetArg, EventContentArg, EventInput } from '@fullcalendar/core'
 import koLocale from '@fullcalendar/core/locales/ko'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import FullCalendar from '@fullcalendar/react'
-import { useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import type { CategoryKey } from '../../constants/categories'
 import { useCategoryFilter } from '../../hooks/useCategoryFilter'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
+import { useEvents } from '../../queries/useEvents'
+import type { CalendarEvent, DateRange } from '../../types/domain'
+import { addDays } from '../../utils/date'
+import { formatEventLabel } from './eventLabel'
 import styles from './MonthCalendar.module.css'
-import { SAMPLE_EVENTS } from './sampleEvents'
+
+function toFullCalendarEvent(event: CalendarEvent): EventInput {
+  return {
+    id: event.id,
+    title: formatEventLabel(event),
+    start: event.startDate,
+    // FullCalendar 의 종일 일정에서 end 는 배타적이라 표시 마지막 날 다음 날을 준다
+    end: addDays(event.endDate, 1),
+    allDay: true,
+    extendedProps: { categoryKey: event.categoryKey },
+  }
+}
 
 /**
  * 이벤트를 카테고리 색상 토큰이 적용된 칩으로 렌더링한다.
  * `data-category` 만 지정하면 tokens.css 가 색상을 매핑한다.
  */
 function renderEventContent(arg: EventContentArg) {
-  const category = arg.event.extendedProps.category as CategoryKey
+  const categoryKey = arg.event.extendedProps.categoryKey as CategoryKey
 
   return (
-    <div className={styles.event} data-category={category}>
+    <div className={styles.event} data-category={categoryKey}>
       <span className={styles.eventTitle}>{arg.event.title}</span>
     </div>
   )
 }
 
-/**
- * 월별 그리드 캘린더 (기획서 2.1 우측 출력 영역).
- *
- * 현재는 라이브러리 렌더링 검증용 임시 데이터를 사용한다.
- * 실제 일정 조회 연동은 KAN-42에서 다룬다.
- */
+/** 월별 그리드 캘린더 (기획서 2.1 우측 출력 영역). */
 function MonthCalendar() {
   const { selected } = useCategoryFilter()
   const isMobile = useMediaQuery('(max-width: 767px)')
 
-  // 임시 데이터라 클라이언트에서 거른다. KAN-42에서 조회 API의
-  // categoryIds 파라미터로 옮기면서 이 필터링은 제거한다.
-  const events = useMemo(
+  // FullCalendar 가 알려주는 표시 기간. 뷰를 옮기면 갱신되고 그때마다 다시 조회한다.
+  const [range, setRange] = useState<DateRange | null>(null)
+  const { data: events, isError } = useEvents(range)
+
+  const handleDatesSet = useCallback((arg: DatesSetArg) => {
+    setRange({
+      from: arg.startStr.slice(0, 10),
+      // endStr 은 배타적이라 하루를 빼면 실제 마지막 표시일이 된다
+      to: addDays(arg.endStr.slice(0, 10), -1),
+    })
+  }, [])
+
+  // 카테고리 필터는 받아둔 목록에서 거른다. 필터를 바꿔도 다시 조회하지 않는다.
+  const visibleEvents = useMemo(
     () =>
-      SAMPLE_EVENTS.filter((event) =>
-        selected.includes(event.extendedProps.category),
-      ),
-    [selected],
+      (events ?? [])
+        .filter((event) => selected.includes(event.categoryKey))
+        .map(toFullCalendarEvent),
+    [events, selected],
   )
 
   return (
     <div className={styles.calendar}>
+      {/* 로딩·에러 상태의 본격적인 처리는 KAN-63에서 다룬다 */}
+      {isError ? (
+        <p className={styles.status} role="alert">
+          일정을 불러오지 못했습니다.
+        </p>
+      ) : null}
+
       <FullCalendar
         plugins={[dayGridPlugin]}
         initialView="dayGridMonth"
@@ -55,7 +83,8 @@ function MonthCalendar() {
             ? { left: 'prev,next', center: 'title', right: 'today' }
             : { left: 'prev,next today', center: 'title', right: '' }
         }
-        events={events}
+        datesSet={handleDatesSet}
+        events={visibleEvents}
         eventContent={renderEventContent}
         fixedWeekCount={false}
         // 셀이 좁은 모바일에서는 표시 개수를 줄이고 나머지는 "+N개"로 접는다
