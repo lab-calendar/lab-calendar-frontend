@@ -159,6 +159,7 @@
 /* ── 커스텀 이벤트 칩 ─────────────────────── */
 .event {
   display: flex;
+  gap: var(--space-1);
   align-items: center;
   min-width: 0;
   padding: 2px var(--space-2);
@@ -166,9 +167,17 @@
   font-size: var(--font-size-xs);
   line-height: var(--line-height-normal);
   color: var(--category-color);
+  cursor: pointer;
   background: var(--category-soft);
   border-left: 3px solid var(--category-color);
   border-radius: var(--radius-sm);
+}
+
+/* 색 없이도 카테고리를 가려낼 수 있게 하는 표식 (KAN-64) */
+.eventMark {
+  flex-shrink: 0;
+  font-size: 0.7em;
+  line-height: 1;
 }
 
 .eventTitle {

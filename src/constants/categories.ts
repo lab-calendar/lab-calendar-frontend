@@ -15,3 +15,16 @@ export type CategoryKey = (typeof CATEGORY_KEYS)[number]
 export function isCategoryKey(value: string): value is CategoryKey {
   return (CATEGORY_KEYS as readonly string[]).includes(value)
 }
+
+/**
+ * 카테고리를 색 없이도 가려낼 수 있게 하는 표식 (KAN-64).
+ *
+ * 기획서상 외부 자문 위원까지 쓰는 서비스라 색각 이상을 가정해야 한다.
+ * 적록색약이 있으면 과제(빨강)와 랩실(초록) 칩을 색으로는 구분할 수 없다.
+ * 모양이 서로 다른 글리프를 색과 함께 붙여 둘 중 하나만으로도 구분되게 한다.
+ */
+export const CATEGORY_MARKS: Record<CategoryKey, string> = {
+  project: '◆',
+  lab: '●',
+  card: '■',
+}

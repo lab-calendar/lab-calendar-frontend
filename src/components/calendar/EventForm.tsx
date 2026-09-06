@@ -194,6 +194,9 @@ function EventForm() {
             }
             value={values.startDate}
             aria-invalid={Boolean(errors.startDate)}
+            aria-describedby={
+              errors.startDate ? `${fieldId}-start-error` : undefined
+            }
             onChange={(changeEvent) =>
               update('startDate', changeEvent.target.value)
             }
@@ -212,6 +215,9 @@ function EventForm() {
             }
             value={values.endDate}
             aria-invalid={Boolean(errors.endDate)}
+            aria-describedby={
+              errors.endDate ? `${fieldId}-end-error` : undefined
+            }
             onChange={(changeEvent) =>
               update('endDate', changeEvent.target.value)
             }
@@ -219,8 +225,16 @@ function EventForm() {
         </div>
       </div>
 
-      {errors.startDate ? <p className={styles.error}>{errors.startDate}</p> : null}
-      {errors.endDate ? <p className={styles.error}>{errors.endDate}</p> : null}
+      {errors.startDate ? (
+        <p id={`${fieldId}-start-error`} className={styles.error}>
+          {errors.startDate}
+        </p>
+      ) : null}
+      {errors.endDate ? (
+        <p id={`${fieldId}-end-error`} className={styles.error}>
+          {errors.endDate}
+        </p>
+      ) : null}
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor={`${fieldId}-participants`}>
@@ -231,12 +245,15 @@ function EventForm() {
           className={styles.input}
           value={values.participants}
           placeholder="홍길동, 김철수"
+          aria-describedby={`${fieldId}-participants-hint`}
           onChange={(changeEvent) =>
             update('participants', changeEvent.target.value)
           }
         />
         {/* 연구원 목록에서 고르는 방식은 KAN-41 이후 */}
-        <p className={styles.hint}>쉼표로 구분해 입력합니다.</p>
+        <p id={`${fieldId}-participants-hint`} className={styles.hint}>
+          쉼표로 구분해 입력합니다.
+        </p>
       </div>
 
       <div className={styles.field}>

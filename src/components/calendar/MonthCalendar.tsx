@@ -2,6 +2,7 @@ import type {
   DatesSetArg,
   EventClickArg,
   EventContentArg,
+  MoreLinkContentArg,
   EventDropArg,
   EventInput,
 } from '@fullcalendar/core'
@@ -28,9 +29,11 @@ import {
   type DateRange,
 } from '../../types/domain'
 import { addDays } from '../../utils/date'
+import { useCategories } from '../../queries/useCategories'
 import ErrorState from '../common/ErrorState'
 import { emptyNoteFor } from './calendarStatus'
 import { datesFromCalendarRange } from './eventDates'
+import EventChip from './EventChip'
 import EventDetailDialog from './EventDetailDialog'
 import { formatEventLabel } from './eventLabel'
 import styles from './MonthCalendar.module.css'
@@ -47,20 +50,6 @@ function toFullCalendarEvent(event: CalendarEvent): EventInput {
     editable: isEditableEvent(event),
     extendedProps: { categoryKey: event.categoryKey },
   }
-}
-
-/**
- * 이벤트를 카테고리 색상 토큰이 적용된 칩으로 렌더링한다.
- * `data-category` 만 지정하면 tokens.css 가 색상을 매핑한다.
- */
-function renderEventContent(arg: EventContentArg) {
-  const categoryKey = arg.event.extendedProps.categoryKey as CategoryKey
-
-  return (
-    <div className={styles.event} data-category={categoryKey}>
-      <span className={styles.eventTitle}>{arg.event.title}</span>
-    </div>
-  )
 }
 
 /** 월별 그리드 캘린더 (기획서 2.1 우측 출력 영역). */
@@ -88,6 +77,57 @@ function MonthCalendar() {
   }, [])
 
   const closeDetail = useCallback(() => setSelectedEventId(null), [])
+
+  /*
+   * 칩 안에 카테고리 이름을 숨겨 둔다. 스크린 리더는 색을 읽어 주지 못하므로
+   * 이름이 없으면 어느 분류의 일정인지 알 수가 없다. 이름은 서버가 준 것을 쓴다.
+   */
+  const { data: categories } = useCategories()
+  const categoryNames = useMemo(
+    () =>
+      new Map(
+        (categories ?? []).map((category) => [category.key, category.name]),
+      ),
+    [categories],
+  )
+
+  const renderEventContent = useCallback(
+    (arg: EventContentArg) => {
+      const categoryKey = arg.event.extendedProps.categoryKey as CategoryKey
+
+      return (
+        <EventChip
+          title={arg.event.title}
+          categoryKey={categoryKey}
+          categoryName={categoryNames.get(categoryKey) ?? ''}
+          onActivate={() => setSelectedEventId(arg.event.id)}
+        />
+      )
+    },
+    [categoryNames],
+  )
+
+  /*
+   * 접힌 일정을 여는 "+N개" 도 href 없는 a 라 키보드로 닿지 않는다. 거기서만
+   * 열리는 일정이 있으므로, 닿지 못하면 그 일정들은 키보드로 볼 방법이 없다.
+   * FullCalendar 는 감싸는 a 의 클릭만 들으므로 키보드도 같은 경로를 태운다.
+   */
+  const renderMoreLink = useCallback(
+    (arg: MoreLinkContentArg) => (
+      <span
+        role="button"
+        tabIndex={0}
+        onKeyDown={(keyEvent) => {
+          if (keyEvent.key !== 'Enter' && keyEvent.key !== ' ') return
+          keyEvent.preventDefault()
+          keyEvent.currentTarget.closest('a')?.click()
+        }}
+      >
+        {arg.num}개 더 보기
+      </span>
+    ),
+    [],
+  )
 
   const { startEdit } = useEventForm()
   const handleEdit = useCallback(
@@ -194,6 +234,7 @@ function MonthCalendar() {
         datesSet={handleDatesSet}
         events={visibleEvents}
         eventContent={renderEventContent}
+        moreLinkContent={renderMoreLink}
         eventClick={handleEventClick}
         eventDrop={handleEventChange}
         eventResize={handleEventChange}
