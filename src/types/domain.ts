@@ -52,3 +52,30 @@ export type DateRange = {
 export function isEditableEvent(event: CalendarEvent): boolean {
   return event.source === 'MANUAL'
 }
+
+/** 과제 등록 폼이 다루는 값 (기획서 3.1). */
+export type ProjectInput = {
+  /** 과제명 */
+  name: string
+  /** 제출 단계 — 연차보고서, 최종보고서 등. 캘린더에서 과제명 옆에 붙는다. */
+  submissionStage?: string
+  /** 제출 마감일 YYYY-MM-DD */
+  endDate: string
+  /** 준비 기간 길이(주). 기본 3주, 과제별로 조정한다. */
+  leadTimeWeeks: number
+  /** 끄면 준비 기간 일정이 캘린더에서 빠진다. 지난 과제를 지우지 않고 숨길 때 쓴다. */
+  active: boolean
+}
+
+export type Project = ProjectInput & {
+  id: string
+  /**
+   * 마감까지 남은 일수. **서버가 계산해서 내려준다.**
+   *
+   * 화면에서 다시 계산하지 않는다 — 기기 시계가 틀어져 있거나 타임존이 다르면
+   * 사람마다 다른 D-Day 를 보게 된다 (KAN-52 완료 조건).
+   */
+  dDay: number
+  /** 준비 기간 시작일. 서버가 종료일과 리드타임으로 계산한다 (KAN-49 배치). */
+  preparationStartDate: string
+}
