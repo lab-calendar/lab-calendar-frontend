@@ -1,5 +1,6 @@
 import type { CalendarEvent, DateRange } from '../types/domain'
 import { overlaps } from '../utils/date'
+import { ApiError } from './errors'
 
 /**
  * 기간 내 일정 조회.
@@ -16,6 +17,47 @@ import { overlaps } from '../utils/date'
  */
 export async function fetchEvents(range: DateRange): Promise<CalendarEvent[]> {
   return DUMMY_EVENTS.filter((event) => overlaps(event, range))
+}
+
+/** 일정 생성/수정 시 서버가 정하는 값은 제외한다. */
+export type EventInput = Omit<CalendarEvent, 'id' | 'source'>
+
+/**
+ * 일정 생성.
+ *
+ * TODO(KAN-39 완료 후): 실제 API 호출로 교체한다.
+ *   const { data } = await apiClient.post<ApiResponse<EventDto>>('/api/events', toDto(input))
+ *   return toCalendarEvent(data.data)
+ */
+export async function createEvent(input: EventInput): Promise<CalendarEvent> {
+  const created: CalendarEvent = {
+    ...input,
+    id: `local-${crypto.randomUUID()}`,
+    source: 'MANUAL',
+  }
+  DUMMY_EVENTS.push(created)
+  return created
+}
+
+/**
+ * 일정 수정.
+ *
+ * TODO(KAN-39 완료 후): 실제 API 호출로 교체한다.
+ *   const { data } = await apiClient.put<ApiResponse<EventDto>>(`/api/events/${id}`, toDto(input))
+ *   return toCalendarEvent(data.data)
+ */
+export async function updateEvent(
+  id: string,
+  input: EventInput,
+): Promise<CalendarEvent> {
+  const index = DUMMY_EVENTS.findIndex((event) => event.id === id)
+  if (index === -1) {
+    throw new ApiError('NOT_FOUND', '수정할 일정을 찾을 수 없습니다.')
+  }
+
+  const updated: CalendarEvent = { ...DUMMY_EVENTS[index], ...input, id }
+  DUMMY_EVENTS[index] = updated
+  return updated
 }
 
 /**

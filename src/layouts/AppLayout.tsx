@@ -1,7 +1,12 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import AppHeader from '../components/layout/AppHeader'
 import Sidebar from '../components/layout/Sidebar'
+import {
+  EventFormContext,
+  type EventFormContextValue,
+} from '../contexts/EventFormContext'
+import type { CalendarEvent } from '../types/domain'
 import styles from './AppLayout.module.css'
 
 /**
@@ -27,6 +32,25 @@ function AppLayout() {
     [],
   )
 
+  /*
+   * 수정할 일정은 캘린더(상세 팝업)에서 고르고 사이드바의 폼이 받는다.
+   * 두 컴포넌트가 형제라 여기서 들고 있는다.
+   */
+  const [editingEvent, setEditingEvent] = useState<CalendarEvent | null>(null)
+
+  const eventForm = useMemo<EventFormContextValue>(
+    () => ({
+      editingEvent,
+      startEdit: (event) => {
+        setEditingEvent(event)
+        // 좁은 화면에서는 폼이 드로어 안에 있어 열어 주지 않으면 보이지 않는다
+        setIsSidebarOpen(true)
+      },
+      startCreate: () => setEditingEvent(null),
+    }),
+    [editingEvent],
+  )
+
   useEffect(() => {
     if (!isSidebarOpen) return
 
@@ -39,29 +63,31 @@ function AppLayout() {
   }, [isSidebarOpen])
 
   return (
-    <div className={styles.layout}>
-      <AppHeader
-        isSidebarOpen={isSidebarOpen}
-        onToggleSidebar={toggleSidebar}
-      />
+    <EventFormContext value={eventForm}>
+      <div className={styles.layout}>
+        <AppHeader
+          isSidebarOpen={isSidebarOpen}
+          onToggleSidebar={toggleSidebar}
+        />
 
-      <div className={styles.body}>
-        <Sidebar open={isSidebarOpen} />
+        <div className={styles.body}>
+          <Sidebar open={isSidebarOpen} />
 
-        {isSidebarOpen ? (
-          <button
-            type="button"
-            className={styles.backdrop}
-            aria-label="제어 영역 닫기"
-            onClick={closeSidebar}
-          />
-        ) : null}
+          {isSidebarOpen ? (
+            <button
+              type="button"
+              className={styles.backdrop}
+              aria-label="제어 영역 닫기"
+              onClick={closeSidebar}
+            />
+          ) : null}
 
-        <main className={styles.main}>
-          <Outlet />
-        </main>
+          <main className={styles.main}>
+            <Outlet />
+          </main>
+        </div>
       </div>
-    </div>
+    </EventFormContext>
   )
 }
 

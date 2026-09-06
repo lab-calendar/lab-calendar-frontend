@@ -8,6 +8,8 @@ type EventDetailDialogProps = {
   /** null 이면 닫힌 상태 */
   event: CalendarEvent | null
   onClose: () => void
+  /** 넘기지 않으면 수정 버튼을 보여주지 않는다 */
+  onEdit?: (event: CalendarEvent) => void
 }
 
 /** 카드/경비는 '사용 목적', 나머지는 카테고리별 의미가 다르다 (기획서 2.2) */
@@ -28,7 +30,11 @@ const SOURCE_NOTICES: Partial<Record<CalendarEvent['source'], string>> = {
  * 네이티브 `<dialog>` 를 쓴다. 포커스 트랩과 ESC 닫기를 브라우저가 처리하므로
  * 직접 구현하지 않는다.
  */
-function EventDetailDialog({ event, onClose }: EventDetailDialogProps) {
+function EventDetailDialog({
+  event,
+  onClose,
+  onEdit,
+}: EventDetailDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
 
   useEffect(() => {
@@ -141,6 +147,19 @@ function EventDetailDialog({ event, onClose }: EventDetailDialogProps) {
 
           {SOURCE_NOTICES[event.source] ? (
             <p className={styles.autoNotice}>{SOURCE_NOTICES[event.source]}</p>
+          ) : null}
+
+          {onEdit ? (
+            <div className={styles.actions}>
+              <button
+                type="button"
+                className={styles.editButton}
+                onClick={() => onEdit(event)}
+              >
+                수정
+              </button>
+              {/* 삭제 버튼은 KAN-46 */}
+            </div>
           ) : null}
         </div>
       ) : null}
