@@ -179,7 +179,12 @@ function ProjectForm({ editingProject, onDone }: ProjectFormProps) {
             value={values.leadTimeWeeks}
             aria-invalid={Boolean(errors.leadTimeWeeks)}
             aria-describedby={
-              errors.leadTimeWeeks ? `${fieldId}-lead-error` : undefined
+              [
+                `${fieldId}-lead-hint`,
+                errors.leadTimeWeeks ? `${fieldId}-lead-error` : null,
+              ]
+                .filter(Boolean)
+                .join(" ")
             }
             onChange={(changeEvent) =>
               update('leadTimeWeeks', changeEvent.target.value)
@@ -199,7 +204,7 @@ function ProjectForm({ editingProject, onDone }: ProjectFormProps) {
         </p>
       ) : null}
 
-      <p className={styles.hint}>
+      <p id={`${fieldId}-lead-hint`} className={styles.hint}>
         마감일에서 준비 기간만큼 거슬러 올라간 날부터 캘린더에 준비 기간 일정이
         자동으로 표시됩니다.
       </p>

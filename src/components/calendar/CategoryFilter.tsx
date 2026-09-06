@@ -1,3 +1,4 @@
+import { CATEGORY_MARKS } from '../../constants/categories'
 import ErrorState from '../common/ErrorState'
 import LoadingState from '../common/LoadingState'
 import { useCategoryFilter } from '../../hooks/useCategoryFilter'
@@ -52,7 +53,9 @@ function CategoryFilter() {
                 checked={selected.includes(category.key)}
                 onChange={() => toggle(category.key)}
               />
-              <span className={styles.badge} aria-hidden="true" />
+              <span className={styles.badge} aria-hidden="true">
+                {CATEGORY_MARKS[category.key]}
+              </span>
               <span className={styles.label}>{category.name}</span>
             </label>
           </li>

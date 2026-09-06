@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { CATEGORY_MARKS } from '../../constants/categories'
 import { useCategories } from '../../queries/useCategories'
 import { isEditableEvent, type CalendarEvent } from '../../types/domain'
 import { formatEventPeriod } from '../../utils/date'
@@ -110,7 +111,11 @@ function EventDetailDialog({
         <div className={styles.content}>
           <div className={styles.header}>
             <div className={styles.heading}>
-              <span className={styles.categoryTag} data-category={event.categoryKey}>
+              <span
+                className={styles.categoryTag}
+                data-category={event.categoryKey}
+              >
+                <span aria-hidden="true">{CATEGORY_MARKS[event.categoryKey]}</span>
                 {categoryName}
               </span>
               <h2 id="event-detail-title" className={styles.title}>

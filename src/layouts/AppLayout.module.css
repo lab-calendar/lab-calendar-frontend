@@ -47,3 +47,26 @@
     padding: var(--space-4);
   }
 }
+
+/*
+ * 본문 바로가기.
+ * 포커스를 받기 전에는 화면 밖에 두고, 받으면 헤더 위로 끌어올린다.
+ * display: none 으로 숨기면 포커스 자체를 못 받아 의미가 없다.
+ */
+.skipLink {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  z-index: var(--z-modal);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-inverse);
+  background: var(--color-primary);
+  border-radius: var(--radius-md);
+  transform: translateY(-200%);
+}
+
+.skipLink:focus-visible {
+  transform: translateY(0);
+}

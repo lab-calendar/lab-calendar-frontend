@@ -5,6 +5,8 @@ import EventForm from '../calendar/EventForm'
 import styles from './Sidebar.module.css'
 
 type SidebarProps = {
+  /** 드로어일 때 포커스를 옮길 대상 */
+  ref?: React.Ref<HTMLElement>
   /** 1024px 미만에서 드로어가 열려 있는지 여부 */
   open: boolean
 }
@@ -16,12 +18,15 @@ type SidebarProps = {
  * 필터와 일정 등록은 캘린더 화면에만 해당한다. 과제 관리 화면에서까지 띄우면
  * 화면에 폼이 둘이 되어 어느 쪽에 입력하는지 헷갈린다.
  */
-function Sidebar({ open }: SidebarProps) {
+function Sidebar({ open, ref }: SidebarProps) {
   const isCalendar = useMatch(ROUTES.calendar) !== null
 
   return (
     <aside
+      ref={ref}
       id="sidebar"
+      /* 안에 포커스 받을 것이 없을 때 컨테이너 자신이 받는다 */
+      tabIndex={-1}
       aria-label="제어 영역"
       className={open ? `${styles.sidebar} ${styles.open}` : styles.sidebar}
     >
