@@ -5,6 +5,7 @@ import FullCalendar from '@fullcalendar/react'
 import { useMemo } from 'react'
 import type { CategoryKey } from '../../constants/categories'
 import { useCategoryFilter } from '../../hooks/useCategoryFilter'
+import { useMediaQuery } from '../../hooks/useMediaQuery'
 import styles from './MonthCalendar.module.css'
 import { SAMPLE_EVENTS } from './sampleEvents'
 
@@ -30,6 +31,7 @@ function renderEventContent(arg: EventContentArg) {
  */
 function MonthCalendar() {
   const { selected } = useCategoryFilter()
+  const isMobile = useMediaQuery('(max-width: 767px)')
 
   // 임시 데이터라 클라이언트에서 거른다. KAN-42에서 조회 API의
   // categoryIds 파라미터로 옮기면서 이 필터링은 제거한다.
@@ -48,15 +50,16 @@ function MonthCalendar() {
         initialView="dayGridMonth"
         locale={koLocale}
         height="100%"
-        headerToolbar={{
-          left: 'prev,next today',
-          center: 'title',
-          right: '',
-        }}
+        headerToolbar={
+          isMobile
+            ? { left: 'prev,next', center: 'title', right: 'today' }
+            : { left: 'prev,next today', center: 'title', right: '' }
+        }
         events={events}
         eventContent={renderEventContent}
         fixedWeekCount={false}
-        dayMaxEvents={3}
+        // 셀이 좁은 모바일에서는 표시 개수를 줄이고 나머지는 "+N개"로 접는다
+        dayMaxEvents={isMobile ? 2 : 3}
         expandRows
       />
     </div>

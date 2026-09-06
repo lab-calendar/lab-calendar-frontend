@@ -6,7 +6,8 @@
 
 /*
  * 기획서 2.1 화면 레이아웃 — 좌측 제어 영역 / 우측 출력 영역 2분할.
- * 모바일·태블릿 대응(사이드바 접기)은 KAN-62에서 다룬다.
+ * 데스크톱(1024px 이상)에서만 2열을 유지하고, 그 아래에서는 제어 영역이
+ * 드로어로 빠지므로 본문이 전체 폭을 쓴다.
  */
 .body {
   display: grid;
@@ -19,4 +20,30 @@
   min-width: 0;
   padding: var(--space-6);
   overflow: auto;
+}
+
+.backdrop {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: var(--layout-header-height) 0 0;
+    z-index: var(--z-backdrop);
+    padding: 0;
+    background: rgb(16 24 40 / 40%);
+    border: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .main {
+    padding: var(--space-4);
+  }
 }

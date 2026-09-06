@@ -75,3 +75,18 @@
 .link:hover {
   text-decoration: underline;
 }
+
+@media (max-width: 767px) {
+  .title {
+    font-size: var(--font-size-lg);
+  }
+
+  .fillSurface {
+    min-height: 420px;
+    padding: var(--space-3);
+  }
+
+  .surface {
+    padding: var(--space-4);
+  }
+}
