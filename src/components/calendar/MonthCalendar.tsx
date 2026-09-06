@@ -9,6 +9,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import FullCalendar from '@fullcalendar/react'
 import { useCallback, useMemo, useState } from 'react'
 import type { CategoryKey } from '../../constants/categories'
+import { useEventForm } from '../../contexts/EventFormContext'
 import { useCategoryFilter } from '../../hooks/useCategoryFilter'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { useEvents } from '../../queries/useEvents'
@@ -64,6 +65,15 @@ function MonthCalendar() {
 
   const closeDetail = useCallback(() => setSelectedEventId(null), [])
 
+  const { startEdit } = useEventForm()
+  const handleEdit = useCallback(
+    (event: CalendarEvent) => {
+      startEdit(event)
+      setSelectedEventId(null)
+    },
+    [startEdit],
+  )
+
   const handleDatesSet = useCallback((arg: DatesSetArg) => {
     setRange({
       from: arg.startStr.slice(0, 10),
@@ -110,7 +120,11 @@ function MonthCalendar() {
         expandRows
       />
 
-      <EventDetailDialog event={selectedEvent} onClose={closeDetail} />
+      <EventDetailDialog
+        event={selectedEvent}
+        onClose={closeDetail}
+        onEdit={handleEdit}
+      />
     </div>
   )
 }

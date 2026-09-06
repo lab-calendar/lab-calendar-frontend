@@ -1,5 +1,5 @@
 import CategoryFilter from '../calendar/CategoryFilter'
-import Placeholder from '../common/Placeholder'
+import EventForm from '../calendar/EventForm'
 import styles from './Sidebar.module.css'
 
 type SidebarProps = {
@@ -25,11 +25,7 @@ function Sidebar({ open }: SidebarProps) {
 
       <section className={styles.section}>
         <h2 className={styles.sectionTitle}>일정 등록</h2>
-        <Placeholder
-          title="일정 등록 · 수정 폼"
-          description="항목 유형 선택 후 기간과 정보를 입력"
-          issue="KAN-44"
-        />
+        <EventForm />
       </section>
     </aside>
   )
