@@ -79,3 +79,29 @@ export type Project = ProjectInput & {
   /** 준비 기간 시작일. 서버가 종료일과 리드타임으로 계산한다 (KAN-49 배치). */
   preparationStartDate: string
 }
+
+/**
+ * 접근 등급 (KAN-21).
+ *
+ * 개인 계정이 아니라 랩실 공용 비밀번호 두 개다. 입력한 비밀번호가 등급을 정하며
+ * 사용자가 고르지 않는다.
+ *
+ * - EDITOR: 편집용. 카드/경비를 포함해 전부 보고 고친다.
+ * - VIEWER: 조회용. 외부 자문 위원이나 출장 중인 교수진에게 공유하는 등급으로,
+ *   쓰기가 막히고 카드/경비가 응답에서 빠진다.
+ */
+export type AuthTier = 'EDITOR' | 'VIEWER'
+
+/** 인증되지 않았으면 등급 자체가 없다. 두 상태를 한 타입에 섞지 않는다. */
+export type Session =
+  | { authenticated: true; tier: AuthTier }
+  | { authenticated: false; tier?: never }
+
+/**
+ * 이 등급이 일정·과제를 고칠 수 있는지.
+ *
+ * 화면에서 숨기는 것은 편의일 뿐 보안 경계가 아니다. 실제 차단은 서버가 한다(KAN-35).
+ */
+export function canEdit(session: Session): boolean {
+  return session.authenticated && session.tier === 'EDITOR'
+}

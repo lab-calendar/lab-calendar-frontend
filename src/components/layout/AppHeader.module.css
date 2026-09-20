@@ -48,6 +48,9 @@
 
 /* D-Day 카운트다운 위젯이 들어갈 자리 (KAN-52) */
 .slotEnd {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
   margin-left: auto;
 }
 
@@ -94,4 +97,30 @@
     padding-inline: var(--space-2);
     font-size: var(--font-size-sm);
   }
+}
+
+.tierBadge {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.signOutButton {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  white-space: nowrap;
+}
+
+.signOutButton:hover {
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
 }

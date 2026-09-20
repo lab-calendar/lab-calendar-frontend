@@ -4,6 +4,7 @@ import {
   useDeleteProject,
   useSaveProject,
 } from '../../queries/useProjectMutations'
+import { useCanEdit } from '../../contexts/AuthContext'
 import type { Project } from '../../types/domain'
 import EmptyState from '../common/EmptyState'
 import { formatEventPeriod } from '../../utils/date'
@@ -28,6 +29,7 @@ function ProjectList({
   const saveProject = useSaveProject()
   const deleteProject = useDeleteProject()
   const [confirmingId, setConfirmingId] = useState<string | null>(null)
+  const canEdit = useCanEdit()
 
   if (projects.length === 0) {
     return (
@@ -96,54 +98,56 @@ function ProjectList({
               </dd>
             </div>
           </dl>
-
-          {confirmingId === project.id ? (
-            <div className={styles.actions}>
-              <span className={styles.confirmText}>
-                삭제하면 캘린더의 준비 기간 일정도 사라집니다.
-              </span>
-              <button
-                type="button"
-                className={styles.dangerButton}
-                disabled={deleteProject.isPending}
-                onClick={() => remove(project)}
-              >
-                {deleteProject.isPending ? '삭제 중…' : '삭제'}
-              </button>
-              <button
-                type="button"
-                className={styles.button}
-                onClick={() => setConfirmingId(null)}
-              >
-                취소
-              </button>
-            </div>
-          ) : (
-            <div className={styles.actions}>
-              <button
-                type="button"
-                className={styles.button}
-                onClick={() => onEdit(project)}
-              >
-                수정
-              </button>
-              <button
-                type="button"
-                className={styles.button}
-                disabled={saveProject.isPending}
-                onClick={() => toggleActive(project)}
-              >
-                {project.active ? '캘린더에서 숨기기' : '캘린더에 표시'}
-              </button>
-              <button
-                type="button"
-                className={styles.dangerButton}
-                onClick={() => setConfirmingId(project.id)}
-              >
-                삭제
-              </button>
-            </div>
-          )}
+          {/* 조회 등급에는 수정·삭제 진입점을 내린다 (KAN-36) */}
+          {canEdit ? (
+            confirmingId === project.id ? (
+              <div className={styles.actions}>
+                <span className={styles.confirmText}>
+                  삭제하면 캘린더의 준비 기간 일정도 사라집니다.
+                </span>
+                <button
+                  type="button"
+                  className={styles.dangerButton}
+                  disabled={deleteProject.isPending}
+                  onClick={() => remove(project)}
+                >
+                  {deleteProject.isPending ? '삭제 중…' : '삭제'}
+                </button>
+                <button
+                  type="button"
+                  className={styles.button}
+                  onClick={() => setConfirmingId(null)}
+                >
+                  취소
+                </button>
+              </div>
+            ) : (
+              <div className={styles.actions}>
+                <button
+                  type="button"
+                  className={styles.button}
+                  onClick={() => onEdit(project)}
+                >
+                  수정
+                </button>
+                <button
+                  type="button"
+                  className={styles.button}
+                  disabled={saveProject.isPending}
+                  onClick={() => toggleActive(project)}
+                >
+                  {project.active ? '캘린더에서 숨기기' : '캘린더에 표시'}
+                </button>
+                <button
+                  type="button"
+                  className={styles.dangerButton}
+                  onClick={() => setConfirmingId(project.id)}
+                >
+                  삭제
+                </button>
+              </div>
+            )
+          ) : null}
         </li>
       ))}
     </ul>

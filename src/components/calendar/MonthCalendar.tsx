@@ -14,6 +14,7 @@ import interactionPlugin, {
 import FullCalendar from '@fullcalendar/react'
 import { useCallback, useMemo, useState } from 'react'
 import type { CategoryKey } from '../../constants/categories'
+import { useCanEdit } from '../../contexts/AuthContext'
 import { useEventForm } from '../../contexts/EventFormContext'
 import { useCategoryFilter } from '../../hooks/useCategoryFilter'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
@@ -129,6 +130,13 @@ function MonthCalendar() {
     [],
   )
 
+  /*
+   * 조회 등급에는 수정·삭제 핸들러를 아예 넘기지 않는다. 상세 팝업은 핸들러가 없으면
+   * 해당 버튼을 그리지 않으므로, 여기서 끊는 것으로 진입점이 사라진다.
+   * 화면에서 가리는 것은 편의일 뿐이고 실제 차단은 서버가 한다 (KAN-35).
+   */
+  const canEdit = useCanEdit()
+
   const { startEdit } = useEventForm()
   const handleEdit = useCallback(
     (event: CalendarEvent) => {
@@ -238,8 +246,8 @@ function MonthCalendar() {
         eventClick={handleEventClick}
         eventDrop={handleEventChange}
         eventResize={handleEventChange}
-        // 개별 일정의 editable 로 다시 걸러진다
-        editable
+        // 조회 등급은 통째로 잠그고, 편집 등급은 개별 일정의 editable 로 다시 걸러진다
+        editable={canEdit}
         fixedWeekCount={false}
         // 셀이 좁은 모바일에서는 표시 개수를 줄이고 나머지는 "+N개"로 접는다
         dayMaxEvents={isMobile ? 2 : 3}
@@ -249,8 +257,8 @@ function MonthCalendar() {
       <EventDetailDialog
         event={selectedEvent}
         onClose={closeDetail}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onEdit={canEdit ? handleEdit : undefined}
+        onDelete={canEdit ? handleDelete : undefined}
         isDeleting={deleteEvent.isPending}
       />
     </div>

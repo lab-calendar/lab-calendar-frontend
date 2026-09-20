@@ -2,4 +2,6 @@
 export const ROUTES = {
   calendar: '/',
   projects: '/projects',
+  /** 비밀번호 입력 화면 (KAN-36) */
+  login: '/login',
 } as const

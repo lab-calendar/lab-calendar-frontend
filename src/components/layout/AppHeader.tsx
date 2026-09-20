@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext'
 import { ROUTES } from '../../router/routes'
 import styles from './AppHeader.module.css'
 
@@ -13,6 +14,9 @@ type AppHeaderProps = {
 }
 
 function AppHeader({ isSidebarOpen, onToggleSidebar }: AppHeaderProps) {
+  const { session, signOut } = useAuth()
+  const isViewer = session?.authenticated === true && session.tier === 'VIEWER'
+
   return (
     <header className={styles.header}>
       {/* 데스크톱에서는 사이드바가 항상 보이므로 숨긴다 */}
@@ -54,7 +58,23 @@ function AppHeader({ isSidebarOpen, onToggleSidebar }: AppHeaderProps) {
       </nav>
 
       {/* D-Day 카운트다운 위젯 자리 — KAN-52 */}
-      <div className={styles.slotEnd} />
+      <div className={styles.slotEnd}>
+        {/*
+          조회 전용임을 화면에 남겨 둔다 (KAN-36). 등록 버튼이 없는 것만으로는
+          권한이 없어서인지 기능이 없어서인지 알 수 없다.
+        */}
+        {isViewer ? <span className={styles.tierBadge}>조회 전용</span> : null}
+
+        {session?.authenticated ? (
+          <button
+            type="button"
+            className={styles.signOutButton}
+            onClick={() => void signOut()}
+          >
+            나가기
+          </button>
+        ) : null}
+      </div>
     </header>
   )
 }
