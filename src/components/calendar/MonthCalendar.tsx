@@ -14,6 +14,7 @@ import interactionPlugin, {
 import FullCalendar from '@fullcalendar/react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CategoryKey } from '../../constants/categories'
+import type { Urgency } from '../projects/deadlineUrgency'
 import { useCanEdit } from '../../contexts/AuthContext'
 import { useEventForm } from '../../contexts/EventFormContext'
 import { useCategoryFilter } from '../../hooks/useCategoryFilter'
@@ -25,6 +26,7 @@ import {
   useSaveEvent,
 } from '../../queries/useEventMutations'
 import { useEvents } from '../../queries/useEvents'
+import { useProjects } from '../../queries/useProjects'
 import {
   isEditableEvent,
   type CalendarEvent,
@@ -38,9 +40,10 @@ import { datesFromCalendarRange } from './eventDates'
 import EventChip from './EventChip'
 import EventDetailDialog from './EventDetailDialog'
 import { formatEventLabel } from './eventLabel'
+import { urgencyForEvent, urgencyLookup } from './projectUrgency'
 import styles from './MonthCalendar.module.css'
 
-function toFullCalendarEvent(event: CalendarEvent): EventInput {
+function toFullCalendarEvent(event: CalendarEvent, urgency: Urgency): EventInput {
   return {
     id: event.id,
     title: formatEventLabel(event),
@@ -50,7 +53,7 @@ function toFullCalendarEvent(event: CalendarEvent): EventInput {
     allDay: true,
     // 자동 생성·구글 연동 일정은 다시 만들어져 덮어써지므로 드래그를 막는다
     editable: isEditableEvent(event),
-    extendedProps: { categoryKey: event.categoryKey },
+    extendedProps: { categoryKey: event.categoryKey, urgency },
   }
 }
 
@@ -111,12 +114,14 @@ function MonthCalendar() {
   const renderEventContent = useCallback(
     (arg: EventContentArg) => {
       const categoryKey = arg.event.extendedProps.categoryKey as CategoryKey
+      const urgency = arg.event.extendedProps.urgency as Urgency
 
       return (
         <EventChip
           title={arg.event.title}
           categoryKey={categoryKey}
           categoryName={categoryNames.get(categoryKey) ?? ''}
+          urgency={urgency}
           onActivate={() => setSelectedEventId(arg.event.id)}
         />
       )
@@ -211,13 +216,22 @@ function MonthCalendar() {
     })
   }, [])
 
+  /*
+   * 마감이 급한 과제의 준비 기간을 강조한다 (KAN-53).
+   *
+   * 이미 받아둔 과제 목록을 그대로 쓴다 — D-Day 위젯과 같은 쿼리라 달력 때문에
+   * 더 부르지 않고, 두 화면이 항상 같은 기준으로 빨간불을 켜게 된다.
+   */
+  const { data: projects } = useProjects()
+  const urgencies = useMemo(() => urgencyLookup(projects), [projects])
+
   // 카테고리 필터는 받아둔 목록에서 거른다. 필터를 바꿔도 다시 조회하지 않는다.
   const visibleEvents = useMemo(
     () =>
       (events ?? [])
         .filter((event) => selected.includes(event.categoryKey))
-        .map(toFullCalendarEvent),
-    [events, selected],
+        .map((event) => toFullCalendarEvent(event, urgencyForEvent(event, urgencies))),
+    [events, selected, urgencies],
   )
 
   const emptyNote = emptyNoteFor(events, visibleEvents.length)

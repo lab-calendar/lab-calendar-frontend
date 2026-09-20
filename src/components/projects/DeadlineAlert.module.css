@@ -1,0 +1,138 @@
+.dialog {
+  width: min(440px, calc(100vw - var(--space-8)));
+  max-height: calc(100dvh - var(--space-10));
+  padding: 0;
+  overflow: hidden;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.dialog::backdrop {
+  background: rgb(16 24 40 / 45%);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  max-height: inherit;
+  padding: var(--space-5);
+  overflow-y: auto;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.itemButton {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--category-project);
+  border-radius: var(--radius-md);
+}
+
+.itemButton:hover {
+  border-color: var(--color-border-strong);
+  border-left-color: var(--category-project);
+}
+
+.dDay {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--category-project);
+  white-space: nowrap;
+}
+
+/*
+ * 지난 마감은 칠을 뒤집어 구분한다. 글자색만 --color-danger 로 바꾸면 차이가
+ * 보이지 않는다 — 과제 카테고리 색이 이미 붉은 계열이다 (KAN-52 에서 확인).
+ */
+.itemButton[data-urgency='overdue'] .dDay {
+  padding: 2px var(--space-1);
+  color: var(--color-text-inverse);
+  background: var(--color-danger);
+  border-radius: var(--radius-sm);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.name {
+  overflow: hidden;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.period {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+}
+
+.note {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+}
+
+.confirm {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-inverse);
+  background: var(--color-primary);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+}
+
+.confirm:hover {
+  background: var(--color-primary-hover);
+}
+
+@media (max-width: 767px) {
+  .actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .confirm {
+    width: 100%;
+  }
+
+  .note {
+    text-align: center;
+  }
+}

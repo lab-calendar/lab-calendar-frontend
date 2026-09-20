@@ -1,4 +1,5 @@
 import { CATEGORY_MARKS, type CategoryKey } from '../../constants/categories'
+import type { Urgency } from '../projects/deadlineUrgency'
 import styles from './MonthCalendar.module.css'
 
 type EventChipProps = {
@@ -6,6 +7,8 @@ type EventChipProps = {
   categoryKey: CategoryKey
   /** 서버가 준 카테고리 이름. 화면에는 안 보이고 스크린 리더만 읽는다. */
   categoryName: string
+  /** 과제 준비 기간이면 그 과제의 급한 정도 (KAN-53). 나머지는 normal. */
+  urgency?: Urgency
   onActivate: () => void
 }
 
@@ -20,12 +23,14 @@ function EventChip({
   title,
   categoryKey,
   categoryName,
+  urgency = 'normal',
   onActivate,
 }: EventChipProps) {
   return (
     <span
       className={styles.event}
       data-category={categoryKey}
+      data-urgency={urgency}
       role="button"
       tabIndex={0}
       onKeyDown={(keyEvent) => {
@@ -46,6 +51,12 @@ function EventChip({
       {categoryName ? (
         <span className="sr-only">{`${categoryName},`}</span>
       ) : null}
+      {urgency === 'normal' ? null : (
+        // 색만으로는 색을 못 보는 사람에게 아무것도 전해지지 않는다
+        <span className="sr-only">
+          {urgency === 'overdue' ? '마감 지남,' : '마감 임박,'}
+        </span>
+      )}
       <span className={styles.eventTitle}>{title}</span>
     </span>
   )

@@ -45,11 +45,22 @@
  * 글자색을 --color-danger 로 바꾸는 것으로는 아무 차이가 없다 — 과제 카테고리 색이
  * 이미 붉은 계열이라 두 값이 화면에서 구별되지 않는다. 그래서 색 대신 칠을 뒤집는다.
  */
-.item[data-overdue] .dDay {
+.item[data-urgency='overdue'] .dDay {
   padding: 2px var(--space-1);
   color: var(--color-text-inverse);
   background: var(--color-danger);
   border-radius: var(--radius-sm);
+}
+
+/*
+ * 마감 직전 주간은 카드 자체를 물들인다 (KAN-53).
+ *
+ * 지난 마감처럼 칠을 뒤집지는 않는다 — 둘을 같은 모양으로 두면 지나버린 것과
+ * 아직 시간이 있는 것을 구분할 수 없다. 약한 배경으로 눈에만 걸리게 한다.
+ */
+.item[data-urgency='imminent'] {
+  background: var(--category-project-soft);
+  border-color: var(--category-project-border);
 }
 
 .body {
