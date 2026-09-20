@@ -62,6 +62,9 @@ describe('색상 토큰 명도 대비', () => {
     ['링크 / 표면', 'color-primary', 'color-surface', TEXT],
     ['오류 글자 / 표면', 'color-danger', 'color-surface', TEXT],
     ['오류 글자 / 배경', 'color-danger', 'color-bg', TEXT],
+    // 지난 마감 D-Day 칩 (KAN-52). 과제 카테고리 색이 이미 붉은색이라
+    // 글자색만으로는 구별되지 않아, 칠을 뒤집어 구분한다.
+    ['지난 마감 칩', 'color-text-inverse', 'color-danger', TEXT],
     ['과제 칩 글자', 'category-project', 'category-project-soft', TEXT],
     ['랩실 칩 글자', 'category-lab', 'category-lab-soft', TEXT],
     ['카드 칩 글자', 'category-card', 'category-card-soft', TEXT],

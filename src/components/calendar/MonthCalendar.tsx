@@ -12,11 +12,12 @@ import interactionPlugin, {
   type EventResizeDoneArg,
 } from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CategoryKey } from '../../constants/categories'
 import { useCanEdit } from '../../contexts/AuthContext'
 import { useEventForm } from '../../contexts/EventFormContext'
 import { useCategoryFilter } from '../../hooks/useCategoryFilter'
+import { useFocusDate } from '../../hooks/useFocusDate'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { toEventInput } from '../../api/events'
 import {
@@ -57,6 +58,21 @@ function toFullCalendarEvent(event: CalendarEvent): EventInput {
 function MonthCalendar() {
   const { selected } = useCategoryFilter()
   const isMobile = useMediaQuery('(max-width: 767px)')
+
+  /*
+   * D-Day 위젯이 URL 에 찍어 둔 달로 옮긴다 (KAN-52).
+   *
+   * 달력이 보여주는 달은 FullCalendar 가 들고 있어서 prop 으로 넣을 수 없다. 처음
+   * 그릴 때는 initialDate 가, 이미 떠 있을 때는 gotoDate 가 맡는다 — 위젯과 달력이
+   * 같은 화면에 있으므로 두 번째가 실제로 쓰이는 쪽이다.
+   */
+  const { focusDate } = useFocusDate()
+  const calendarRef = useRef<FullCalendar>(null)
+
+  useEffect(() => {
+    if (!focusDate) return
+    calendarRef.current?.getApi().gotoDate(focusDate)
+  }, [focusDate])
 
   // FullCalendar 가 알려주는 표시 기간. 뷰를 옮기면 갱신되고 그때마다 다시 조회한다.
   const [range, setRange] = useState<DateRange | null>(null)
@@ -230,7 +246,9 @@ function MonthCalendar() {
       {emptyNote ? <p className={styles.emptyNote}>{emptyNote}</p> : null}
 
       <FullCalendar
+        ref={calendarRef}
         plugins={[dayGridPlugin, interactionPlugin]}
+        {...(focusDate ? { initialDate: focusDate } : {})}
         initialView="dayGridMonth"
         locale={koLocale}
         height="100%"
