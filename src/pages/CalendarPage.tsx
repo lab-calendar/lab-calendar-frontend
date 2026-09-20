@@ -12,11 +12,6 @@ function CalendarPage() {
         </p>
       </div>
 
-      {/* 백엔드 연동(KAN-40)이 끝나면 제거한다 */}
-      <p className={styles.notice}>
-        백엔드 연동 전이라 임시 데이터를 표시합니다.
-      </p>
-
       <div className={styles.fillSurface}>
         <MonthCalendar />
       </div>

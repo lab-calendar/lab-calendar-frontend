@@ -93,7 +93,7 @@ function ProjectList({
                   project.endDate,
                 )}
                 <span className={styles.leadTime}>
-                  {project.leadTimeWeeks}주
+                  {project.leadTimeDays}일
                 </span>
               </dd>
             </div>

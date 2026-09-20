@@ -35,11 +35,6 @@ function ProjectsPage() {
         </p>
       </div>
 
-      {/* 백엔드 연동(KAN-48)이 끝나면 제거한다 */}
-      <p className={styles.notice}>
-        백엔드 연동 전이라 임시 데이터를 표시합니다.
-      </p>
-
       {/* 조회 등급에는 등록 폼을 내리고 목록만 남긴다 (KAN-36) */}
       <div className={canEdit ? styles.split : undefined}>
         {canEdit ? (

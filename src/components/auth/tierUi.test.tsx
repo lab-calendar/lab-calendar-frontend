@@ -27,7 +27,7 @@ const PROJECT: Project = {
   name: 'BRL 과제',
   submissionStage: '연차보고서',
   endDate: '2026-09-26',
-  leadTimeWeeks: 3,
+  leadTimeDays: 3,
   preparationStartDate: '2026-09-05',
   dDay: 6,
   active: true,

@@ -61,8 +61,13 @@ export type ProjectInput = {
   submissionStage?: string
   /** 제출 마감일 YYYY-MM-DD */
   endDate: string
-  /** 준비 기간 길이(주). 기본 3주, 과제별로 조정한다. */
-  leadTimeWeeks: number
+  /**
+   * 준비 기간 길이(일). 기본 21일, 과제별로 조정한다.
+   *
+   * 주가 아니라 일이다 — "열흘 준비" 처럼 주로 떨어지지 않는 기간이 실제로 있고,
+   * 계약도 0~182 일로 정했다 (docs/api-contract.md §7.4).
+   */
+  leadTimeDays: number
   /** 끄면 준비 기간 일정이 캘린더에서 빠진다. 지난 과제를 지우지 않고 숨길 때 쓴다. */
   active: boolean
 }
