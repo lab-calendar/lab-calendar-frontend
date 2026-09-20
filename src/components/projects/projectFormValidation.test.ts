@@ -10,7 +10,7 @@ function values(overrides: Partial<ProjectFormValues> = {}): ProjectFormValues {
     name: 'BRL 과제',
     submissionStage: '연차보고서',
     endDate: '2026-09-26',
-    leadTimeWeeks: '3',
+    leadTimeDays: '21',
     active: true,
     ...overrides,
   }
@@ -31,20 +31,37 @@ describe('validateProjectForm', () => {
 
   it('준비 기간이 정수가 아니면 오류를 낸다', () => {
     expect(
-      validateProjectForm(values({ leadTimeWeeks: '2.5' })).leadTimeWeeks,
+      validateProjectForm(values({ leadTimeDays: '2.5' })).leadTimeDays,
     ).toBeDefined()
   })
 
-  it('준비 기간이 0주 이하면 오류를 낸다', () => {
+  it('준비 기간 0일은 마감 당일 하루를 뜻하므로 허용한다', () => {
     expect(
-      validateProjectForm(values({ leadTimeWeeks: '0' })).leadTimeWeeks,
+      validateProjectForm(values({ leadTimeDays: '0' })).leadTimeDays,
+    ).toBeUndefined()
+  })
+
+  it('준비 기간이 음수면 오류를 낸다', () => {
+    expect(
+      validateProjectForm(values({ leadTimeDays: '-1' })).leadTimeDays,
     ).toBeDefined()
   })
 
-  it('준비 기간이 26주를 넘으면 오류를 낸다', () => {
+  it('계약 상한인 182일까지는 허용하고 그 위는 막는다', () => {
+    // 준비 기간이 반년을 넘으면 캘린더가 그 막대 하나로 덤여 나머지를 읽을 수 없다
     expect(
-      validateProjectForm(values({ leadTimeWeeks: '27' })).leadTimeWeeks,
+      validateProjectForm(values({ leadTimeDays: '182' })).leadTimeDays,
+    ).toBeUndefined()
+    expect(
+      validateProjectForm(values({ leadTimeDays: '183' })).leadTimeDays,
     ).toBeDefined()
+  })
+
+  it('주로 떨어지지 않는 기간도 넣을 수 있다', () => {
+    // 주 단위로 받았다면 "열흘 준비" 를 등록할 방법이 없다
+    expect(
+      validateProjectForm(values({ leadTimeDays: '10' })).leadTimeDays,
+    ).toBeUndefined()
   })
 
   it('제출 단계는 비어 있어도 된다', () => {
@@ -56,13 +73,13 @@ describe('toProjectInputFromForm', () => {
   it('앞뒤 공백을 정리하고 준비 기간을 숫자로 바꾼다', () => {
     expect(
       toProjectInputFromForm(
-        values({ name: '  BRL 과제 ', leadTimeWeeks: '4' }),
+        values({ name: '  BRL 과제 ', leadTimeDays: '4' }),
       ),
     ).toEqual({
       name: 'BRL 과제',
       submissionStage: '연차보고서',
       endDate: '2026-09-26',
-      leadTimeWeeks: 4,
+      leadTimeDays: 4,
       active: true,
     })
   })

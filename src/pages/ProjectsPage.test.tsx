@@ -21,13 +21,13 @@ vi.mock('../api/projects', () => ({
     name,
     submissionStage,
     endDate,
-    leadTimeWeeks,
+    leadTimeDays,
     active,
   }: Project): ProjectInput => ({
     name,
     submissionStage,
     endDate,
-    leadTimeWeeks,
+    leadTimeDays,
     active,
   }),
 }))
@@ -37,7 +37,7 @@ const ACTIVE: Project = {
   name: 'BRL 과제',
   submissionStage: '연차보고서',
   endDate: '2026-09-26',
-  leadTimeWeeks: 3,
+  leadTimeDays: 3,
   active: true,
   dDay: 20,
   preparationStartDate: '2026-09-05',
@@ -47,7 +47,7 @@ const HIDDEN: Project = {
   id: 'p2',
   name: '산학협력 과제',
   endDate: '2026-07-01',
-  leadTimeWeeks: 2,
+  leadTimeDays: 2,
   active: false,
   dDay: -67,
   preparationStartDate: '2026-06-17',
@@ -73,7 +73,7 @@ describe('ProjectsPage', () => {
     const card = await cardOf('BRL 과제')
     expect(within(card).getByText('연차보고서')).toBeInTheDocument()
     expect(within(card).getByText('D-20')).toBeInTheDocument()
-    expect(within(card).getByText('3주')).toBeInTheDocument()
+    expect(within(card).getByText('3일')).toBeInTheDocument()
     expect(within(card).getByText(/2026년 9월 5일/)).toBeInTheDocument()
   })
 
@@ -91,8 +91,8 @@ describe('ProjectsPage', () => {
 
     await user.type(screen.getByLabelText('과제명'), '신규 과제')
     await user.type(screen.getByLabelText('제출 단계'), '착수보고서')
-    await user.clear(screen.getByLabelText('준비 기간 (주)'))
-    await user.type(screen.getByLabelText('준비 기간 (주)'), '5')
+    await user.clear(screen.getByLabelText('준비 기간 (일)'))
+    await user.type(screen.getByLabelText('준비 기간 (일)'), '5')
     await user.click(screen.getByRole('button', { name: '등록' }))
 
     await waitFor(() => {
@@ -100,7 +100,7 @@ describe('ProjectsPage', () => {
         expect.objectContaining({
           name: '신규 과제',
           submissionStage: '착수보고서',
-          leadTimeWeeks: 5,
+          leadTimeDays: 5,
           active: true,
         }),
       )
@@ -122,12 +122,12 @@ describe('ProjectsPage', () => {
     renderWithRouter(<ProjectsPage />)
 
     await user.type(screen.getByLabelText('과제명'), '신규 과제')
-    await user.clear(screen.getByLabelText('준비 기간 (주)'))
-    await user.type(screen.getByLabelText('준비 기간 (주)'), '52')
+    await user.clear(screen.getByLabelText('준비 기간 (일)'))
+    await user.type(screen.getByLabelText('준비 기간 (일)'), '200')
     await user.click(screen.getByRole('button', { name: '등록' }))
 
     expect(
-      await screen.findByText(/준비 기간은 1주 이상 26주 이하/),
+      await screen.findByText(/준비 기간은 0일 이상 182일 이하/),
     ).toBeInTheDocument()
     expect(createProject).not.toHaveBeenCalled()
   })
@@ -141,7 +141,7 @@ describe('ProjectsPage', () => {
 
     expect(screen.getByRole('heading', { name: '과제 수정' })).toBeInTheDocument()
     expect(screen.getByLabelText('과제명')).toHaveValue('BRL 과제')
-    expect(screen.getByLabelText('준비 기간 (주)')).toHaveValue(3)
+    expect(screen.getByLabelText('준비 기간 (일)')).toHaveValue(3)
   })
 
   it('새 과제로 돌아가면 폼이 비워진다', async () => {

@@ -5,19 +5,27 @@ export type ProjectFormValues = {
   name: string
   submissionStage: string
   endDate: string
-  leadTimeWeeks: string
+  leadTimeDays: string
   active: boolean
 }
 
-export type ProjectFormField = 'name' | 'endDate' | 'leadTimeWeeks'
+export type ProjectFormField = 'name' | 'endDate' | 'leadTimeDays'
 export type ProjectFormErrors = Partial<Record<ProjectFormField, string>>
 
-/** 기획서 3.1 의 기본 준비 기간. */
-export const DEFAULT_LEAD_TIME_WEEKS = 3
+/** 기획서 3.1 의 기본 준비 기간 — 3주. */
+export const DEFAULT_LEAD_TIME_DAYS = 21
 
-const MIN_LEAD_TIME_WEEKS = 1
-/** 준비 기간이 반년을 넘으면 캘린더가 그 막대 하나로 덮여 쓸모가 없어진다. */
-const MAX_LEAD_TIME_WEEKS = 26
+/**
+ * 준비 기간의 범위 (docs/api-contract.md §7.4).
+ *
+ * 주 단위가 아니라 일 단위로 받는다. "열흘 준비" 처럼 주로 떨어지지 않는 기간이
+ * 실제로 있고, 주로만 받으면 그런 과제를 등록할 방법이 없다.
+ *
+ * 0 은 마감 당일 하루짜리를 뜻한다. 상한을 반년으로 둔 이유는, 그보다 긴 준비 기간은
+ * 캘린더가 그 막대 하나로 덮여 나머지 일정을 읽을 수 없게 되기 때문이다.
+ */
+const MIN_LEAD_TIME_DAYS = 0
+const MAX_LEAD_TIME_DAYS = 182
 
 export function validateProjectForm(
   values: ProjectFormValues,
@@ -32,11 +40,11 @@ export function validateProjectForm(
     errors.endDate = '제출 마감일을 선택해 주세요.'
   }
 
-  const weeks = Number(values.leadTimeWeeks)
-  if (!values.leadTimeWeeks.trim() || !Number.isInteger(weeks)) {
-    errors.leadTimeWeeks = '준비 기간을 주 단위 정수로 입력해 주세요.'
-  } else if (weeks < MIN_LEAD_TIME_WEEKS || weeks > MAX_LEAD_TIME_WEEKS) {
-    errors.leadTimeWeeks = `준비 기간은 ${MIN_LEAD_TIME_WEEKS}주 이상 ${MAX_LEAD_TIME_WEEKS}주 이하여야 합니다.`
+  const days = Number(values.leadTimeDays)
+  if (!values.leadTimeDays.trim() || !Number.isInteger(days)) {
+    errors.leadTimeDays = '준비 기간을 일 단위 정수로 입력해 주세요.'
+  } else if (days < MIN_LEAD_TIME_DAYS || days > MAX_LEAD_TIME_DAYS) {
+    errors.leadTimeDays = `준비 기간은 ${MIN_LEAD_TIME_DAYS}일 이상 ${MAX_LEAD_TIME_DAYS}일 이하여야 합니다.`
   }
 
   return errors
@@ -52,7 +60,7 @@ export function toProjectInputFromForm(
     name: values.name.trim(),
     submissionStage: submissionStage || undefined,
     endDate: values.endDate,
-    leadTimeWeeks: Number(values.leadTimeWeeks),
+    leadTimeDays: Number(values.leadTimeDays),
     active: values.active,
   }
 }
