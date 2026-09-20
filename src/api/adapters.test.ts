@@ -3,6 +3,7 @@ import type { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { apiClient } from './client'
 import { createEvent, fetchEvents, updateEvent } from './events'
 import { createProject, fetchProjects, updateProject } from './projects'
+import { fetchCategories } from './categories'
 
 /**
  * 어댑터가 서버 DTO 와 도메인 타입 사이를 옮기는 방식 (KAN-71).
@@ -202,5 +203,28 @@ describe('createProject / updateProject', () => {
     expect(captured.url).toBe('/api/projects/1')
     expect(captured.body).not.toHaveProperty('dDay')
     expect(captured.body).not.toHaveProperty('preparationStartDate')
+  })
+})
+
+describe('fetchCategories', () => {
+  it('서버가 준 목록을 그대로 쓴다', async () => {
+    respondWith({
+      data: [
+        { id: '1', key: 'project', name: '과제/연구 관리' },
+        { id: '2', key: 'lab', name: '랩실 주기적 일정' },
+      ],
+    })
+
+    const categories = await fetchCategories()
+
+    expect(captured.url).toBe('/api/categories')
+    expect(categories.map((category) => category.key)).toEqual(['project', 'lab'])
+  })
+
+  it('조회 등급에서 카드가 빠져도 프론트는 알 필요가 없다', async () => {
+    // 거르는 자리는 서버다 (KAN-35). 여기서 등급을 보면 그 책임이 프론트로 옮겨 온다.
+    respondWith({ data: [{ id: '1', key: 'project', name: '과제/연구 관리' }] })
+
+    expect(await fetchCategories()).toHaveLength(1)
   })
 })
