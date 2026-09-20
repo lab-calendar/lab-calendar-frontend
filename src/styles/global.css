@@ -18,7 +18,18 @@ body {
   font-size: var(--font-size-md);
   line-height: var(--line-height-normal);
   color: var(--color-text);
+  /*
+   * 유리 표면이 비충 바탕 (KAN-72).
+   *
+   * 뒷배경이 평평한 한 색이면 반투명으로 만들어도 아무것도 비치지 않아
+   * 그냥 회색 판으로 보인다. 다만 업무용 화면이므로 대비는 아주 얇게 둔다 —
+   * 배경이 눈에 띄면 그것만으로 일정을 읽는 데 방해가 된다.
+   */
   background: var(--color-bg);
+  background-image:
+    radial-gradient(120% 90% at 12% 0%, var(--color-bg-tint-cool) 0%, transparent 58%),
+    radial-gradient(90% 80% at 100% 100%, var(--color-bg-tint-warm) 0%, transparent 62%);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
