@@ -75,27 +75,42 @@
   color: var(--color-text);
 }
 
+/*
+ * 유리 패널 위에 흰색을 한 겹 더 얹는다. 흰 층은 어두운 글자의 대비를 떨어뜨리는
+ * 일이 없어서, 유리 위 대비 검증이 그대로 이 위에도 성립한다.
+ */
 .calendar :global(.fc .fc-button-primary) {
   padding: var(--space-1) var(--space-3);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-muted);
-  background: var(--color-surface);
+  background: rgb(255 255 255 / 60%);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  box-shadow: none;
+  box-shadow: 0 1px 2px rgb(16 24 40 / 4%);
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease;
 }
 
 .calendar :global(.fc .fc-button-primary:hover) {
   color: var(--color-text);
-  background: var(--color-surface-muted);
+  background: rgb(255 255 255 / 92%);
   border-color: var(--color-border-strong);
+}
+
+.calendar :global(.fc .fc-button-primary:not(:disabled):active) {
+  color: var(--color-text);
+  background: var(--color-surface);
+  border-color: var(--color-border-strong);
+  box-shadow: none;
 }
 
 .calendar :global(.fc .fc-button-primary:disabled) {
   color: var(--color-text-subtle);
-  background: var(--color-surface-muted);
+  background: rgb(255 255 255 / 35%);
   border-color: var(--color-border);
+  box-shadow: none;
   opacity: 1;
 }
 
@@ -106,10 +121,19 @@
 }
 
 /* ── 그리드 ───────────────────────────────── */
+/*
+ * 칸 경계는 반투명으로 옅게 둔다. 칸은 날짜 숫자로 구분되고 이 선은 구조를
+ * 보조할 뿐이라, 진한 회색 격자가 유리 면을 조각내지 않게 한다.
+ */
 .calendar :global(.fc-theme-standard .fc-scrollgrid),
 .calendar :global(.fc-theme-standard td),
 .calendar :global(.fc-theme-standard th) {
-  border-color: var(--color-border);
+  border-color: rgb(16 24 40 / 9%);
+}
+
+.calendar :global(.fc-theme-standard .fc-scrollgrid) {
+  overflow: hidden;
+  border-radius: var(--radius-md);
 }
 
 .calendar :global(.fc .fc-col-header-cell) {
@@ -117,7 +141,26 @@
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-muted);
-  background: var(--color-surface-muted);
+  background: rgb(255 255 255 / 50%);
+}
+
+/* 한국 달력의 관례대로 일요일은 붉게, 토요일은 푸르게 (둘 다 유리 위 대비 검증 대상) */
+.calendar :global(.fc .fc-col-header-cell.fc-day-sun),
+.calendar :global(.fc .fc-day-sun .fc-daygrid-day-number) {
+  color: var(--color-danger);
+}
+
+.calendar :global(.fc .fc-col-header-cell.fc-day-sat),
+.calendar :global(.fc .fc-day-sat .fc-daygrid-day-number) {
+  color: var(--color-primary);
+}
+
+.calendar :global(.fc .fc-daygrid-day) {
+  transition: background-color 120ms ease;
+}
+
+.calendar :global(.fc .fc-daygrid-day:hover) {
+  background: rgb(255 255 255 / 40%);
 }
 
 .calendar :global(.fc .fc-daygrid-day-number) {
@@ -126,22 +169,91 @@
   color: var(--color-text-muted);
 }
 
+/* 이웃 달의 날짜는 요일 색을 따르지 않는다 — 이번 달이 아니라는 것이 먼저다 */
 .calendar :global(.fc .fc-day-other .fc-daygrid-day-number) {
   color: var(--color-text-subtle);
 }
 
+/*
+ * 오늘은 칸을 옅게 물들이고 날짜를 동그란 배지로 채운다. 흰 글자와 주색의 조합은
+ * 버튼과 같아 대비 테스트가 이미 덮고 있다.
+ */
 .calendar :global(.fc .fc-day-today) {
-  background: var(--color-primary-soft);
+  background: rgb(43 102 218 / 7%);
+}
+
+.calendar :global(.fc .fc-daygrid-day.fc-day-today:hover) {
+  background: rgb(43 102 218 / 11%);
 }
 
 .calendar :global(.fc .fc-day-today .fc-daygrid-day-number) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 var(--space-1);
+  margin: 3px;
   font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
+  color: var(--color-text-inverse);
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
 }
 
 .calendar :global(.fc .fc-daygrid-more-link) {
+  padding: 1px var(--space-2);
+  margin-left: 2px;
   font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-muted);
+  border-radius: var(--radius-full);
+}
+
+.calendar :global(.fc .fc-daygrid-more-link:hover) {
+  color: var(--color-text);
+  text-decoration: none;
+  background: rgb(255 255 255 / 80%);
+}
+
+/* ── "+N개 더 보기" 팝업 ─────────────────── */
+/*
+ * FullCalendar 가 그리는 팝업이라 기본값은 흰 상자다. 일정 상세 팝업·마감 알림과
+ * 같은 유리 재질로 맞춘다.
+ */
+.calendar :global(.fc .fc-popover) {
+  z-index: var(--z-modal);
+  overflow: hidden;
+  background: var(--glass-fill-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    var(--glass-shadow),
+    0 12px 32px rgb(16 24 40 / 14%);
+}
+
+.calendar :global(.fc .fc-popover-header) {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  background: transparent;
+  border-bottom: 1px solid rgb(16 24 40 / 8%);
+}
+
+.calendar :global(.fc .fc-popover-close) {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+.calendar :global(.fc .fc-popover-close:hover) {
+  color: var(--color-text);
+}
+
+.calendar :global(.fc .fc-popover-body) {
+  padding: var(--space-2);
 }
 
 /* 기본 이벤트 컨테이너를 비우고 아래 커스텀 칩으로 대체한다 */
@@ -170,7 +282,23 @@
   cursor: pointer;
   background: var(--category-soft);
   border-left: 3px solid var(--category-color);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
+  transition:
+    box-shadow 120ms ease,
+    transform 120ms ease;
+}
+
+.event:hover {
+  box-shadow: 0 2px 6px rgb(16 24 40 / 12%);
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event,
+  .event:hover {
+    transform: none;
+    transition: none;
+  }
 }
 
 /*
@@ -226,6 +354,12 @@
   .calendar :global(.fc .fc-daygrid-day-number) {
     padding: 2px var(--space-1);
     font-size: var(--font-size-xs);
+  }
+
+  .calendar :global(.fc .fc-day-today .fc-daygrid-day-number) {
+    min-width: 20px;
+    height: 20px;
+    margin: 2px;
   }
 
   .calendar :global(.fc .fc-daygrid-event-harness) {
