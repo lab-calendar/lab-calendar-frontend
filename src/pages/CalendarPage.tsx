@@ -1,4 +1,5 @@
 import MonthCalendar from '../components/calendar/MonthCalendar'
+import DeadlineAlert from '../components/projects/DeadlineAlert'
 import UpcomingDeadlines from '../components/projects/UpcomingDeadlines'
 import styles from './Page.module.css'
 
@@ -15,6 +16,9 @@ function CalendarPage() {
 
       {/* 달력 위에 둔다. 들어오자마자 가장 급한 마감이 먼저 눈에 들어와야 한다 (KAN-52) */}
       <UpcomingDeadlines />
+
+      {/* 마감이 급한 것이 있을 때만, 하루에 한 번 앞을 막아선다 (KAN-53) */}
+      <DeadlineAlert />
 
       <div className={styles.fillSurface}>
         <MonthCalendar />

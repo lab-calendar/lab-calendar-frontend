@@ -6,6 +6,7 @@ import type { Project } from '../../types/domain'
 import ErrorState from '../common/ErrorState'
 import LoadingState from '../common/LoadingState'
 import { formatDDay } from './dDay'
+import { urgencyOf } from './deadlineUrgency'
 import styles from './UpcomingDeadlines.module.css'
 
 /** 한 줄에 들어가고 훑어볼 만한 수. 더 늘리면 달력이 밀린다. */
@@ -82,7 +83,7 @@ function UpcomingDeadlines() {
             <button
               type="button"
               className={styles.item}
-              data-overdue={project.dDay < 0 ? '' : undefined}
+              data-urgency={urgencyOf(project.dDay)}
               onClick={() => focusOn(project.endDate)}
             >
               <span className={styles.dDay}>

@@ -173,6 +173,22 @@
   border-radius: var(--radius-sm);
 }
 
+/*
+ * 마감이 급한 과제의 준비 기간 (KAN-53).
+ *
+ * 기획서 3.1 은 "빨간색 하이라이팅" 을 말하지만, 과제 칩은 이미 붉다. 색을
+ * 더 붉히는 대신 칠을 뒤집어, 연한 바탕의 다른 과제 일정들 사이에서 1초에 구분되게 한다.
+ *
+ * 지난 마감과 임박한 마감을 달리 칠하지 않는다 — 달력에서 둘은 모두 "지금 봐야 한다" 로
+ * 똑같고, 그 차이는 위젯과 알림에서 드러난다. 읽는 쪽에는 칩이 직접 구분해 읽어 준다.
+ */
+.event[data-urgency='imminent'],
+.event[data-urgency='overdue'] {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-inverse);
+  background: var(--category-color);
+}
+
 /* 색 없이도 카테고리를 가려낼 수 있게 하는 표식 (KAN-64) */
 .eventMark {
   flex-shrink: 0;
