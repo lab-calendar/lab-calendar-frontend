@@ -1,27 +1,36 @@
+import { apiClient } from './client'
 import type { Category } from '../types/domain'
+import type { CategoryKey } from '../constants/categories'
+
+/**
+ * 카테고리 API (KAN-38).
+ *
+ * 마지막 남아 있던 더미다. 이제 `src/api/*` 전체가 실제 서버를 본다.
+ */
+
+type ApiResponse<T> = { data: T }
+
+/** docs/api-contract.md §5 */
+type CategoryDto = {
+  id: string
+  key: CategoryKey
+  name: string
+}
 
 /**
  * 카테고리 목록.
  *
- * TODO(KAN-38 완료 후): 실제 API 호출로 교체한다.
- *   const { data } = await apiClient.get<ApiResponse<CategoryDto[]>>('/api/categories')
- *   return data.data
+ * 색상은 응답에 없다. 프론트 디자인 토큰이 명도 대비 4.5:1 기준으로 고른 값을
+ * 들고 있고 회귀 테스트가 지킨다(KAN-64) — 서버가 색을 보내면 그 기준이 조용히
+ * 무너진다. `key` 가 `tokens.css` 의 `[data-category]` 와 이어 주는 고리다.
  *
- * 일정·과제는 서버에 붙었지만(KAN-71) 이것만 남았다. `GET /api/categories` 가 아직
- * 없어서다. 세 가지는 서버가 마이그레이션으로 심어 두는 고정 값이라, 그때까지 같은
- * 값을 여기서 돌려주는 것으로 화면이 정상 동작한다.
+ * 조회 등급에서는 서버가 카드/경비를 빼고 내려준다(KAN-35). 프론트는 등급을
+ * 몰라도 되고, 받은 목록을 그대로 그리면 된다.
  *
- * 다만 **조회 등급에서 카드/경비가 빠지지 않는다.** 서버가 응답에서 빼 주기로 되어
- * 있고(KAN-35), 여기서 등급을 보고 거르면 그 책임이 프론트로 옮겨 온다. KAN-38 이
- * 붙으면 자연히 해결되므로 그대로 둔다.
+ * 자주 바뀌지 않아 오래 캐시한다 — `useCategories` 참고.
  */
 export async function fetchCategories(): Promise<Category[]> {
-  return CATEGORIES
+  const { data } =
+    await apiClient.get<ApiResponse<CategoryDto[]>>('/api/categories')
+  return data.data
 }
-
-/** 서버의 `category` 시드와 같은 값 (KAN-28 마이그레이션). */
-const CATEGORIES: Category[] = [
-  { id: 1, key: 'project', name: '과제/연구 관리' },
-  { id: 2, key: 'lab', name: '랩실 주기적 일정' },
-  { id: 3, key: 'card', name: '카드/경비 사용' },
-]

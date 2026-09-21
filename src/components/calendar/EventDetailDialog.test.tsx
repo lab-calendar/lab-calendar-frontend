@@ -11,9 +11,9 @@ vi.mock('../../api/categories', () => ({
 }))
 
 const CATEGORIES: Category[] = [
-  { id: 1, key: 'project', name: '과제/연구 관리' },
-  { id: 2, key: 'lab', name: '랩실 주기적 일정' },
-  { id: 3, key: 'card', name: '카드/경비 사용' },
+  { id: '1', key: 'project', name: '과제/연구 관리' },
+  { id: '2', key: 'lab', name: '랩실 주기적 일정' },
+  { id: '3', key: 'card', name: '카드/경비 사용' },
 ]
 
 function event(overrides: Partial<CalendarEvent> = {}): CalendarEvent {

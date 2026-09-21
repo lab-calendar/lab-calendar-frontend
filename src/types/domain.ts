@@ -7,7 +7,8 @@
 import type { CategoryKey } from '../constants/categories'
 
 export type Category = {
-  id: number
+  /** 다른 응답들과 마찬가지로 문자열이다 (계약 §5). */
+  id: string
   /** tokens.css 의 `[data-category]` 와 매핑되는 키 */
   key: CategoryKey
   name: string
