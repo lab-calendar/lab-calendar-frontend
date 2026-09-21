@@ -6,10 +6,22 @@
   height: 100%;
 }
 
+/*
+ * 제목과 설명도 유리 위에 둔다 (KAN-73). 배경의 색 번짐 위에 글자를 바로 올리면
+ * 번짐 한가운데서 대비가 모자란다 — 모든 글자는 유리 면 위에 있다는 것이 대비
+ * 계산의 전제다.
+ */
 .header {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--glass-fill);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
 }
 
 .title {
@@ -59,6 +71,7 @@
   border-radius: var(--radius-md);
 }
 
+/* 오류·없는 화면 안내. 제목과 같은 이유로 유리 위에 둔다 (KAN-73) */
 .centered {
   display: flex;
   flex-direction: column;
@@ -66,7 +79,14 @@
   align-items: center;
   justify-content: center;
   height: 100%;
+  padding: var(--space-6);
   text-align: center;
+  border-radius: var(--radius-lg);
+  background: var(--glass-fill);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
 }
 
 .link {
