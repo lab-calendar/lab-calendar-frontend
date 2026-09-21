@@ -105,47 +105,68 @@ function blend(foreground: string, background: string, alpha: number): string {
 }
 
 describe('유리 표면 위의 명도 대비', () => {
-  /** tokens.css 의 --glass-fill 에서 가장 연한 지점 (아래쪽 65%) */
-  const glass = blend('#ffffff', token('color-bg'), 0.65)
-  /** 다이얼로그처럼 더 진하게 칠하는 면 */
-  const glassStrong = blend('#ffffff', token('color-bg'), 0.82)
+  /*
+   * 유리 뒤에는 배경색과 색 번짐 세 가지가 깔린다 (KAN-73). 번짐 한가운데가 가장
+   * 진하므로, 유리가 그 위에 올라간 경우를 모두 계산한다. 어느 하나에서라도 기준을
+   * 못 넘기면 그 번짐 위를 지나는 글자는 읽히지 않는다.
+   *
+   * 유리 농도는 가장 연한 지점(아래쪽 72%)으로 잡는다 — 거기서 통하면 위쪽은 저절로 통한다.
+   */
+  const GLASS_ALPHA = 0.72
+  const GLASS_STRONG_ALPHA = 0.86
 
-  it.each([
+  const backdrops = [
+    'color-bg',
+    'backdrop-blue',
+    'backdrop-violet',
+    'backdrop-teal',
+  ] as const
+
+  const pairs = [
     ['본문 글자', 'color-text', TEXT],
     ['보조 글자', 'color-text-muted', TEXT],
     ['힌트 글자', 'color-text-subtle', TEXT],
     ['링크', 'color-primary', TEXT],
     ['오류 글자', 'color-danger', TEXT],
     ['입력 테두리', 'color-border-strong', UI],
-  ])('%s / 유리 표면', (_name, foreground, minimum) => {
+    ['과제 표식', 'category-project', UI],
+    ['랩실 표식', 'category-lab', UI],
+    ['카드 표식', 'category-card', UI],
+  ] as const
+
+  const cases = backdrops.flatMap((backdrop) =>
+    pairs.map(([name, foreground, minimum]) => [
+      `${name} / 유리 (${backdrop} 위)`,
+      foreground,
+      backdrop,
+      minimum,
+    ] as const),
+  )
+
+  it.each(cases)('%s', (_name, foreground, backdrop, minimum) => {
+    const glass = blend('#ffffff', token(backdrop), GLASS_ALPHA)
     expect(contrast(token(foreground), glass)).toBeGreaterThanOrEqual(minimum)
   })
 
-  it('진한 유리는 흰색에 더 가까워 언제나 연한 쪽보다 유리하다', () => {
-    // 둘 중 연한 쪽만 통과시키면 나머지는 자동으로 따라온다
-    expect(contrast(token('color-text'), glassStrong)).toBeGreaterThanOrEqual(
-      contrast(token('color-text'), glass),
-    )
+  it('진한 유리는 연한 유리보다 언제나 유리하다', () => {
+    // 다이얼로그처럼 더 진하게 칠하는 면은 따로 검증하지 않아도 된다
+    for (const backdrop of backdrops) {
+      expect(
+        contrast(token('color-text'), blend('#ffffff', token(backdrop), GLASS_STRONG_ALPHA)),
+      ).toBeGreaterThanOrEqual(
+        contrast(token('color-text'), blend('#ffffff', token(backdrop), GLASS_ALPHA)),
+      )
+    }
   })
 
-  it('임박 일정 칩이 유리 위에 올라가도 큰라지지 않는다', () => {
-    // 칩은 불투명이라 유리가 아니지만, 그 테두리가 바탕과 구분되어야 한다
-    expect(
-      contrast(token('category-project'), glass),
-    ).toBeGreaterThanOrEqual(UI)
-  })
-})
-
-describe('배경 그라데이션', () => {
-  it('--color-bg 가 가장 어두운 지점이다', () => {
+  it('색 번짐이 실제로 색을 띤다', () => {
     /*
-     * 유리 표면의 대비를 --color-bg 하나로 계산하는 것이 이 전제 덕분이다.
-     * 틴트를 --color-bg 보다 어둡게 바꾸면 그 계산이 최악의 경우가 아니게 되고,
-     * 어느 구석에서만 글자가 안 읽히는 상황이 조용히 생긴다.
+     * 대비를 맞추려다 번짐을 배경색만큼 옅게 만들면 유리 너머로 비칠 것이 없어진다.
+     * KAN-72 가 그렇게 해서 효과가 보이지 않았다. 번짐은 배경보다 눈에 띄게 진해야 한다.
      */
     const base = luminance(token('color-bg'))
-
-    expect(luminance(token('color-bg-tint-cool'))).toBeGreaterThan(base)
-    expect(luminance(token('color-bg-tint-warm'))).toBeGreaterThan(base)
+    for (const backdrop of ['backdrop-blue', 'backdrop-violet', 'backdrop-teal']) {
+      expect(base - luminance(token(backdrop))).toBeGreaterThan(0.08)
+    }
   })
 })
