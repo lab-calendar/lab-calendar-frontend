@@ -1,0 +1,116 @@
+.widget {
+  margin-bottom: var(--space-3);
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  /* 준비 기간 막대와 같은 색으로 과제 항목임을 잇는다 */
+  border-left: 3px solid var(--category-project);
+  border-radius: var(--radius-md);
+}
+
+.item:hover {
+  border-color: var(--color-border-strong);
+  border-left-color: var(--category-project);
+  box-shadow: var(--shadow-sm);
+}
+
+.dDay {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--category-project);
+  white-space: nowrap;
+}
+
+/*
+ * 지난 마감은 남은 마감과 같은 무게로 읽히면 안 된다.
+ *
+ * 글자색을 --color-danger 로 바꾸는 것으로는 아무 차이가 없다 — 과제 카테고리 색이
+ * 이미 붉은 계열이라 두 값이 화면에서 구별되지 않는다. 그래서 색 대신 칠을 뒤집는다.
+ */
+.item[data-overdue] .dDay {
+  padding: 2px var(--space-1);
+  color: var(--color-text-inverse);
+  background: var(--color-danger);
+  border-radius: var(--radius-sm);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  /* 이름이 길어도 칸을 밀어내지 않고 잘리게 한다 */
+  min-width: 0;
+}
+
+.name {
+  overflow: hidden;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stage {
+  overflow: hidden;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty {
+  margin: 0 0 var(--space-3);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+}
+
+.link {
+  padding: 0;
+  font-size: inherit;
+  color: var(--color-primary);
+  background: none;
+  border: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/*
+ * 좁은 화면에서는 세 칸이 들어가지 않는다. 한 줄에 하나씩 쌓으면 달력이 아래로
+ * 너무 밀리므로, 가로로 훑어보도록 남기고 넘치는 만큼만 스크롤한다.
+ */
+@media (max-width: 767px) {
+  .list {
+    display: flex;
+    gap: var(--space-2);
+    overflow-x: auto;
+    /* 스크롤바가 카드를 잘라 보이지 않도록 아래를 조금 띄운다 */
+    padding-bottom: var(--space-1);
+    scroll-snap-type: x mandatory;
+  }
+
+  .list > li {
+    flex: 0 0 min(72%, 16rem);
+    scroll-snap-align: start;
+  }
+}

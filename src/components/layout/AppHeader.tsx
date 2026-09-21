@@ -57,7 +57,7 @@ function AppHeader({ isSidebarOpen, onToggleSidebar }: AppHeaderProps) {
         ))}
       </nav>
 
-      {/* D-Day 카운트다운 위젯 자리 — KAN-52 */}
+      {/* 등급 표시와 세션 종료 */}
       <div className={styles.slotEnd}>
         {/*
           조회 전용임을 화면에 남겨 둔다 (KAN-36). 등록 버튼이 없는 것만으로는
