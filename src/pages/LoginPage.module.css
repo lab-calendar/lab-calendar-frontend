@@ -4,15 +4,17 @@
   justify-content: center;
   min-height: 100dvh;
   padding: var(--space-4);
-  background: var(--color-surface-muted);
+  /* 바디의 그라데이션이 그대로 비치도록 칠하지 않는다 (KAN-72) */
 }
 
 .card {
   width: 100%;
   max-width: 24rem;
   padding: var(--space-6);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--glass-fill-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
 }
