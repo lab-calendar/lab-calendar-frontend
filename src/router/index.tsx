@@ -1,12 +1,14 @@
 import { createBrowserRouter } from 'react-router-dom'
 import RequireAuth from '../components/auth/RequireAuth'
 import AppLayout from '../layouts/AppLayout'
-import CalendarPage from '../pages/CalendarPage'
 import LoginPage from '../pages/LoginPage'
-import MembersPage from '../pages/MembersPage'
-import NotFoundPage from '../pages/NotFoundPage'
-import ProjectsPage from '../pages/ProjectsPage'
 import RouteErrorPage from '../pages/RouteErrorPage'
+import {
+  CalendarPage,
+  MembersPage,
+  NotFoundPage,
+  ProjectsPage,
+} from './pages'
 import { ROUTES } from './routes'
 
 export const router = createBrowserRouter([
@@ -25,6 +27,7 @@ export const router = createBrowserRouter([
     children: [
       {
         element: <AppLayout />,
+        // 화면 코드는 들어갈 때 받는다 (KAN-75). 기다리는 자리는 AppLayout 의 Suspense.
         children: [
           { index: true, element: <CalendarPage /> },
           { path: 'projects', element: <ProjectsPage /> },

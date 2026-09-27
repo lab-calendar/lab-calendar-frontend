@@ -1,5 +1,7 @@
-import { screen } from '@testing-library/react'
+import { act, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { lazy, type ReactElement } from 'react'
+import { Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { renderWithRouter } from '../test/renderWithRouter'
 import AppLayout from './AppLayout'
@@ -128,5 +130,40 @@ describe('AppLayout 드로어 포커스', () => {
     await user.keyboard('{Escape}')
 
     expect(document.activeElement).toBe(menuButton())
+  })
+})
+
+describe('AppLayout 화면 코드 기다리기 (KAN-75)', () => {
+  it('화면이 도착할 때까지 로딩 표시를 보여주고 헤더는 그대로 둔다', async () => {
+    let arrive: (module: { default: () => ReactElement }) => void = () => {}
+    const SlowPage = lazy(
+      () =>
+        new Promise<{ default: () => ReactElement }>((resolve) => {
+          arrive = resolve
+        }),
+    )
+
+    renderWithRouter(
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route index element={<SlowPage />} />
+        </Route>
+      </Routes>,
+    )
+
+    // 사이드바도 자기 데이터를 기다리므로 본문 안에서 찾는다
+    const main = screen.getByRole('main')
+    expect(within(main).getByRole('status')).toHaveTextContent(
+      '화면을 불러오는 중입니다',
+    )
+    // 본문만 기다린다 — 헤더가 함께 사라지면 화면 전체가 깜빡인다
+    expect(screen.getByRole('button', { name: '제어 영역 열기' })).toBeInTheDocument()
+
+    // 헤더 메뉴에 없는 문구를 쓴다 — '과제 관리' 로 두면 메뉴가 먼저 걸려 늘 통과한다
+    act(() => arrive({ default: () => <p>도착한 화면</p> }))
+
+    expect(await within(main).findByText('도착한 화면')).toBeInTheDocument()
+    // React 는 기다리던 자리를 DOM 에 숨겨 둘 수 있다. 접근성 트리에서 사라졌는지로 본다.
+    expect(within(main).queryByRole('status')).toBeNull()
   })
 })

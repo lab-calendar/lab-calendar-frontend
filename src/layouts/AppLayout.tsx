@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
+import LoadingState from '../components/common/LoadingState'
 import AppHeader from '../components/layout/AppHeader'
 import Sidebar from '../components/layout/Sidebar'
 import { useFocusTrap } from '../hooks/useFocusTrap'
@@ -99,7 +100,22 @@ function AppLayout() {
           ) : null}
 
           <main id="main" tabIndex={-1} className={styles.main}>
-            <Outlet />
+            {/*
+              화면 코드가 도착할 때까지 기다리는 자리 (KAN-75).
+              헤더와 사이드바는 그대로 두고 본문만 바뀌므로, 화면을 옮길 때
+              전체가 깜빡이지 않고 들어올 내용의 자리만 비어 보인다.
+            */}
+            <Suspense
+              fallback={
+                <LoadingState
+                  label="화면을 불러오는 중입니다"
+                  lines={3}
+                  lineHeight="6rem"
+                />
+              }
+            >
+              <Outlet />
+            </Suspense>
           </main>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { ApiError } from '../api/errors'
 import { useAuth } from '../contexts/AuthContext'
@@ -22,6 +22,26 @@ function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  /*
+   * 비밀번호를 치는 동안 달력 화면 코드를 미리 받아 둔다 (KAN-75).
+   *
+   * 화면별로 코드를 나눈 대가로, 로그인 직후 달력 코드를 그때부터 받게 된다. 이
+   * 화면을 그린 뒤 한가할 때 미리 받아 두면 그 기다림이 사라진다. 첫 화면을 그리는
+   * 동안에는 경쟁하지 않도록 한가해진 뒤로 미루고, 못 받아도 그만이다 — 들어갈 때
+   * 정상적으로 다시 받는다.
+   */
+  useEffect(() => {
+    const prefetch = () => void import('./CalendarPage').catch(() => {})
+
+    if (typeof window.requestIdleCallback === 'function') {
+      const handle = window.requestIdleCallback(prefetch, { timeout: 2000 })
+      return () => window.cancelIdleCallback(handle)
+    }
+
+    const timer = window.setTimeout(prefetch, 300)
+    return () => window.clearTimeout(timer)
+  }, [])
 
   // 이미 들어와 있으면 보던 곳으로 되돌린다.
   if (session?.authenticated) {
