@@ -1,5 +1,5 @@
 import { useId, useState } from 'react'
-import type { CategoryKey } from '../../constants/categories'
+import { CATEGORY_MARKS, type CategoryKey } from '../../constants/categories'
 import { useEventForm } from '../../contexts/EventFormContext'
 import { useCategories } from '../../queries/useCategories'
 import { useSaveEvent } from '../../queries/useEventMutations'
@@ -125,25 +125,36 @@ function EventForm() {
         ) : null}
       </div>
 
-      <div className={styles.field}>
-        <label className={styles.label} htmlFor={`${fieldId}-category`}>
-          항목 유형
-        </label>
-        <select
-          id={`${fieldId}-category`}
-          className={styles.select}
-          value={values.categoryKey}
-          onChange={(changeEvent) =>
-            update('categoryKey', changeEvent.target.value as CategoryKey)
-          }
-        >
+      {/*
+        드롭다운 대신 칩으로 펼쳐 둔다. 선택지가 셋뿐이라 한눈에 보이는 편이 빠르고,
+        기본 드롭다운은 펼친 목록을 운영체제가 그려 화면의 재질을 따라오지 못한다.
+        안은 라디오 버튼이라 키보드 조작과 스크린 리더 읽기는 그대로다.
+      */}
+      <fieldset className={styles.typeField}>
+        <legend className={styles.label}>항목 유형</legend>
+        <div className={styles.typeGroup}>
           {(categories ?? []).map((category) => (
-            <option key={category.id} value={category.key}>
+            <label
+              key={category.id}
+              className={styles.typeChip}
+              data-category={category.key}
+            >
+              <input
+                type="radio"
+                className={styles.typeInput}
+                name={`${fieldId}-category`}
+                value={category.key}
+                checked={values.categoryKey === category.key}
+                onChange={() => update('categoryKey', category.key)}
+              />
+              <span className={styles.typeMark} aria-hidden="true">
+                {CATEGORY_MARKS[category.key]}
+              </span>
               {category.name}
-            </option>
+            </label>
           ))}
-        </select>
-      </div>
+        </div>
+      </fieldset>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor={`${fieldId}-title`}>

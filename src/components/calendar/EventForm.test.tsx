@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fetchCategories } from '../../api/categories'
@@ -108,10 +108,39 @@ describe('EventForm 등록 모드', () => {
     expect(screen.getByLabelText('제출 단계')).toBeInTheDocument()
 
     // 카테고리 목록은 비동기로 채워진다
-    await screen.findByRole('option', { name: '카드/경비 사용' })
-    await user.selectOptions(screen.getByLabelText('항목 유형'), 'card')
+    await user.click(await screen.findByRole('radio', { name: '카드/경비 사용' }))
 
     expect(screen.getByLabelText('사용 목적')).toBeInTheDocument()
+  })
+
+  it('항목 유형은 이름 붙은 한 묶음의 라디오다', async () => {
+    renderForm()
+
+    // 칩 모양이어도 스크린 리더에는 "항목 유형" 그룹의 선택지 셋으로 읽혀야 한다
+    const group = await screen.findByRole('group', { name: '항목 유형' })
+    const options = await within(group).findAllByRole('radio')
+    expect(options).toHaveLength(3)
+  })
+
+  it('새 일정은 과제/연구 관리가 골라진 채로 시작한다', async () => {
+    renderForm()
+
+    expect(
+      await screen.findByRole('radio', { name: '과제/연구 관리' }),
+    ).toBeChecked()
+  })
+
+  it('방향키로 유형을 옮겨 고를 수 있다', async () => {
+    const user = userEvent.setup()
+    renderForm()
+
+    const first = await screen.findByRole('radio', { name: '과제/연구 관리' })
+    first.focus()
+    await user.keyboard('{ArrowDown}')
+
+    // 기본 라디오 동작 그대로 — 직접 만든 드롭다운이었으면 따로 구현해야 했을 부분
+    expect(screen.getByRole('radio', { name: '랩실 주기적 일정' })).toBeChecked()
+    expect(screen.getByLabelText('담당 연구원')).toBeInTheDocument()
   })
 })
 
