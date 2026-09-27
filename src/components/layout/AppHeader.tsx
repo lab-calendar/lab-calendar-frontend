@@ -6,6 +6,7 @@ import styles from './AppHeader.module.css'
 const NAV_ITEMS = [
   { to: ROUTES.calendar, label: '캘린더', end: true },
   { to: ROUTES.projects, label: '과제 관리', end: false },
+  { to: ROUTES.members, label: '구성원', end: false },
 ]
 
 type AppHeaderProps = {

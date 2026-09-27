@@ -3,6 +3,7 @@ import RequireAuth from '../components/auth/RequireAuth'
 import AppLayout from '../layouts/AppLayout'
 import CalendarPage from '../pages/CalendarPage'
 import LoginPage from '../pages/LoginPage'
+import MembersPage from '../pages/MembersPage'
 import NotFoundPage from '../pages/NotFoundPage'
 import ProjectsPage from '../pages/ProjectsPage'
 import RouteErrorPage from '../pages/RouteErrorPage'
@@ -27,6 +28,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <CalendarPage /> },
           { path: 'projects', element: <ProjectsPage /> },
+          { path: 'members', element: <MembersPage /> },
           { path: '*', element: <NotFoundPage /> },
         ],
       },

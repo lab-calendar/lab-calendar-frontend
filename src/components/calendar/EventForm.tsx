@@ -1,8 +1,11 @@
 import { useId, useState } from 'react'
+import { activeMembers } from '../../api/members'
 import type { CategoryKey } from '../../constants/categories'
 import { useEventForm } from '../../contexts/EventFormContext'
 import { useCategories } from '../../queries/useCategories'
 import { useSaveEvent } from '../../queries/useEventMutations'
+import { useMembers } from '../../queries/useMembers'
+import MemberPicker from '../members/MemberPicker'
 import type { CalendarEvent } from '../../types/domain'
 import { todayIso } from '../../utils/date'
 import styles from './EventForm.module.css'
@@ -53,8 +56,12 @@ function valuesFrom(event: CalendarEvent): EventFormValues {
 function EventForm() {
   const { editingEvent, startCreate } = useEventForm()
   const { data: categories } = useCategories()
+  // 명단은 거들기만 한다. 못 받아 와도 자유 입력으로 일정을 만들 수 있어야 한다.
+  const { data: members } = useMembers()
   const saveEvent = useSaveEvent()
   const fieldId = useId()
+
+  const roster = activeMembers(members)
 
   // 수정 대상이 바뀌면 폼을 그 일정으로 다시 채운다.
   // effect 로 처리하면 렌더가 한 번 더 돌아 이전 값이 잠깐 보이므로 렌더 중에 맞춘다.
@@ -72,11 +79,32 @@ function EventForm() {
 
   const detailField = DETAIL_FIELDS[values.categoryKey]
 
+  // 담당 연구원 칸에만 명단을 붙인다. 제출 단계나 지출 목적은 사람 이름이 아니다.
+  const ownerListId =
+    values.categoryKey === 'lab' && roster.length > 0
+      ? `${fieldId}-owners`
+      : undefined
+
   function update<K extends keyof EventFormValues>(
     key: K,
     value: EventFormValues[K],
   ) {
     setValues((previous) => ({ ...previous, [key]: value }))
+  }
+
+  /**
+   * 명단에서 고른 이름을 참석자 입력에 넣거나 뺀다 (KAN-74).
+   *
+   * 입력칸의 글이 늘 기준이다. 고른 사람을 따로 들고 있으면 손으로 지운 이름이
+   * 어딘가에 선택된 채 남아 두 곳이 어긋난다.
+   */
+  function toggleParticipant(name: string) {
+    const names = parseParticipants(values.participants)
+    const next = names.includes(name)
+      ? names.filter((selected) => selected !== name)
+      : [...names, name]
+
+    update('participants', next.join(', '))
   }
 
   function handleSubmit(submitEvent: React.FormEvent) {
@@ -175,8 +203,20 @@ function EventForm() {
           className={styles.input}
           value={values.detail}
           placeholder={detailField.hint}
+          /*
+           * 담당 연구원은 명단에서 이름을 제안한다 (KAN-74). datalist 라 목록에 없는
+           * 이름도 그대로 칠 수 있고, 브라우저가 그리므로 폼이 길어지지 않는다.
+           */
+          list={ownerListId}
           onChange={(changeEvent) => update('detail', changeEvent.target.value)}
         />
+        {ownerListId ? (
+          <datalist id={ownerListId}>
+            {roster.map((member) => (
+              <option key={member.id} value={member.name} />
+            ))}
+          </datalist>
+        ) : null}
       </div>
 
       <div className={styles.dateRow}>
@@ -250,9 +290,17 @@ function EventForm() {
             update('participants', changeEvent.target.value)
           }
         />
-        {/* 연구원 목록에서 고르는 방식은 KAN-41 이후 */}
+        <MemberPicker
+          members={roster}
+          selectedNames={parseParticipants(values.participants)}
+          onToggle={toggleParticipant}
+          describedById={`${fieldId}-participants-hint`}
+        />
+
         <p id={`${fieldId}-participants-hint`} className={styles.hint}>
-          쉼표로 구분해 입력합니다.
+          {roster.length > 0
+            ? '쉼표로 구분해 입력하거나, 명단에서 눌러 넣고 뺍니다. 명단에 없는 외부 인원은 직접 입력합니다.'
+            : '쉼표로 구분해 입력합니다. 구성원 화면에 명단을 등록해 두면 여기서 골라 넣을 수 있습니다.'}
         </p>
       </div>
 
