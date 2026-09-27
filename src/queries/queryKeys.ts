@@ -9,6 +9,8 @@ export const queryKeys = {
 
   projects: ['projects'] as const,
 
+  members: ['members'] as const,
+
   events: {
     all: ['events'] as const,
     list: (range: DateRange | null) => ['events', 'list', range] as const,

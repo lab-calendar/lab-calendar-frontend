@@ -6,6 +6,13 @@ export type ApiErrorKind =
   /** 권한 부족 — 조회 등급이 쓰기를 시도한 경우 등 (403) */
   | 'FORBIDDEN'
   | 'NOT_FOUND'
+  /**
+   * 지금 상태에서는 할 수 없는 요청 (409).
+   *
+   * 입력이 틀린 것이 아니라 데이터가 얽혀 있어서 거절된 경우다 — 참석 이력이 있는
+   * 구성원 삭제처럼. 고쳐 쓸 방법이 따로 있으므로 화면이 안내를 덧붙인다.
+   */
+  | 'CONFLICT'
   /** 요청 값 검증 실패 (400) */
   | 'VALIDATION'
   | 'SERVER'
@@ -40,6 +47,7 @@ const MESSAGES: Record<ApiErrorKind, string> = {
   UNAUTHORIZED: '인증이 필요합니다. 비밀번호를 다시 입력해 주세요.',
   FORBIDDEN: '이 작업을 수행할 권한이 없습니다.',
   NOT_FOUND: '요청한 정보를 찾을 수 없습니다.',
+  CONFLICT: '지금 상태에서는 이 작업을 할 수 없습니다.',
   VALIDATION: '입력한 내용을 다시 확인해 주세요.',
   SERVER: '서버에 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.',
   NETWORK: '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
@@ -51,6 +59,7 @@ function kindFromStatus(status: number): ApiErrorKind {
   if (status === 401) return 'UNAUTHORIZED'
   if (status === 403) return 'FORBIDDEN'
   if (status === 404) return 'NOT_FOUND'
+  if (status === 409) return 'CONFLICT'
   if (status >= 500) return 'SERVER'
   return 'UNKNOWN'
 }

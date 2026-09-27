@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   parseParticipants,
+  toggleParticipantName,
   validateEventForm,
   type EventFormValues,
 } from './eventFormValidation'
@@ -85,5 +86,24 @@ describe('parseParticipants', () => {
 
   it('비어 있으면 빈 배열을 준다', () => {
     expect(parseParticipants('   ')).toEqual([])
+  })
+})
+
+describe('toggleParticipantName', () => {
+  it('없던 이름은 뒤에 붙인다', () => {
+    expect(toggleParticipantName('', '홍길동')).toBe('홍길동')
+    expect(toggleParticipantName('홍길동', '김철수')).toBe('홍길동, 김철수')
+  })
+
+  it('있던 이름은 뺀다', () => {
+    expect(toggleParticipantName('홍길동, 김철수', '홍길동')).toBe('김철수')
+    expect(toggleParticipantName('홍길동', '홍길동')).toBe('')
+  })
+
+  it('손으로 친 이름과 순서를 건드리지 않는다', () => {
+    // 명단에 없는 외부 인원이 앞에 있어도 자리를 지킨다
+    expect(toggleParticipantName('외부 연구원,  김철수 ', '홍길동')).toBe(
+      '외부 연구원, 김철수, 홍길동',
+    )
   })
 })

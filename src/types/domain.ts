@@ -14,6 +14,22 @@ export type Category = {
   name: string
 }
 
+/** 랩실 구성원 등록·수정이 다루는 값 (KAN-41). */
+export type MemberInput = {
+  name: string
+  /**
+   * 재직 중인지.
+   *
+   * 떠난 사람도 지우지 않고 남긴다 — 지난 일정의 참석자였던 기록이 사라지면 안 된다.
+   * 고르는 자리에는 재직 중인 사람만 올린다.
+   */
+  active: boolean
+}
+
+export type Member = MemberInput & {
+  id: string
+}
+
 /** 일정이 어디서 만들어졌는지 (기획서 3.1 자동 생성, 3.2 구글 연동) */
 export type EventSource = 'MANUAL' | 'AUTO_GENERATED' | 'GOOGLE_SYNC'
 
