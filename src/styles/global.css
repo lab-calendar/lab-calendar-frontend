@@ -26,9 +26,27 @@ body {
    * 배경이 눈에 띄면 그것만으로 일정을 읽는 데 방해가 된다.
    */
   background: var(--color-bg);
+  /*
+   * 패널 뒤에 색 번짐 세 개를 깐다 (KAN-73). 유리가 이 색을 흐리게 받아야 재질로
+   * 읽힌다. 크기는 화면에 맞춰 늘고 줄되, 좁은 화면에서도 패널 몇 개에는 걸치도록
+   * 하한을 둔다. 위치는 사이드바 위쪽 · 캘린더 오른쪽 · 아래 가운데.
+   */
   background-image:
-    radial-gradient(120% 90% at 12% 0%, var(--color-bg-tint-cool) 0%, transparent 58%),
-    radial-gradient(90% 80% at 100% 100%, var(--color-bg-tint-warm) 0%, transparent 62%);
+    radial-gradient(
+      clamp(260px, 42vw, 680px) clamp(260px, 42vw, 680px) at 6% 16%,
+      var(--backdrop-blue) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      clamp(260px, 40vw, 640px) clamp(260px, 40vw, 640px) at 94% 34%,
+      var(--backdrop-violet) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      clamp(240px, 36vw, 580px) clamp(240px, 36vw, 580px) at 48% 104%,
+      var(--backdrop-teal) 0%,
+      transparent 70%
+    );
   background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

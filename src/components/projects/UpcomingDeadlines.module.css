@@ -90,10 +90,18 @@
   white-space: nowrap;
 }
 
+/* 배경 번짐 위에 바로 놓이지 않도록 유리 위에 둔다 (KAN-73) */
 .empty {
   margin: 0 0 var(--space-3);
+  padding: var(--space-2) var(--space-3);
   font-size: var(--font-size-xs);
   color: var(--color-text-subtle);
+  border-radius: var(--radius-md);
+  background: var(--glass-fill);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
 }
 
 .link {

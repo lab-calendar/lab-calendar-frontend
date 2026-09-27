@@ -43,4 +43,44 @@ describe('formatEventLabel', () => {
   it('덧붙일 값이 없으면 제목만 쓴다', () => {
     expect(formatEventLabel(event({ title: '연구실 청소' }))).toBe('연구실 청소')
   })
+
+  describe('과제에서 자동으로 만든 준비 기간', () => {
+    it('기획서 문구대로 작성 요망과 준비 시작을 붙인다', () => {
+      // 기획서 3.1 — "[작성 요망] BRL 과제 연차보고서 준비 시작"
+      const label = formatEventLabel(
+        event({
+          source: 'AUTO_GENERATED',
+          title: 'BRL 과제',
+          detail: '연차보고서',
+        }),
+      )
+
+      expect(label).toBe('[작성 요망] BRL 과제 연차보고서 준비 시작')
+    })
+
+    it('제출 단계가 없으면 과제명만 넣는다', () => {
+      const label = formatEventLabel(
+        event({ source: 'AUTO_GENERATED', title: 'BRL 과제' }),
+      )
+
+      expect(label).toBe('[작성 요망] BRL 과제 준비 시작')
+    })
+
+    it('공백뿐인 제출 단계는 없는 것으로 본다', () => {
+      // 두 칸 띄어진 "BRL 과제  준비 시작" 이 되지 않게
+      const label = formatEventLabel(
+        event({ source: 'AUTO_GENERATED', title: 'BRL 과제', detail: '  ' }),
+      )
+
+      expect(label).toBe('[작성 요망] BRL 과제 준비 시작')
+    })
+
+    it('손으로 넣은 과제 일정은 그대로 둔다', () => {
+      const label = formatEventLabel(
+        event({ source: 'MANUAL', title: 'BRL 과제', detail: '연차보고서' }),
+      )
+
+      expect(label).toBe('BRL 과제 (연차보고서)')
+    })
+  })
 })

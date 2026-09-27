@@ -1,6 +1,6 @@
 import { useId, useState } from 'react'
 import { activeMembers } from '../../api/members'
-import type { CategoryKey } from '../../constants/categories'
+import { CATEGORY_MARKS, type CategoryKey } from '../../constants/categories'
 import { useEventForm } from '../../contexts/EventFormContext'
 import { useCategories } from '../../queries/useCategories'
 import { useSaveEvent } from '../../queries/useEventMutations'
@@ -11,6 +11,7 @@ import { todayIso } from '../../utils/date'
 import styles from './EventForm.module.css'
 import {
   parseParticipants,
+  toggleParticipantName,
   validateEventForm,
   type EventFormErrors,
   type EventFormValues,
@@ -95,16 +96,14 @@ function EventForm() {
   /**
    * 명단에서 고른 이름을 참석자 입력에 넣거나 뺀다 (KAN-74).
    *
-   * 입력칸의 글이 늘 기준이다. 고른 사람을 따로 들고 있으면 손으로 지운 이름이
-   * 어딘가에 선택된 채 남아 두 곳이 어긋난다.
+   * 직전 값에서 계산한다. 렌더 시점의 값을 읽으면, 리렌더 사이에 두 번 누를 때 뒤의
+   * 클릭이 앞의 선택을 덮어써 한 명이 조용히 사라진다.
    */
   function toggleParticipant(name: string) {
-    const names = parseParticipants(values.participants)
-    const next = names.includes(name)
-      ? names.filter((selected) => selected !== name)
-      : [...names, name]
-
-    update('participants', next.join(', '))
+    setValues((previous) => ({
+      ...previous,
+      participants: toggleParticipantName(previous.participants, name),
+    }))
   }
 
   function handleSubmit(submitEvent: React.FormEvent) {
@@ -153,25 +152,36 @@ function EventForm() {
         ) : null}
       </div>
 
-      <div className={styles.field}>
-        <label className={styles.label} htmlFor={`${fieldId}-category`}>
-          항목 유형
-        </label>
-        <select
-          id={`${fieldId}-category`}
-          className={styles.select}
-          value={values.categoryKey}
-          onChange={(changeEvent) =>
-            update('categoryKey', changeEvent.target.value as CategoryKey)
-          }
-        >
+      {/*
+        드롭다운 대신 칩으로 펼쳐 둔다. 선택지가 셋뿐이라 한눈에 보이는 편이 빠르고,
+        기본 드롭다운은 펼친 목록을 운영체제가 그려 화면의 재질을 따라오지 못한다.
+        안은 라디오 버튼이라 키보드 조작과 스크린 리더 읽기는 그대로다.
+      */}
+      <fieldset className={styles.typeField}>
+        <legend className={styles.label}>항목 유형</legend>
+        <div className={styles.typeGroup}>
           {(categories ?? []).map((category) => (
-            <option key={category.id} value={category.key}>
+            <label
+              key={category.id}
+              className={styles.typeChip}
+              data-category={category.key}
+            >
+              <input
+                type="radio"
+                className={styles.typeInput}
+                name={`${fieldId}-category`}
+                value={category.key}
+                checked={values.categoryKey === category.key}
+                onChange={() => update('categoryKey', category.key)}
+              />
+              <span className={styles.typeMark} aria-hidden="true">
+                {CATEGORY_MARKS[category.key]}
+              </span>
               {category.name}
-            </option>
+            </label>
           ))}
-        </select>
-      </div>
+        </div>
+      </fieldset>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor={`${fieldId}-title`}>

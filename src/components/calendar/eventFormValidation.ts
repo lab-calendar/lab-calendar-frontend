@@ -35,6 +35,21 @@ export function validateEventForm(values: EventFormValues): EventFormErrors {
   return errors
 }
 
+/**
+ * 참석자 입력에서 이름 하나를 넣거나 뺀다 (KAN-74 명단에서 고르기).
+ *
+ * 입력칸의 글을 받아 새 글을 돌려준다 — 고른 사람을 따로 들고 있으면 손으로 지운
+ * 이름이 어딘가에 선택된 채 남아 두 곳이 어긋난다.
+ */
+export function toggleParticipantName(input: string, name: string): string {
+  const names = parseParticipants(input)
+  const next = names.includes(name)
+    ? names.filter((selected) => selected !== name)
+    : [...names, name]
+
+  return next.join(', ')
+}
+
 /** 쉼표로 구분한 입력을 이름 배열로 바꾼다. 공백과 중복은 정리한다. */
 export function parseParticipants(input: string): string[] {
   const names = input
