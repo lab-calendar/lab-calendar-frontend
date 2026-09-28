@@ -23,6 +23,31 @@ export function formatEventLabel(event: CalendarEvent): string {
     : `${event.title} (${event.detail})`
 }
 
+/** 이름을 이만큼만 늘어놓고 나머지는 수로 접는다. 스무 명짜리 회의가 실제로 있다. */
+const HOVER_NAME_LIMIT = 8
+
+/**
+ * 달력 칩에 마우스를 올렸을 때 나올 문구 (KAN-61).
+ *
+ * 칸이 좁아 칩에는 무엇을 샀는지(카드 종류·구분)까지만 적는다. 정산할 때 정작
+ * 궁금한 것은 "누가 있었나" 인데, 그걸 보려고 매번 일정을 열어야 하면 열 건을
+ * 확인하는 데 열 번을 눌러야 한다.
+ *
+ * 마우스가 없는 환경에서는 이 문구가 보이지 않는다. 그쪽은 칩을 눌러 여는 상세
+ * 팝업이 같은 내용을 더 자세히 보여주므로, 여기서 잃는 정보는 없다.
+ */
+export function formatEventHoverText(event: CalendarEvent): string {
+  const label = formatEventLabel(event)
+  if (event.participants.length === 0) return label
+
+  const shown = event.participants.slice(0, HOVER_NAME_LIMIT).join(', ')
+  const hidden = event.participants.length - HOVER_NAME_LIMIT
+  const names = hidden > 0 ? `${shown} 외 ${hidden}명` : shown
+
+  // 줄을 바꿔 둔다 — 한 줄로 이으면 이름이 제목에 붙어 어디까지가 제목인지 흐려진다
+  return `${label}\n참석 ${names} · 총 ${event.participants.length}명`
+}
+
 /**
  * 서버가 저장해 둔 제목과 같은 규칙이다 (백엔드 PreparationEvent).
  *

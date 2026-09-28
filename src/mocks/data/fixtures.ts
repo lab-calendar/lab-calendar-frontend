@@ -118,10 +118,15 @@ export function seedEvents(today: string): MockEvent[] {
      * 출처는 GOOGLE_SYNC 다. 엑셀 업로드로 들어온 카드 내역도 서버가 이 값으로 적는다
      * (KAN-58). CARD_IMPORT 로의 전환은 데이터 마이그레이션이 따르는 후속 작업이다.
      */
+    /*
+     * 제목은 과제명(장부 B열), detail 은 구분(D열)이다 — 엑셀에서 들어온 카드 내역을
+     * 서버가 그렇게 내려준다 (KAN-57 해석, KAN-58 반영). 달력 칩은 이 둘만 보여주고
+     * 참석 인원은 마우스를 올렸을 때 나온다.
+     */
     {
       id: '4',
-      title: '[법인카드 A]',
-      detail: '다과비',
+      title: 'BRL 과제',
+      detail: '저녁',
       startDate: addDays(today, 2),
       endDate: addDays(today, 2),
       categoryKey: 'card',
@@ -131,13 +136,29 @@ export function seedEvents(today: string): MockEvent[] {
     },
     {
       id: '5',
-      title: '[연구비카드 B]',
-      detail: '저녁',
+      title: '컬러 과제',
+      detail: '초과',
       startDate: addDays(today, -2),
       endDate: addDays(today, -2),
       categoryKey: 'card',
       memo: null,
       participants: ['이영희', '박민수', '김철수'],
+      source: 'GOOGLE_SYNC',
+    },
+    /*
+     * 구분이 빈 행 — 실제 장부에서 12% 다. 서버가 detail 을 null 로 내려주므로
+     * 칩에는 과제명만 남는다. 콜론만 덩그러니 남는 모양이 나오지 않는지 여기서 본다.
+     */
+    {
+      id: '6',
+      title: '창의도전 과제',
+      detail: null,
+      startDate: addDays(today, -1),
+      endDate: addDays(today, -1),
+      categoryKey: 'card',
+      memo: null,
+      // 명단에 없는 이름도 섞인다 — 장부의 참석자는 외부 인원을 포함한다
+      participants: ['홍길동', '이영희', '박민수', '김철수', '김도연'],
       source: 'GOOGLE_SYNC',
     },
   ]

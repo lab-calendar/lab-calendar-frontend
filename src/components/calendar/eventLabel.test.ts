@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { CalendarEvent } from '../../types/domain'
-import { formatEventLabel } from './eventLabel'
+import { formatEventHoverText, formatEventLabel } from './eventLabel'
 
 function event(overrides: Partial<CalendarEvent>): CalendarEvent {
   return {
@@ -82,5 +82,64 @@ describe('formatEventLabel', () => {
 
       expect(label).toBe('BRL 과제 (연차보고서)')
     })
+  })
+})
+
+describe('formatEventHoverText (KAN-61)', () => {
+  it('칩 문구 아래에 참석 인원을 붙인다', () => {
+    // 카드 칩에는 카드 종류와 구분만 들어간다. 정산할 때 궁금한 인원은 여기로 나온다.
+    const hover = formatEventHoverText(
+      event({
+        categoryKey: 'card',
+        title: 'BRL 과제',
+        detail: '저녁',
+        participants: ['홍길동', '김철수', '이영희'],
+      }),
+    )
+
+    expect(hover).toBe('BRL 과제: 저녁\n참석 홍길동, 김철수, 이영희 · 총 3명')
+  })
+
+  it('참석자가 없으면 칩 문구만 쓴다', () => {
+    expect(
+      formatEventHoverText(
+        event({ categoryKey: 'card', title: 'BRL 과제', detail: '점심' }),
+      ),
+    ).toBe('BRL 과제: 점심')
+  })
+
+  it('사람이 많으면 앞쪽만 늘어놓고 나머지는 수로 접는다', () => {
+    // 실제 장부에 스무 명짜리 회의가 있다. 그대로 이으면 말풍선이 화면을 덮는다.
+    const participants = Array.from({ length: 11 }, (_, index) => `참석자${index + 1}`)
+
+    const hover = formatEventHoverText(
+      event({ categoryKey: 'card', title: '컬러 과제', detail: '초과', participants }),
+    )
+
+    expect(hover).toContain('참석자8 외 3명')
+    expect(hover).toContain('· 총 11명')
+    expect(hover).not.toContain('참석자9,')
+  })
+
+  it('구분이 없으면 과제명만 남고 인원은 그대로 붙는다', () => {
+    // 실제 장부에서 구분이 빈 행이 12% 라, 서버가 detail 을 null 로 내려준다
+    const hover = formatEventHoverText(
+      event({ categoryKey: 'card', title: 'BRL 과제', participants: ['홍길동'] }),
+    )
+
+    expect(hover).toBe('BRL 과제\n참석 홍길동 · 총 1명')
+  })
+
+  it('카드가 아닌 일정에도 같은 방식으로 붙는다', () => {
+    const hover = formatEventHoverText(
+      event({
+        categoryKey: 'lab',
+        title: '정기 주간 랩미팅',
+        detail: '홍길동',
+        participants: ['홍길동', '김철수'],
+      }),
+    )
+
+    expect(hover).toBe('정기 주간 랩미팅 (홍길동)\n참석 홍길동, 김철수 · 총 2명')
   })
 })
