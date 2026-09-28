@@ -114,6 +114,9 @@ export function seedEvents(today: string): MockEvent[] {
     /*
      * 카드 지출은 조회 등급에게 보이면 안 되는 데이터다 (KAN-35). 목에도 넣어 두어야
      * 등급을 바꿔 가며 "정말 빠지는지" 를 눈으로 확인할 수 있다.
+     *
+     * 출처는 GOOGLE_SYNC 다. 엑셀 업로드로 들어온 카드 내역도 서버가 이 값으로 적는다
+     * (KAN-58). CARD_IMPORT 로의 전환은 데이터 마이그레이션이 따르는 후속 작업이다.
      */
     {
       id: '4',
@@ -124,7 +127,7 @@ export function seedEvents(today: string): MockEvent[] {
       categoryKey: 'card',
       memo: null,
       participants: ['홍길동', '김철수'],
-      source: 'CARD_IMPORT',
+      source: 'GOOGLE_SYNC',
     },
     {
       id: '5',
@@ -135,7 +138,7 @@ export function seedEvents(today: string): MockEvent[] {
       categoryKey: 'card',
       memo: null,
       participants: ['이영희', '박민수', '김철수'],
-      source: 'CARD_IMPORT',
+      source: 'GOOGLE_SYNC',
     },
   ]
 }

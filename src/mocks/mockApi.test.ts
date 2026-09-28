@@ -259,3 +259,28 @@ describe('일부러 망가뜨리기', () => {
     await expect(fetchProjects()).resolves.toBeInstanceOf(Array)
   })
 })
+
+describe('테스트 사이 상태 정리', () => {
+  /*
+   * 목은 새로고침을 넘겨 로그인을 기억하려고 세션 저장소를 쓴다 (db.ts). 테스트 사이에
+   * 그 값이 남으면 앞 테스트의 등급이 뒤 테스트로 흘러, 로그아웃 상태를 기대하는
+   * 테스트가 혼자 통과하다가 파일 전체를 돌릴 때만 깨진다. 실행 순서에 따라 결과가
+   * 달라지는 실패는 원인을 찾기가 가장 어렵다.
+   */
+  it('앞 테스트의 로그인이 세션 저장소에 남지 않는다', async () => {
+    await signInAs('editor')
+
+    expect(window.sessionStorage.getItem('lab-calendar:mock-tier')).toBe(
+      'EDITOR',
+    )
+  })
+
+  it('다음 테스트는 로그아웃 상태로 시작한다', async () => {
+    expect(window.sessionStorage.getItem('lab-calendar:mock-tier')).toBeNull()
+
+    const failure = await fetchProjects().catch((error: unknown) => error)
+
+    expect(failure).toBeInstanceOf(ApiError)
+    expect(failure).toMatchObject({ kind: 'UNAUTHORIZED' })
+  })
+})

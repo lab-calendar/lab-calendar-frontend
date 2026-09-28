@@ -58,10 +58,19 @@ function freshDb(today: string): Db {
 
 let db = freshDb(todayIso())
 
-/** 테스트마다 같은 자리에서 시작하도록 되돌린다. 날짜를 고정하면 결과도 고정된다. */
-export function resetDb(options: { today?: string } = {}): void {
+/**
+ * 테스트마다 같은 자리에서 시작하도록 되돌린다. 날짜를 고정하면 결과도 고정된다.
+ *
+ * 저장소까지 비운다. 메모리의 tier 만 지우면 세션 저장소에 남은 값이 다음 리셋의
+ * `restoreTier()` 로 되살아나, 로그인하지 않은 채로 시작해야 할 테스트가 앞 테스트의
+ * 등급을 물려받는다.
+ */
+export function resetDb(
+  options: { today?: string; tier?: MockTier | null } = {},
+): void {
   db = freshDb(options.today ?? todayIso())
-  db.tier = null
+  db.tier = options.tier ?? null
+  rememberTier(db.tier)
 }
 
 export function mockDb(): Db {

@@ -56,4 +56,16 @@ function render() {
   )
 }
 
-void startMockApi().then(render)
+/*
+ * 목을 켜지 못해도 화면은 뜬다. 여기서 멈추면 빈 페이지만 남아서, 워커 등록이 막힌
+ * 것인지 앱이 깨진 것인지 구분할 방법이 없다. 목 없이 뜬 앱은 진짜 API 를 보므로
+ * 백엔드가 없으면 오류 화면이 나오는데, 그게 빈 화면보다 훨씬 많은 것을 알려 준다.
+ */
+void startMockApi()
+  .catch((error: unknown) => {
+    console.error(
+      '[mock] 목 API 를 켜지 못했습니다. 실제 API 로 진행합니다.',
+      error,
+    )
+  })
+  .then(render)
