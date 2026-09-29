@@ -68,6 +68,12 @@
   display: none;
   align-items: center;
   justify-content: center;
+  /*
+   * 헤더가 가로 flex 라 좁은 화면에서 이 버튼부터 눌린다. 390px 에서 22px 까지
+   * 찌그러져 손가락으로 겨냥하기 어려웠다 (WCAG 2.5.8 의 최소 24px 도 못 넘긴다).
+   * 메뉴를 여는 유일한 수단이라 줄어들 자리가 아니다.
+   */
+  flex: 0 0 auto;
   width: 34px;
   height: 34px;
   margin-left: calc(var(--space-2) * -1);
