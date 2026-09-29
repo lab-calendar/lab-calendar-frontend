@@ -10,6 +10,8 @@ type SidebarProps = {
   ref?: React.Ref<HTMLElement>
   /** 1024px 미만에서 드로어가 열려 있는지 여부 */
   open: boolean
+  /** 데스크톱에서 접어 둔 상태 (KAN-81). 접히면 탭 이동 대상에서도 빠진다 */
+  collapsed?: boolean
 }
 
 /**
@@ -22,7 +24,7 @@ type SidebarProps = {
  * 조회 등급에서는 등록 폼을 내린다. 남겨 두면 다 채우고 저장을 눌렀을 때에야
  * 403 으로 거절당한다 (KAN-36).
  */
-function Sidebar({ open, ref }: SidebarProps) {
+function Sidebar({ open, collapsed = false, ref }: SidebarProps) {
   const isCalendar = useMatch(ROUTES.calendar) !== null
   const canEdit = useCanEdit()
 
@@ -33,7 +35,13 @@ function Sidebar({ open, ref }: SidebarProps) {
       /* 안에 포커스 받을 것이 없을 때 컨테이너 자신이 받는다 */
       tabIndex={-1}
       aria-label="제어 영역"
-      className={open ? `${styles.sidebar} ${styles.open}` : styles.sidebar}
+      className={[
+        styles.sidebar,
+        open ? styles.open : '',
+        collapsed ? styles.collapsed : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
       {isCalendar ? (
         <>

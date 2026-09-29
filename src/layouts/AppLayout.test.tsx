@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { lazy, type ReactElement } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { useEventForm } from '../contexts/EventFormContext'
 import { renderWithRouter } from '../test/renderWithRouter'
 import AppLayout from './AppLayout'
 
@@ -167,3 +168,85 @@ describe('AppLayout 화면 코드 기다리기 (KAN-75)', () => {
     expect(within(main).queryByRole('status')).toBeNull()
   })
 })
+
+describe('AppLayout 제어 영역 접기 (KAN-81)', () => {
+  const toggle = () =>
+    screen.getByRole('button', { name: /제어 영역 (접기|펴기)/ })
+
+  beforeEach(() => window.localStorage.clear())
+  afterEach(() => window.localStorage.clear())
+
+  it('기본은 펴진 상태다', () => {
+    renderWithRouter(<AppLayout />)
+
+    expect(toggle()).toHaveAccessibleName('제어 영역 접기')
+    expect(toggle()).toHaveAttribute('aria-expanded', 'true')
+    expect(toggle()).toHaveAttribute('aria-controls', 'sidebar')
+  })
+
+  it('누르면 접히고 다시 누르면 펴진다', async () => {
+    const user = userEvent.setup()
+    renderWithRouter(<AppLayout />)
+
+    await user.click(toggle())
+    expect(toggle()).toHaveAccessibleName('제어 영역 펴기')
+    expect(toggle()).toHaveAttribute('aria-expanded', 'false')
+
+    await user.click(toggle())
+    expect(toggle()).toHaveAttribute('aria-expanded', 'true')
+  })
+
+  it('접은 상태를 기억한다', async () => {
+    // 넓은 달력을 보려고 접은 사람이 새로고침마다 다시 접어야 하면 소용이 없다
+    const user = userEvent.setup()
+    const { unmount } = renderWithRouter(<AppLayout />)
+
+    await user.click(toggle())
+    unmount()
+
+    renderWithRouter(<AppLayout />)
+    expect(toggle()).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('접힌 채로 일정을 고르면 폼을 보여주려고 다시 펴진다', async () => {
+    // 접힌 자리에서 폼이 열리면 아무 일도 일어나지 않은 것처럼 보인다
+    const user = userEvent.setup()
+    renderWithRouter(
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route index element={<EditTrigger />} />
+        </Route>
+      </Routes>,
+    )
+
+    await user.click(toggle())
+    expect(toggle()).toHaveAttribute('aria-expanded', 'false')
+
+    await user.click(await screen.findByRole('button', { name: '수정 열기' }))
+    expect(toggle()).toHaveAttribute('aria-expanded', 'true')
+  })
+})
+
+/** 캘린더 상세 팝업이 하는 일 — 컨텍스트로 폼에 일정을 넘긴다. */
+function EditTrigger() {
+  const { startEdit } = useEventForm()
+
+  return (
+    <button
+      type="button"
+      onClick={() =>
+        startEdit({
+          id: '1',
+          title: '정기 주간 랩미팅',
+          startDate: '2026-09-10',
+          endDate: '2026-09-10',
+          categoryKey: 'lab',
+          participants: [],
+          source: 'MANUAL',
+        })
+      }
+    >
+      수정 열기
+    </button>
+  )
+}
