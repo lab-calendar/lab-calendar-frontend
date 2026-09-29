@@ -1,4 +1,3 @@
-import CardSyncStatus from '../components/calendar/CardSyncStatus'
 import MonthCalendar from '../components/calendar/MonthCalendar'
 import DeadlineAlert from '../components/projects/DeadlineAlert'
 import UpcomingDeadlines from '../components/projects/UpcomingDeadlines'
@@ -20,9 +19,6 @@ function CalendarPage() {
 
       {/* 마감이 급한 것이 있을 때만, 하루에 한 번 앞을 막아선다 (KAN-53) */}
       <DeadlineAlert />
-
-      {/* 카드 내역이 언제까지 들어왔는지. 동기화가 멈춰 있으면 여기서 알린다 (KAN-61) */}
-      <CardSyncStatus />
 
       <div className={styles.fillSurface}>
         <MonthCalendar />

@@ -1,5 +1,4 @@
 import { authHandlers } from './auth'
-import { cardExpenseHandlers } from './cardExpenses'
 import { categoryHandlers } from './categories'
 import { eventHandlers } from './events'
 import { memberHandlers } from './members'
@@ -13,7 +12,6 @@ import { projectHandlers } from './projects'
  */
 export const handlers = [
   ...authHandlers,
-  ...cardExpenseHandlers,
   ...categoryHandlers,
   ...eventHandlers,
   ...projectHandlers,

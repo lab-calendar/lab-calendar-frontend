@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
 import { login, logout } from '../api/auth'
-import { fetchCardSync, syncCardExpenses } from '../api/cardExpenses'
 import { fetchCategories } from '../api/categories'
 import { ApiError } from '../api/errors'
 import { createEvent, fetchEvents } from '../api/events'
@@ -241,74 +240,6 @@ describe('구성원', () => {
     expect((await fetchMembers()).map((member) => member.name)).not.toContain(
       '최지우',
     )
-  })
-})
-
-describe('카드 내역 동기화', () => {
-  it('마지막 결과를 요약해 내려준다', async () => {
-    await signInAs('editor')
-
-    const sync = await fetchCardSync()
-
-    expect(sync).toMatchObject({
-      status: 'SUCCESS',
-      processedCount: expect.any(Number),
-      skippedCount: expect.any(Number),
-    })
-    // 서버가 값 없음을 null 로 보내는 자리를 어댑터가 undefined 로 맞춘다
-    expect(sync.message).toBeUndefined()
-  })
-
-  it('수동 동기화가 마지막 결과를 갱신한다', async () => {
-    await signInAs('editor')
-    const before = await fetchCardSync()
-
-    const result = await syncCardExpenses()
-
-    expect(result.status).toBe('SUCCESS')
-    expect(result.lastSyncedAt).not.toBe(before.lastSyncedAt)
-    // 다음 조회도 같은 값을 준다 — 갱신이 응답에만 있고 저장되지 않으면 새로고침에 되돌아간다
-    expect(await fetchCardSync()).toMatchObject({
-      lastSyncedAt: result.lastSyncedAt,
-    })
-  })
-
-  it('양식이 깨진 행은 장부를 고치기 전까지 계속 건너뛴다', async () => {
-    await signInAs('editor')
-    const before = await fetchCardSync()
-
-    const result = await syncCardExpenses()
-
-    expect(result.skippedCount).toBe(before.skippedCount)
-  })
-
-  it('조회 등급은 동기화 이력도 받지 못한다', async () => {
-    // 지출을 가리면서 "3건 반영됨" 을 알려 주면 가린 의미가 없다 (KAN-35)
-    await signInAs('viewer')
-
-    await expect(fetchCardSync()).rejects.toMatchObject({ kind: 'FORBIDDEN' })
-  })
-
-  it('조회 등급은 수동 동기화도 할 수 없다', async () => {
-    await signInAs('viewer')
-
-    await expect(syncCardExpenses()).rejects.toMatchObject({ kind: 'FORBIDDEN' })
-  })
-
-  it('실패한 동기화는 이력에 실패로 남는다', async () => {
-    /*
-     * 실패를 응답으로만 알리면 새로고침에 경고 배너가 사라진다. 서버는 SyncLog 에
-     * 적어 두므로(KAN-60) 목도 같은 자리에 남겨야 화면이 실제와 같게 움직인다.
-     */
-    await signInAs('editor')
-    setFailing(['cardExpenses'])
-
-    await expect(syncCardExpenses()).rejects.toMatchObject({ kind: 'SERVER' })
-
-    setFailing([])
-    const sync = await fetchCardSync()
-    expect(sync.status).toBe('FAILED')
-    expect(sync.message).toBeTruthy()
   })
 })
 

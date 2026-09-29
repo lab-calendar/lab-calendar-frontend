@@ -4,7 +4,7 @@
  * 로딩과 오류 화면(KAN-63)은 서버가 잘 돌 때는 한순간도 볼 수 없다. 그 화면들을
  * 눈으로 확인할 방법이 없으면, 만들어 놓고 맞는지 모르는 채로 두게 된다.
  *
- * 주소창에서: `?mockDelay=1500`, `?mockFail=events,cardExpenses`
+ * 주소창에서: `?mockDelay=1500`, `?mockFail=events,projects`
  * 콘솔에서: `mockApi.delay(1500)`, `mockApi.fail('events')`, `mockApi.reset()`
  */
 
@@ -14,7 +14,6 @@ export const MOCK_DOMAINS = [
   'events',
   'projects',
   'members',
-  'cardExpenses',
 ] as const
 
 export type MockDomain = (typeof MOCK_DOMAINS)[number]

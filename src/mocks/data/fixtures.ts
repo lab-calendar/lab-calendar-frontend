@@ -1,10 +1,5 @@
 import { addDays } from '../../utils/date'
-import type {
-  MockCardSync,
-  MockEvent,
-  MockMember,
-  MockProject,
-} from './types'
+import type { MockEvent, MockMember, MockProject } from './types'
 
 /**
  * 목 서버의 초기 데이터 (KAN-70).
@@ -123,14 +118,15 @@ export function seedEvents(today: string): MockEvent[] {
      * 출처는 GOOGLE_SYNC 다. 엑셀 업로드로 들어온 카드 내역도 서버가 이 값으로 적는다
      * (KAN-58). CARD_IMPORT 로의 전환은 데이터 마이그레이션이 따르는 후속 작업이다.
      *
-     * 제목은 카드 종류(장부 B열), detail 은 구분(D열)이다 — 엑셀에서 들어온 카드
-     * 내역을 서버가 그렇게 내려준다 (KAN-57, KAN-58). 달력 칩은 이 둘만 보여주고
-     * 참석 인원(C열)은 마우스를 올렸을 때 나온다.
+     * 제목은 과제(장부 B열), detail 은 구분 원문(D열)이다 — 엑셀에서 들여온 카드
+     * 내역을 서버가 그렇게 내려준다 (KAN-54 설계 §5). 파일에 카드 종류 열은 없고,
+     * 과제마다 연구비 카드가 따로라 과제명이 곧 카드다. 서버는 대괄호·콜론을 붙이지
+     * 않는다. 달력 칩은 이 둘만 보여주고 참석 인원(C열)은 마우스를 올렸을 때 나온다.
      */
     {
       id: '4',
-      title: '[법인카드 A]',
-      detail: '회의',
+      title: 'BRL',
+      detail: '저녁',
       startDate: addDays(today, 2),
       endDate: addDays(today, 2),
       categoryKey: 'card',
@@ -140,7 +136,7 @@ export function seedEvents(today: string): MockEvent[] {
     },
     {
       id: '5',
-      title: '[연구비카드 B]',
+      title: '과제A',
       detail: '초과',
       startDate: addDays(today, -2),
       endDate: addDays(today, -2),
@@ -150,12 +146,12 @@ export function seedEvents(today: string): MockEvent[] {
       source: 'GOOGLE_SYNC',
     },
     /*
-     * 구분이 빈 행 — 실제 장부에서 12% 다. 서버가 detail 을 null 로 내려주므로
-     * 칩에는 카드 종류만 남는다. 뒤에 군더더기가 붙지 않는지 여기서 본다.
+     * 구분이 빈 행 — 실제 장부에서 318건(12%) 이다. 서버가 detail 을 null 로
+     * 내려주므로 칩에는 과제명만 남는다. 콜론만 덩그러니 남지 않는지 여기서 본다.
      */
     {
       id: '6',
-      title: '[법인카드 A]',
+      title: '창의도전 과제',
       detail: null,
       startDate: addDays(today, -1),
       endDate: addDays(today, -1),
@@ -166,23 +162,4 @@ export function seedEvents(today: string): MockEvent[] {
       source: 'GOOGLE_SYNC',
     },
   ]
-}
-
-/**
- * 카드 내역 동기화의 첫 상태 (KAN-60).
- *
- * 성공한 지 얼마 안 된 상태로 둔다 — 목을 켜면 카드 막대가 이미 달력에 있으므로,
- * "한 번도 안 돌았다"로 두면 화면과 상태가 어긋난다.
- *
- * 건너뛴 행을 한 건 남겨 둔다. 장부에는 양식이 깨진 줄이 늘 섞여 있고, 그 사실을
- * 알려 주는 문구가 화면에 실제로 나오는지 눌러 보지 않고는 알 수 없다.
- */
-export function seedCardSync(today: string): MockCardSync {
-  return {
-    status: 'SUCCESS',
-    lastSyncedAt: `${today}T09:10:00+09:00`,
-    processedCount: 3,
-    skippedCount: 1,
-    message: null,
-  }
 }

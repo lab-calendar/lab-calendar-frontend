@@ -46,7 +46,7 @@ export type CalendarEvent = {
    * 제목 옆에 덧붙는 값. 카테고리에 따라 의미가 다르다 (기획서 2.2 표시 데이터 양식).
    * - project: 제출 단계
    * - lab: 담당 연구원
-   * - card: 구분 (회의 · 초과) — 장부 D열
+   * - card: 구분 (점심 · 저녁 · 초과) — 장부 D열
    */
   detail?: string
   memo?: string
@@ -126,25 +126,4 @@ export type Session =
  */
 export function canEdit(session: Session): boolean {
   return session.authenticated && session.tier === 'EDITOR'
-}
-
-/**
- * 카드 내역 동기화의 마지막 결과 (KAN-60).
- *
- * 구글 문서 양식이 깨지거나 권한이 바뀌면 동기화는 조용히 실패한다. 화면에 아무
- * 일도 일어나지 않아 "달력에 안 뜨는데 왜인지 모르는" 상태가 되므로, 마지막 결과를
- * 받아 두고 실패했으면 그 사실을 사람에게 알린다.
- */
-export type CardSyncStatus = 'SUCCESS' | 'FAILED' | 'NEVER_RUN'
-
-export type CardSync = {
-  status: CardSyncStatus
-  /** 마지막으로 동기화가 끝난 시각. 한 번도 돌지 않았으면 없다. */
-  lastSyncedAt?: string
-  /** 이번 동기화가 달력에 반영한 건수 */
-  processedCount: number
-  /** 양식이 맞지 않아 건너뛴 행 수. 0 보다 크면 장부를 손봐야 한다는 뜻이다. */
-  skippedCount: number
-  /** 실패 사유. 서버가 주지 않으면 없다. */
-  message?: string
 }

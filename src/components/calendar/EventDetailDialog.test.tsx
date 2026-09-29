@@ -80,7 +80,7 @@ describe('EventDetailDialog', () => {
   it('카테고리에 따라 부가 정보의 라벨이 달라진다', () => {
     const { unmount } = renderWithRouter(
       <EventDetailDialog
-        event={event({ categoryKey: 'card', detail: '회의' })}
+        event={event({ categoryKey: 'card', detail: '저녁' })}
         onClose={() => {}}
       />,
     )

@@ -21,7 +21,7 @@ import {
 const DETAIL_FIELDS: Record<CategoryKey, { label: string; hint: string }> = {
   project: { label: '제출 단계', hint: '예: 연차보고서, 최종보고서' },
   lab: { label: '담당 연구원', hint: '예: 홍길동' },
-  card: { label: '구분', hint: '예: 회의, 초과' },
+  card: { label: '구분', hint: '예: 점심, 저녁, 초과' },
 }
 
 

@@ -34,12 +34,3 @@ export type MockMember = {
 }
 
 export type MockTier = 'EDITOR' | 'VIEWER'
-
-/** 카드 내역 동기화의 마지막 결과. 서버의 SyncLog 한 줄에 해당한다 (KAN-60). */
-export type MockCardSync = {
-  status: 'SUCCESS' | 'FAILED' | 'NEVER_RUN'
-  lastSyncedAt: string | null
-  processedCount: number
-  skippedCount: number
-  message: string | null
-}
