@@ -10,11 +10,71 @@
  * 드로어로 빠지므로 본문이 전체 폭을 쓴다.
  */
 .body {
+  /* 접기 손잡이가 사이드바 경계에 붙는다 (KAN-81) */
+  position: relative;
   display: grid;
   grid-template-columns: var(--layout-sidebar-width) minmax(0, 1fr);
   flex: 1;
   min-height: 0;
 }
+
+/*
+ * 접으면 사이드바 폭 자체를 0 으로 둔다 (KAN-81).
+ *
+ * 격자 칸과 사이드바가 같은 변수를 보고 있어 한 곳만 바꾸면 둘 다 따라온다. 칸 폭과
+ * 요소 폭을 따로 줄이면 한쪽이 내용 최소 폭에 걸려 접어도 자리가 남는다.
+ *
+ * 폭 전환은 넣지 않는다. grid-template-columns 전환을 브라우저가 중간에 멈춰 세워
+ * 접히지 않는 일을 겪었고, 접고 펴는 일은 한 번에 끝나는 편이 덜 헷갈린다.
+ */
+@media (min-width: 1024px) {
+  .body[data-sidebar='collapsed'] {
+    --layout-sidebar-width: 0px;
+  }
+}
+
+/*
+ * 접기·펴기 손잡이.
+ *
+ * 사이드바와 본문의 경계 위에 반쯤 걸쳐 둔다. 접힌 뒤에도 같은 자리(왼쪽 끝)에
+ * 남아 있어야 다시 펼 수 있다 — 사이드바 안에 두면 접는 순간 같이 사라진다.
+ */
+.collapseToggle {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--layout-sidebar-width);
+  z-index: var(--z-header);
+  display: grid;
+  place-items: center;
+  /* 손가락으로 누를 자리 (WCAG 2.5.8) */
+  width: 24px;
+  height: 44px;
+  padding: 0;
+  transform: translateX(-50%);
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
+}
+
+.body[data-sidebar='collapsed'] .collapseToggle {
+  left: 0;
+  transform: translateX(var(--space-2));
+}
+
+.collapseToggle:hover {
+  color: var(--color-text);
+  border-color: var(--color-text-subtle);
+}
+
+/*
+ * 손잡이 위치에도 전환을 걸지 않는다.
+ *
+ * left 가 사이드바 폭 변수에서 나오는데, 그 값이 바뀔 때 전환이 옛 값에 붙들려
+ * 손잡이가 접힌 뒤에도 제자리에 남는 일을 겪었다. 접기 자체가 한 번에 끝나므로
+ * 손잡이도 같이 옮겨 가는 편이 자연스럽다.
+ */
 
 .main {
   min-width: 0;
@@ -27,8 +87,14 @@
 }
 
 @media (max-width: 1023px) {
-  .body {
+  .body,
+  .body[data-sidebar='collapsed'] {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* 이 폭에서는 드로어가 여닫는 일을 맡는다. 손잡이가 둘이면 어느 쪽이 맞는지 모른다 */
+  .collapseToggle {
+    display: none;
   }
 
   .backdrop {
