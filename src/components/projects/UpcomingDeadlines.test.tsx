@@ -26,6 +26,8 @@ function project(overrides: Partial<Project> = {}): Project {
     active: true,
     dDay: 10,
     preparationStartDate: '2026-09-05',
+    // 임박 여부는 서버가 정한다. 여기서는 그 규칙(오늘 포함 7일)을 흉내 내 자리를 채운다
+    deadlineImminent: (overrides.dDay ?? 3) >= 0 && (overrides.dDay ?? 3) <= 7,
     ...overrides,
   }
 }

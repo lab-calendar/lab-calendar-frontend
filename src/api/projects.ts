@@ -19,6 +19,7 @@ type ProjectDto = {
   leadTimeDays: number
   active: boolean
   dDay: number
+  deadlineImminent: boolean
   preparationStartDate: string
 }
 
@@ -31,6 +32,7 @@ function toProject(dto: ProjectDto): Project {
     leadTimeDays: dto.leadTimeDays,
     active: dto.active,
     dDay: dto.dDay,
+    deadlineImminent: dto.deadlineImminent,
     preparationStartDate: dto.preparationStartDate,
   }
 }

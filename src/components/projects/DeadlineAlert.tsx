@@ -79,7 +79,7 @@ function DeadlineAlert() {
               <button
                 type="button"
                 className={styles.itemButton}
-                data-urgency={urgencyOf(project.dDay)}
+                data-urgency={urgencyOf(project)}
                 onClick={() => handleGoTo(project.endDate)}
               >
                 <span className={styles.dDay}>

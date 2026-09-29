@@ -98,6 +98,14 @@ export type Project = ProjectInput & {
    * 사람마다 다른 D-Day 를 보게 된다 (KAN-52 완료 조건).
    */
   dDay: number
+  /**
+   * 마감 직전 주간인지. **서버가 판단해서 내려준다.**
+   *
+   * "직전 주간" 의 기준은 서버에 있다(계약 §7.1). 화면에서 `dDay <= 7` 로 다시
+   * 판단하면 서버가 기준을 바꿨을 때 달력의 빨간불과 서버의 판단이 갈린다 —
+   * D-Day 를 서버 값으로 쓰는 것과 같은 이유다 (KAN-52).
+   */
+  deadlineImminent: boolean
   /** 준비 기간 시작일. 서버가 종료일과 리드타임으로 계산한다 (KAN-49 배치). */
   preparationStartDate: string
 }

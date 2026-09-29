@@ -40,6 +40,7 @@ const ACTIVE: Project = {
   leadTimeDays: 3,
   active: true,
   dDay: 20,
+  deadlineImminent: false,
   preparationStartDate: '2026-09-05',
 }
 
@@ -50,6 +51,7 @@ const HIDDEN: Project = {
   leadTimeDays: 2,
   active: false,
   dDay: -67,
+  deadlineImminent: false,
   preparationStartDate: '2026-06-17',
 }
 
