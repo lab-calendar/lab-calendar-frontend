@@ -16,11 +16,11 @@ type EventDetailDialogProps = {
   isDeleting?: boolean
 }
 
-/** 카드/경비는 '사용 목적', 나머지는 카테고리별 의미가 다르다 (기획서 2.2) */
+/** 카드/경비는 장부 D열의 '구분', 나머지는 카테고리별 의미가 다르다 (기획서 2.2) */
 const DETAIL_LABELS: Record<CalendarEvent['categoryKey'], string> = {
   project: '제출 단계',
   lab: '담당 연구원',
-  card: '사용 목적',
+  card: '구분',
 }
 
 /** 사람이 못 고치는 일정은 어디서 바꿔야 하는지까지 알려준다 */
@@ -28,7 +28,9 @@ const SOURCE_NOTICES: Partial<Record<CalendarEvent['source'], string>> = {
   AUTO_GENERATED:
     '과제 종료일에서 역산해 자동 생성된 일정입니다. 여기서 고쳐도 다음 배치에서 되돌아가므로, 과제 관리에서 종료일이나 리드타임을 바꿔 주세요.',
   GOOGLE_SYNC:
-    '구글 공유 문서에서 동기화된 일정입니다. 여기서 고쳐도 다음 동기화에서 되돌아가므로, 원본 문서를 수정해 주세요.',
+    '카드 내역 파일에서 들여온 일정입니다. 여기서 고쳐도 다음 반영에서 되돌아가므로, 엑셀 원본을 고친 뒤 다시 올려 주세요.',
+  CARD_IMPORT:
+    '카드 내역 파일에서 들여온 일정입니다. 여기서 고쳐도 다음 반영에서 되돌아가므로, 엑셀 원본을 고친 뒤 다시 올려 주세요.',
 }
 
 /**

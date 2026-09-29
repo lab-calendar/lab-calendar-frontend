@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addDays, formatEventPeriod, overlaps } from './date'
+import { addDays, formatDateTime, formatEventPeriod, overlaps } from './date'
 
 describe('formatEventPeriod', () => {
   it('하루짜리는 요일과 함께 한 날짜만 쓴다', () => {
@@ -76,5 +76,25 @@ describe('overlaps', () => {
       .toBe(false)
     expect(overlaps({ startDate: '2026-10-01', endDate: '2026-10-31' }, range))
       .toBe(false)
+  })
+})
+
+describe('formatDateTime', () => {
+  it('월·일과 시각만 남긴다', () => {
+    // 마지막 동기화처럼 "방금인가 어제인가" 를 보는 자리라 연도는 붙이지 않는다
+    const local = new Date(2026, 8, 28, 14, 5)
+
+    expect(formatDateTime(local.toISOString())).toBe('9월 28일 14:05')
+  })
+
+  it('한 자리 시각도 두 자리로 맞춘다', () => {
+    const local = new Date(2026, 8, 1, 9, 0)
+
+    expect(formatDateTime(local.toISOString())).toBe('9월 1일 09:00')
+  })
+
+  it('읽을 수 없는 값은 받은 그대로 둔다', () => {
+    // 서버가 예상 못 한 형식을 주더라도 "Invalid Date" 가 화면에 나가지는 않게 한다
+    expect(formatDateTime('어제')).toBe('어제')
   })
 })

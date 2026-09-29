@@ -4,7 +4,7 @@ import type { Project } from '../../types/domain'
 import { todayIso } from '../../utils/date'
 import styles from './ProjectForm.module.css'
 import {
-  DEFAULT_LEAD_TIME_WEEKS,
+  DEFAULT_LEAD_TIME_DAYS,
   toProjectInputFromForm,
   validateProjectForm,
   type ProjectFormErrors,
@@ -16,7 +16,7 @@ function emptyValues(): ProjectFormValues {
     name: '',
     submissionStage: '',
     endDate: todayIso(),
-    leadTimeWeeks: String(DEFAULT_LEAD_TIME_WEEKS),
+    leadTimeDays: String(DEFAULT_LEAD_TIME_DAYS),
     active: true,
   }
 }
@@ -26,7 +26,7 @@ function valuesFrom(project: Project): ProjectFormValues {
     name: project.name,
     submissionStage: project.submissionStage ?? '',
     endDate: project.endDate,
-    leadTimeWeeks: String(project.leadTimeWeeks),
+    leadTimeDays: String(project.leadTimeDays),
     active: project.active,
   }
 }
@@ -164,30 +164,30 @@ function ProjectForm({ editingProject, onDone }: ProjectFormProps) {
 
         <div className={styles.field}>
           <label className={styles.label} htmlFor={`${fieldId}-lead`}>
-            준비 기간 (주)
+            준비 기간 (일)
           </label>
           <input
             id={`${fieldId}-lead`}
             type="number"
-            min={1}
-            max={26}
+            min={0}
+            max={182}
             className={
-              errors.leadTimeWeeks
+              errors.leadTimeDays
                 ? `${styles.input} ${styles.invalid}`
                 : styles.input
             }
-            value={values.leadTimeWeeks}
-            aria-invalid={Boolean(errors.leadTimeWeeks)}
+            value={values.leadTimeDays}
+            aria-invalid={Boolean(errors.leadTimeDays)}
             aria-describedby={
               [
                 `${fieldId}-lead-hint`,
-                errors.leadTimeWeeks ? `${fieldId}-lead-error` : null,
+                errors.leadTimeDays ? `${fieldId}-lead-error` : null,
               ]
                 .filter(Boolean)
                 .join(" ")
             }
             onChange={(changeEvent) =>
-              update('leadTimeWeeks', changeEvent.target.value)
+              update('leadTimeDays', changeEvent.target.value)
             }
           />
         </div>
@@ -198,9 +198,9 @@ function ProjectForm({ editingProject, onDone }: ProjectFormProps) {
           {errors.endDate}
         </p>
       ) : null}
-      {errors.leadTimeWeeks ? (
+      {errors.leadTimeDays ? (
         <p id={`${fieldId}-lead-error`} className={styles.error}>
-          {errors.leadTimeWeeks}
+          {errors.leadTimeDays}
         </p>
       ) : null}
 

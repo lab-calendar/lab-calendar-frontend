@@ -12,10 +12,13 @@ import interactionPlugin, {
   type EventResizeDoneArg,
 } from '@fullcalendar/interaction'
 import FullCalendar from '@fullcalendar/react'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { CategoryKey } from '../../constants/categories'
+import type { Urgency } from '../projects/deadlineUrgency'
+import { useCanEdit } from '../../contexts/AuthContext'
 import { useEventForm } from '../../contexts/EventFormContext'
 import { useCategoryFilter } from '../../hooks/useCategoryFilter'
+import { useFocusDate } from '../../hooks/useFocusDate'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { toEventInput } from '../../api/events'
 import {
@@ -23,6 +26,7 @@ import {
   useSaveEvent,
 } from '../../queries/useEventMutations'
 import { useEvents } from '../../queries/useEvents'
+import { useProjects } from '../../queries/useProjects'
 import {
   isEditableEvent,
   type CalendarEvent,
@@ -35,10 +39,11 @@ import { emptyNoteFor } from './calendarStatus'
 import { datesFromCalendarRange } from './eventDates'
 import EventChip from './EventChip'
 import EventDetailDialog from './EventDetailDialog'
-import { formatEventLabel } from './eventLabel'
+import { formatEventHoverText, formatEventLabel } from './eventLabel'
+import { urgencyForEvent, urgencyLookup } from './projectUrgency'
 import styles from './MonthCalendar.module.css'
 
-function toFullCalendarEvent(event: CalendarEvent): EventInput {
+function toFullCalendarEvent(event: CalendarEvent, urgency: Urgency): EventInput {
   return {
     id: event.id,
     title: formatEventLabel(event),
@@ -48,7 +53,12 @@ function toFullCalendarEvent(event: CalendarEvent): EventInput {
     allDay: true,
     // 자동 생성·구글 연동 일정은 다시 만들어져 덮어써지므로 드래그를 막는다
     editable: isEditableEvent(event),
-    extendedProps: { categoryKey: event.categoryKey },
+    extendedProps: {
+      categoryKey: event.categoryKey,
+      urgency,
+      // 칩에는 안 들어가는 참석 인원을 말풍선으로 내보낸다 (KAN-61)
+      hoverText: formatEventHoverText(event),
+    },
   }
 }
 
@@ -56,6 +66,21 @@ function toFullCalendarEvent(event: CalendarEvent): EventInput {
 function MonthCalendar() {
   const { selected } = useCategoryFilter()
   const isMobile = useMediaQuery('(max-width: 767px)')
+
+  /*
+   * D-Day 위젯이 URL 에 찍어 둔 달로 옮긴다 (KAN-52).
+   *
+   * 달력이 보여주는 달은 FullCalendar 가 들고 있어서 prop 으로 넣을 수 없다. 처음
+   * 그릴 때는 initialDate 가, 이미 떠 있을 때는 gotoDate 가 맡는다 — 위젯과 달력이
+   * 같은 화면에 있으므로 두 번째가 실제로 쓰이는 쪽이다.
+   */
+  const { focusDate } = useFocusDate()
+  const calendarRef = useRef<FullCalendar>(null)
+
+  useEffect(() => {
+    if (!focusDate) return
+    calendarRef.current?.getApi().gotoDate(focusDate)
+  }, [focusDate])
 
   // FullCalendar 가 알려주는 표시 기간. 뷰를 옮기면 갱신되고 그때마다 다시 조회한다.
   const [range, setRange] = useState<DateRange | null>(null)
@@ -94,12 +119,15 @@ function MonthCalendar() {
   const renderEventContent = useCallback(
     (arg: EventContentArg) => {
       const categoryKey = arg.event.extendedProps.categoryKey as CategoryKey
+      const urgency = arg.event.extendedProps.urgency as Urgency
 
       return (
         <EventChip
           title={arg.event.title}
+          hoverText={arg.event.extendedProps.hoverText as string}
           categoryKey={categoryKey}
           categoryName={categoryNames.get(categoryKey) ?? ''}
+          urgency={urgency}
           onActivate={() => setSelectedEventId(arg.event.id)}
         />
       )
@@ -128,6 +156,13 @@ function MonthCalendar() {
     ),
     [],
   )
+
+  /*
+   * 조회 등급에는 수정·삭제 핸들러를 아예 넘기지 않는다. 상세 팝업은 핸들러가 없으면
+   * 해당 버튼을 그리지 않으므로, 여기서 끊는 것으로 진입점이 사라진다.
+   * 화면에서 가리는 것은 편의일 뿐이고 실제 차단은 서버가 한다 (KAN-35).
+   */
+  const canEdit = useCanEdit()
 
   const { startEdit } = useEventForm()
   const handleEdit = useCallback(
@@ -187,13 +222,22 @@ function MonthCalendar() {
     })
   }, [])
 
+  /*
+   * 마감이 급한 과제의 준비 기간을 강조한다 (KAN-53).
+   *
+   * 이미 받아둔 과제 목록을 그대로 쓴다 — D-Day 위젯과 같은 쿼리라 달력 때문에
+   * 더 부르지 않고, 두 화면이 항상 같은 기준으로 빨간불을 켜게 된다.
+   */
+  const { data: projects } = useProjects()
+  const urgencies = useMemo(() => urgencyLookup(projects), [projects])
+
   // 카테고리 필터는 받아둔 목록에서 거른다. 필터를 바꿔도 다시 조회하지 않는다.
   const visibleEvents = useMemo(
     () =>
       (events ?? [])
         .filter((event) => selected.includes(event.categoryKey))
-        .map(toFullCalendarEvent),
-    [events, selected],
+        .map((event) => toFullCalendarEvent(event, urgencyForEvent(event, urgencies))),
+    [events, selected, urgencies],
   )
 
   const emptyNote = emptyNoteFor(events, visibleEvents.length)
@@ -222,7 +266,9 @@ function MonthCalendar() {
       {emptyNote ? <p className={styles.emptyNote}>{emptyNote}</p> : null}
 
       <FullCalendar
+        ref={calendarRef}
         plugins={[dayGridPlugin, interactionPlugin]}
+        {...(focusDate ? { initialDate: focusDate } : {})}
         initialView="dayGridMonth"
         locale={koLocale}
         height="100%"
@@ -238,8 +284,8 @@ function MonthCalendar() {
         eventClick={handleEventClick}
         eventDrop={handleEventChange}
         eventResize={handleEventChange}
-        // 개별 일정의 editable 로 다시 걸러진다
-        editable
+        // 조회 등급은 통째로 잠그고, 편집 등급은 개별 일정의 editable 로 다시 걸러진다
+        editable={canEdit}
         fixedWeekCount={false}
         // 셀이 좁은 모바일에서는 표시 개수를 줄이고 나머지는 "+N개"로 접는다
         dayMaxEvents={isMobile ? 2 : 3}
@@ -249,8 +295,8 @@ function MonthCalendar() {
       <EventDetailDialog
         event={selectedEvent}
         onClose={closeDetail}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        onEdit={canEdit ? handleEdit : undefined}
+        onDelete={canEdit ? handleDelete : undefined}
         isDeleting={deleteEvent.isPending}
       />
     </div>

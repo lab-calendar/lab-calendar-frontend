@@ -5,6 +5,21 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    /*
+     * /api 를 백엔드로 넘겨 브라우저에게는 한 출처로 보이게 한다 (KAN-36).
+     *
+     * 교차 출처로 부르면 세션 쿠키를 주고받는 데 CORS 와 SameSite 조건이 겹쳐
+     * 붙는다. 운영에서는 nginx 가 같은 일을 하므로, 개발도 같은 모양으로 맞춰
+     * 두는 편이 낫다 — 로컬에서만 되는 설정을 만들지 않는다.
+     */
+    proxy: {
+      '/api': {
+        target: process.env.VITE_API_PROXY_TARGET ?? 'http://localhost:8080',
+        changeOrigin: false,
+      },
+    },
+  },
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],

@@ -12,9 +12,9 @@ vi.mock('../../api/categories', () => ({
 }))
 
 const CATEGORIES: Category[] = [
-  { id: 1, key: 'project', name: '과제/연구 관리' },
-  { id: 2, key: 'lab', name: '랩실 주기적 일정' },
-  { id: 3, key: 'card', name: '카드/경비 사용' },
+  { id: '1', key: 'project', name: '과제/연구 관리' },
+  { id: '2', key: 'lab', name: '랩실 주기적 일정' },
+  { id: '3', key: 'card', name: '카드/경비 사용' },
 ]
 
 const EMPTY_HINT = '표시할 카테고리를 하나 이상 선택해 주세요.'

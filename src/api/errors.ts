@@ -6,6 +6,13 @@ export type ApiErrorKind =
   /** 권한 부족 — 조회 등급이 쓰기를 시도한 경우 등 (403) */
   | 'FORBIDDEN'
   | 'NOT_FOUND'
+  /**
+   * 지금 상태에서는 할 수 없는 요청 (409).
+   *
+   * 입력이 틀린 것이 아니라 데이터가 얽혀 있어서 거절된 경우다 — 참석 이력이 있는
+   * 구성원 삭제처럼. 고쳐 쓸 방법이 따로 있으므로 화면이 안내를 덧붙인다.
+   */
+  | 'CONFLICT'
   /** 요청 값 검증 실패 (400) */
   | 'VALIDATION'
   | 'SERVER'
@@ -20,18 +27,31 @@ export type ApiErrorKind =
 export class ApiError extends Error {
   readonly kind: ApiErrorKind
   readonly status?: number
+  /**
+   * 서버가 붙인 에러 코드 (KAN-29 공통 응답 포맷).
+   *
+   * 상태 코드만으로는 갈라지지 않는 경우에 쓴다 — 같은 409 라도 `PREVIEW_STALE`
+   * 이면 미리보기를 다시 받아야 하고, 그 밖이면 그냥 알리고 만다. 화면이 분기해야
+   * 하는 코드에만 쓰고, 문구는 서버가 준 `message` 를 그대로 보여준다.
+   */
+  readonly code?: string
   /** 필드별 검증 오류 (KAN-29 공통 응답 포맷) */
   readonly fieldErrors?: Record<string, string>
 
   constructor(
     kind: ApiErrorKind,
     message: string,
-    options: { status?: number; fieldErrors?: Record<string, string> } = {},
+    options: {
+      status?: number
+      code?: string
+      fieldErrors?: Record<string, string>
+    } = {},
   ) {
     super(message)
     this.name = 'ApiError'
     this.kind = kind
     this.status = options.status
+    this.code = options.code
     this.fieldErrors = options.fieldErrors
   }
 }
@@ -40,6 +60,7 @@ const MESSAGES: Record<ApiErrorKind, string> = {
   UNAUTHORIZED: '인증이 필요합니다. 비밀번호를 다시 입력해 주세요.',
   FORBIDDEN: '이 작업을 수행할 권한이 없습니다.',
   NOT_FOUND: '요청한 정보를 찾을 수 없습니다.',
+  CONFLICT: '지금 상태에서는 이 작업을 할 수 없습니다.',
   VALIDATION: '입력한 내용을 다시 확인해 주세요.',
   SERVER: '서버에 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.',
   NETWORK: '서버에 연결할 수 없습니다. 네트워크 상태를 확인해 주세요.',
@@ -51,12 +72,14 @@ function kindFromStatus(status: number): ApiErrorKind {
   if (status === 401) return 'UNAUTHORIZED'
   if (status === 403) return 'FORBIDDEN'
   if (status === 404) return 'NOT_FOUND'
+  if (status === 409) return 'CONFLICT'
   if (status >= 500) return 'SERVER'
   return 'UNKNOWN'
 }
 
 /** 서버 공통 에러 응답 (KAN-29). 형태가 확정되면 여기만 맞추면 된다. */
 type ErrorResponseBody = {
+  code?: string
   message?: string
   fieldErrors?: Record<string, string>
 }
@@ -75,6 +98,7 @@ export function toApiError(error: unknown): ApiError {
 
     return new ApiError(kind, body?.message ?? MESSAGES[kind], {
       status: response.status,
+      code: body?.code,
       fieldErrors: body?.fieldErrors,
     })
   }

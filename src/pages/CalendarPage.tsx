@@ -1,4 +1,6 @@
 import MonthCalendar from '../components/calendar/MonthCalendar'
+import DeadlineAlert from '../components/projects/DeadlineAlert'
+import UpcomingDeadlines from '../components/projects/UpcomingDeadlines'
 import styles from './Page.module.css'
 
 /** 메인 캘린더 화면 (기획서 2.1 우측 출력 영역). */
@@ -12,10 +14,11 @@ function CalendarPage() {
         </p>
       </div>
 
-      {/* 백엔드 연동(KAN-40)이 끝나면 제거한다 */}
-      <p className={styles.notice}>
-        백엔드 연동 전이라 임시 데이터를 표시합니다.
-      </p>
+      {/* 달력 위에 둔다. 들어오자마자 가장 급한 마감이 먼저 눈에 들어와야 한다 (KAN-52) */}
+      <UpcomingDeadlines />
+
+      {/* 마감이 급한 것이 있을 때만, 하루에 한 번 앞을 막아선다 (KAN-53) */}
+      <DeadlineAlert />
 
       <div className={styles.fillSurface}>
         <MonthCalendar />

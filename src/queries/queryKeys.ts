@@ -9,8 +9,13 @@ export const queryKeys = {
 
   projects: ['projects'] as const,
 
+  members: ['members'] as const,
+
   events: {
     all: ['events'] as const,
     list: (range: DateRange | null) => ['events', 'list', range] as const,
   },
+
+  /** 카드 내역 업로드 이력 (KAN-60) */
+  cardImports: ['card-imports'] as const,
 } as const

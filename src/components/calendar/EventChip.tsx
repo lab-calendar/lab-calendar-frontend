@@ -1,11 +1,16 @@
 import { CATEGORY_MARKS, type CategoryKey } from '../../constants/categories'
+import type { Urgency } from '../projects/deadlineUrgency'
 import styles from './MonthCalendar.module.css'
 
 type EventChipProps = {
   title: string
+  /** 마우스를 올렸을 때 나올 문구. 참석 인원까지 담는다 (KAN-61). */
+  hoverText?: string
   categoryKey: CategoryKey
   /** 서버가 준 카테고리 이름. 화면에는 안 보이고 스크린 리더만 읽는다. */
   categoryName: string
+  /** 과제 준비 기간이면 그 과제의 급한 정도 (KAN-53). 나머지는 normal. */
+  urgency?: Urgency
   onActivate: () => void
 }
 
@@ -18,16 +23,25 @@ type EventChipProps = {
  */
 function EventChip({
   title,
+  hoverText,
   categoryKey,
   categoryName,
+  urgency = 'normal',
   onActivate,
 }: EventChipProps) {
   return (
     <span
       className={styles.event}
       data-category={categoryKey}
+      data-urgency={urgency}
       role="button"
       tabIndex={0}
+      /*
+       * 브라우저가 그려 주는 기본 말풍선을 쓴다. 직접 만들면 좁은 칸 옆에서 잘리지
+       * 않게 띄울 자리를 계산해야 하고, 달력 칸마다 그 계산이 붙는다.
+       * 스크린 리더는 칩 안의 글을 읽으므로 이 값을 이름으로 쓰지 않게 둔다.
+       */
+      title={hoverText ?? title}
       onKeyDown={(keyEvent) => {
         if (keyEvent.key !== 'Enter' && keyEvent.key !== ' ') return
         // Space 로 화면이 스크롤되지 않게 한다
@@ -46,6 +60,12 @@ function EventChip({
       {categoryName ? (
         <span className="sr-only">{`${categoryName},`}</span>
       ) : null}
+      {urgency === 'normal' ? null : (
+        // 색만으로는 색을 못 보는 사람에게 아무것도 전해지지 않는다
+        <span className="sr-only">
+          {urgency === 'overdue' ? '마감 지남,' : '마감 임박,'}
+        </span>
+      )}
       <span className={styles.eventTitle}>{title}</span>
     </span>
   )
