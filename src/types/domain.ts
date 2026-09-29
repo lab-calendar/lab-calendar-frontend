@@ -30,8 +30,19 @@ export type Member = MemberInput & {
   id: string
 }
 
-/** 일정이 어디서 만들어졌는지 (기획서 3.1 자동 생성, 3.2 구글 연동) */
-export type EventSource = 'MANUAL' | 'AUTO_GENERATED' | 'GOOGLE_SYNC'
+/**
+ * 일정이 어디서 만들어졌는지 (기획서 3.1 자동 생성, 3.2 카드 내역).
+ *
+ * `GOOGLE_SYNC` 는 구글 API 로 직접 읽어 오던 시절의 값이다. 팀이 엑셀 업로드로
+ * 방향을 바꾸면서 `CARD_IMPORT` 가 생겼고(KAN-54 설계 §6.3), 서버가 옮겨 가는
+ * 동안에는 둘 다 올 수 있다. 화면에서는 같은 것으로 다룬다 — 어느 쪽이든 사람이
+ * 고칠 수 없고, 고치려면 원본을 손봐야 한다.
+ */
+export type EventSource =
+  | 'MANUAL'
+  | 'AUTO_GENERATED'
+  | 'GOOGLE_SYNC'
+  | 'CARD_IMPORT'
 
 export type CalendarEvent = {
   id: string
@@ -46,7 +57,7 @@ export type CalendarEvent = {
    * 제목 옆에 덧붙는 값. 카테고리에 따라 의미가 다르다 (기획서 2.2 표시 데이터 양식).
    * - project: 제출 단계
    * - lab: 담당 연구원
-   * - card: 지출 목적
+   * - card: 구분 (점심 · 저녁 · 초과) — 장부 D열
    */
   detail?: string
   memo?: string
@@ -134,4 +145,85 @@ export type Session =
  */
 export function canEdit(session: Session): boolean {
   return session.authenticated && session.tier === 'EDITOR'
+}
+
+/**
+ * 카드 내역 엑셀 가져오기 (KAN-54 설계 §6.2).
+ *
+ * 구글 API 주기 동기화 대신, 사용자가 구글 시트에서 `.xlsx` 로 내려받아 올린다.
+ * 올리면 먼저 미리보기가 뜨고, 확인해야 반영된다 — 달 단위로 기존 내역을 갈아
+ * 끼우는 작업이라 무엇이 사라지는지 보지 않고 누르게 하면 안 된다.
+ */
+
+/** 그 달을 반영할 수 있는지. BLOCKED 는 오류 때문에 통째로 보존한다. */
+export type CardImportMonthStatus = 'READY' | 'BLOCKED'
+
+export type CardImportMonth = {
+  /** `YYYY-MM` */
+  month: string
+  status: CardImportMonthStatus
+  added: number
+  /** 파일에서 사라진 행. 반영하면 달력에서 지워진다. */
+  removed: number
+  unchanged: number
+}
+
+/** 월 시트로 읽지 못해 건너뛴 시트 — `복사용 시트`, 연도 없는 `7월` 등 */
+export type CardImportSkippedSheet = {
+  sheet: string
+  reason: string
+}
+
+/** ERROR 는 그 달 전체를 막고, WARNING 은 알리고 반영한다 (설계 §3.2). */
+export type CardImportProblemLevel = 'ERROR' | 'WARNING'
+
+export type CardImportProblem = {
+  sheet: string
+  row: number
+  level: CardImportProblemLevel
+  code: string
+  message: string
+}
+
+export type CardImportTotals = {
+  added: number
+  removed: number
+  unchanged: number
+  /** ERROR 로 건너뛴 행 수 */
+  skippedRows: number
+  /** 오류 때문에 통째로 보존한 달 수 */
+  blockedMonths: number
+}
+
+export type CardImportResult = {
+  /** true 면 아무것도 저장하지 않은 미리보기다. */
+  dryRun: boolean
+  /**
+   * 반영할 때 되돌려 보내야 하는 서명값.
+   *
+   * 미리보기를 보여준 그 상태 그대로 반영되는지 서버가 확인하는 장치다. 파일이나
+   * DB 가 그새 바뀌면 409 `PREVIEW_STALE` 로 거절되고 미리보기부터 다시 받는다.
+   */
+  previewToken: string
+  fileName: string
+  months: CardImportMonth[]
+  skippedSheets: CardImportSkippedSheet[]
+  problems: CardImportProblem[]
+  totals: CardImportTotals
+}
+
+/** 반영할 달이 하나라도 있는지. 없으면 서버가 422 로 거절한다 (설계 §3.2). */
+export function hasApplicableMonth(result: CardImportResult): boolean {
+  return result.months.some((month) => month.status === 'READY')
+}
+
+/** 지난 업로드 한 건 (KAN-60). */
+export type CardImportHistoryEntry = {
+  id: string
+  /** 반영한 시각 */
+  importedAt: string
+  fileName: string
+  /** PARTIAL — 정상 월만 반영하고 오류 월은 보존한 경우 */
+  status: 'SUCCESS' | 'PARTIAL' | 'FAILED'
+  totals: CardImportTotals
 }

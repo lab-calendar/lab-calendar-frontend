@@ -1,5 +1,10 @@
 import { addDays } from '../../utils/date'
-import type { MockEvent, MockMember, MockProject } from './types'
+import type {
+  MockCardImport,
+  MockEvent,
+  MockMember,
+  MockProject,
+} from './types'
 
 /**
  * 목 서버의 초기 데이터 (KAN-70).
@@ -117,11 +122,16 @@ export function seedEvents(today: string): MockEvent[] {
      *
      * 출처는 GOOGLE_SYNC 다. 엑셀 업로드로 들어온 카드 내역도 서버가 이 값으로 적는다
      * (KAN-58). CARD_IMPORT 로의 전환은 데이터 마이그레이션이 따르는 후속 작업이다.
+     *
+     * 제목은 과제(장부 B열), detail 은 구분 원문(D열)이다 — 엑셀에서 들여온 카드
+     * 내역을 서버가 그렇게 내려준다 (KAN-54 설계 §5). 파일에 카드 종류 열은 없고,
+     * 과제마다 연구비 카드가 따로라 과제명이 곧 카드다. 서버는 대괄호·콜론을 붙이지
+     * 않는다. 달력 칩은 이 둘만 보여주고 참석 인원(C열)은 마우스를 올렸을 때 나온다.
      */
     {
       id: '4',
-      title: '[법인카드 A]',
-      detail: '다과비',
+      title: 'BRL',
+      detail: '저녁',
       startDate: addDays(today, 2),
       endDate: addDays(today, 2),
       categoryKey: 'card',
@@ -131,14 +141,67 @@ export function seedEvents(today: string): MockEvent[] {
     },
     {
       id: '5',
-      title: '[연구비카드 B]',
-      detail: '저녁',
+      title: '과제A',
+      detail: '초과',
       startDate: addDays(today, -2),
       endDate: addDays(today, -2),
       categoryKey: 'card',
       memo: null,
       participants: ['이영희', '박민수', '김철수'],
       source: 'GOOGLE_SYNC',
+    },
+    /*
+     * 구분이 빈 행 — 실제 장부에서 318건(12%) 이다. 서버가 detail 을 null 로
+     * 내려주므로 칩에는 과제명만 남는다. 콜론만 덩그러니 남지 않는지 여기서 본다.
+     */
+    {
+      id: '6',
+      title: '창의도전 과제',
+      detail: null,
+      startDate: addDays(today, -1),
+      endDate: addDays(today, -1),
+      categoryKey: 'card',
+      memo: null,
+      // 명단에 없는 이름도 섞인다 — 장부의 참석자는 외부 인원을 포함한다
+      participants: ['홍길동', '이영희', '박민수', '김철수', '김도연'],
+      source: 'GOOGLE_SYNC',
+    },
+  ]
+}
+
+/**
+ * 카드 내역 업로드 이력 (KAN-60).
+ *
+ * 한 회차는 일부만 반영된 것으로 둔다 — 오류가 있는 달을 보존했을 때 목록에서
+ * 그 사실이 눈에 띄는지, 화면을 눌러 보지 않고는 알 수 없다.
+ */
+export function seedCardImports(today: string): MockCardImport[] {
+  return [
+    {
+      id: '90',
+      importedAt: `${today}T09:10:00+09:00`,
+      fileName: '회의록 인원.xlsx',
+      status: 'SUCCESS',
+      totals: {
+        added: 3,
+        removed: 0,
+        unchanged: 32,
+        skippedRows: 0,
+        blockedMonths: 0,
+      },
+    },
+    {
+      id: '89',
+      importedAt: `${addDays(today, -6)}T17:42:00+09:00`,
+      fileName: '회의록 인원(수정).xlsx',
+      status: 'PARTIAL',
+      totals: {
+        added: 2,
+        removed: 1,
+        unchanged: 18,
+        skippedRows: 1,
+        blockedMonths: 1,
+      },
     },
   ]
 }

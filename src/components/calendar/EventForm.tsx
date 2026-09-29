@@ -21,7 +21,7 @@ import {
 const DETAIL_FIELDS: Record<CategoryKey, { label: string; hint: string }> = {
   project: { label: '제출 단계', hint: '예: 연차보고서, 최종보고서' },
   lab: { label: '담당 연구원', hint: '예: 홍길동' },
-  card: { label: '사용 목적', hint: '예: 다과비' },
+  card: { label: '구분', hint: '예: 점심, 저녁, 초과' },
 }
 
 
@@ -80,7 +80,7 @@ function EventForm() {
 
   const detailField = DETAIL_FIELDS[values.categoryKey]
 
-  // 담당 연구원 칸에만 명단을 붙인다. 제출 단계나 지출 목적은 사람 이름이 아니다.
+  // 담당 연구원 칸에만 명단을 붙인다. 제출 단계나 카드 구분은 사람 이름이 아니다.
   const ownerListId =
     values.categoryKey === 'lab' && roster.length > 0
       ? `${fieldId}-owners`

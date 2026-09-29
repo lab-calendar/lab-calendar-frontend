@@ -1,12 +1,17 @@
 import { describe, expect, it } from 'vitest'
 import { login, logout } from '../api/auth'
+import {
+  applyCardImport,
+  fetchCardImports,
+  previewCardImport,
+} from '../api/cardImports'
 import { fetchCategories } from '../api/categories'
 import { ApiError } from '../api/errors'
 import { createEvent, fetchEvents } from '../api/events'
 import { deleteMember, fetchMembers } from '../api/members'
 import { fetchProjects, updateProject } from '../api/projects'
 import { setUpMockApi } from '../test/mockApi'
-import { setFailing } from './scenario'
+import { setCardImportCase, setFailing } from './scenario'
 
 /**
  * 목 서버가 실제 서버처럼 구는지 (KAN-70).
@@ -240,6 +245,117 @@ describe('구성원', () => {
     expect((await fetchMembers()).map((member) => member.name)).not.toContain(
       '최지우',
     )
+  })
+})
+
+describe('카드 내역 가져오기', () => {
+  /*
+   * 파일 이름은 실어 보내는 경로에 따라 `blob` 으로 바뀌어 도착한다. 토큰은 크기도
+   * 함께 보므로, 다른 파일을 흉내 낼 때는 내용 길이를 다르게 준다.
+   */
+  function xlsx(name: string, content = 'xlsx'): File {
+    return new File([content], name, {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    })
+  }
+
+  it('미리보기는 아무것도 저장하지 않는다', async () => {
+    await signInAs('editor')
+    const before = await fetchCardImports()
+
+    const preview = await previewCardImport(xlsx('회의록 인원.xlsx'))
+
+    expect(preview.dryRun).toBe(true)
+    expect(preview.previewToken).toBeTruthy()
+    // 미리보기만으로 이력이 늘면 올려 보지도 못하고 기록이 쌓인다
+    expect(await fetchCardImports()).toHaveLength(before.length)
+  })
+
+  it('반영은 미리보기 토큰을 요구한다', async () => {
+    await signInAs('editor')
+    const preview = await previewCardImport(xlsx('회의록 인원.xlsx'))
+
+    const applied = await applyCardImport(xlsx('회의록 인원.xlsx'), preview.previewToken)
+
+    expect(applied.dryRun).toBe(false)
+    expect((await fetchCardImports())[0]).toMatchObject({ status: 'SUCCESS' })
+  })
+
+  it('낡은 미리보기 토큰으로 반영하면 PREVIEW_STALE 이다', async () => {
+    /*
+     * 미리보기를 보여준 그 상태 그대로 반영되는지 서버가 확인한다. 화면은 이 코드를
+     * 보고 미리보기부터 다시 받는 흐름으로 돌아간다 (설계 §6.2).
+     */
+    await signInAs('editor')
+    const first = await previewCardImport(xlsx('첫 파일.xlsx'))
+    // 다른 파일로 미리보기를 다시 받으면 앞의 토큰은 더 이상 유효하지 않다
+    await previewCardImport(xlsx('다른 파일.xlsx'))
+
+    const failure = await applyCardImport(
+      xlsx('첫 파일.xlsx'),
+      first.previewToken,
+    ).catch((error: unknown) => error)
+
+    expect(failure).toBeInstanceOf(ApiError)
+    expect(failure).toMatchObject({ kind: 'CONFLICT', code: 'PREVIEW_STALE' })
+  })
+
+  it('한 번 반영한 토큰은 다시 쓸 수 없다', async () => {
+    await signInAs('editor')
+    const preview = await previewCardImport(xlsx('회의록 인원.xlsx'))
+    await applyCardImport(xlsx('회의록 인원.xlsx'), preview.previewToken)
+
+    const failure = await applyCardImport(
+      xlsx('회의록 인원.xlsx'),
+      preview.previewToken,
+    ).catch((error: unknown) => error)
+
+    expect(failure).toMatchObject({ code: 'PREVIEW_STALE' })
+    // 거절된 재시도가 이력을 늘리지 않는다
+    expect(await fetchCardImports()).toHaveLength(3)
+  })
+
+  it('반영할 달이 하나도 없으면 거절한다', async () => {
+    await signInAs('editor')
+    setCardImportCase('empty')
+    const preview = await previewCardImport(xlsx('empty.xlsx'))
+
+    const failure = await applyCardImport(
+      xlsx('empty.xlsx'),
+      preview.previewToken,
+    ).catch((error: unknown) => error)
+
+    expect(failure).toMatchObject({ code: 'NO_APPLICABLE_MONTHS' })
+  })
+
+  it('오류가 있는 달은 막히고 나머지만 반영된다', async () => {
+    await signInAs('editor')
+    setCardImportCase('blocked')
+
+    const preview = await previewCardImport(xlsx('blocked.xlsx'))
+
+    expect(preview.months).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ month: '2026-09', status: 'BLOCKED' }),
+        expect.objectContaining({ month: '2026-08', status: 'READY' }),
+      ]),
+    )
+    expect(preview.problems.some((problem) => problem.level === 'ERROR')).toBe(true)
+
+    const applied = await applyCardImport(xlsx('blocked.xlsx'), preview.previewToken)
+    // 일부만 반영된 회차는 이력에서 구분된다
+    expect((await fetchCardImports())[0].status).toBe('PARTIAL')
+    expect(applied.totals.blockedMonths).toBe(1)
+  })
+
+  it('조회 등급은 미리보기도 이력도 받지 못한다', async () => {
+    // 지출을 가리면서 "몇 건 들어왔다" 를 알려 주면 가린 의미가 없다 (KAN-35)
+    await signInAs('viewer')
+
+    await expect(fetchCardImports()).rejects.toMatchObject({ kind: 'FORBIDDEN' })
+    await expect(previewCardImport(xlsx('회의록 인원.xlsx'))).rejects.toMatchObject({
+      kind: 'FORBIDDEN',
+    })
   })
 })
 

@@ -4,6 +4,8 @@ import styles from './MonthCalendar.module.css'
 
 type EventChipProps = {
   title: string
+  /** 마우스를 올렸을 때 나올 문구. 참석 인원까지 담는다 (KAN-61). */
+  hoverText?: string
   categoryKey: CategoryKey
   /** 서버가 준 카테고리 이름. 화면에는 안 보이고 스크린 리더만 읽는다. */
   categoryName: string
@@ -21,6 +23,7 @@ type EventChipProps = {
  */
 function EventChip({
   title,
+  hoverText,
   categoryKey,
   categoryName,
   urgency = 'normal',
@@ -33,6 +36,12 @@ function EventChip({
       data-urgency={urgency}
       role="button"
       tabIndex={0}
+      /*
+       * 브라우저가 그려 주는 기본 말풍선을 쓴다. 직접 만들면 좁은 칸 옆에서 잘리지
+       * 않게 띄울 자리를 계산해야 하고, 달력 칸마다 그 계산이 붙는다.
+       * 스크린 리더는 칩 안의 글을 읽으므로 이 값을 이름으로 쓰지 않게 둔다.
+       */
+      title={hoverText ?? title}
       onKeyDown={(keyEvent) => {
         if (keyEvent.key !== 'Enter' && keyEvent.key !== ' ') return
         // Space 로 화면이 스크롤되지 않게 한다

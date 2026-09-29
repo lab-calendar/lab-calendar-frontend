@@ -5,6 +5,7 @@ import LoginPage from '../pages/LoginPage'
 import RouteErrorPage from '../pages/RouteErrorPage'
 import {
   CalendarPage,
+  CardImportPage,
   MembersPage,
   NotFoundPage,
   ProjectsPage,
@@ -32,6 +33,7 @@ export const router = createBrowserRouter([
           { index: true, element: <CalendarPage /> },
           { path: 'projects', element: <ProjectsPage /> },
           { path: 'members', element: <MembersPage /> },
+          { path: 'card-expenses', element: <CardImportPage /> },
           { path: '*', element: <NotFoundPage /> },
         ],
       },

@@ -56,3 +56,20 @@ export function todayIso(): string {
   const day = String(now.getDate()).padStart(2, '0')
   return `${now.getFullYear()}-${month}-${day}`
 }
+
+/**
+ * 타임스탬프를 사람이 읽는 문구로 만든다 — `9월 28일 14:00`.
+ *
+ * 연도는 붙이지 않는다. 마지막 동기화처럼 "방금인가 어제인가" 를 보는 자리에서만
+ * 쓰기 때문이다. 서버가 오프셋을 함께 주므로(`+09:00`) 보는 사람의 시간대로 읽힌다.
+ */
+export function formatDateTime(timestamp: string): string {
+  const date = new Date(timestamp)
+  if (Number.isNaN(date.getTime())) return timestamp
+
+  const month = date.getMonth() + 1
+  const day = date.getDate()
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  return `${month}월 ${day}일 ${hours}:${minutes}`
+}

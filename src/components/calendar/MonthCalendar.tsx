@@ -39,7 +39,7 @@ import { emptyNoteFor } from './calendarStatus'
 import { datesFromCalendarRange } from './eventDates'
 import EventChip from './EventChip'
 import EventDetailDialog from './EventDetailDialog'
-import { formatEventLabel } from './eventLabel'
+import { formatEventHoverText, formatEventLabel } from './eventLabel'
 import { urgencyForEvent, urgencyLookup } from './projectUrgency'
 import styles from './MonthCalendar.module.css'
 
@@ -53,7 +53,12 @@ function toFullCalendarEvent(event: CalendarEvent, urgency: Urgency): EventInput
     allDay: true,
     // 자동 생성·구글 연동 일정은 다시 만들어져 덮어써지므로 드래그를 막는다
     editable: isEditableEvent(event),
-    extendedProps: { categoryKey: event.categoryKey, urgency },
+    extendedProps: {
+      categoryKey: event.categoryKey,
+      urgency,
+      // 칩에는 안 들어가는 참석 인원을 말풍선으로 내보낸다 (KAN-61)
+      hoverText: formatEventHoverText(event),
+    },
   }
 }
 
@@ -119,6 +124,7 @@ function MonthCalendar() {
       return (
         <EventChip
           title={arg.event.title}
+          hoverText={arg.event.extendedProps.hoverText as string}
           categoryKey={categoryKey}
           categoryName={categoryNames.get(categoryKey) ?? ''}
           urgency={urgency}

@@ -1,6 +1,17 @@
 import { addDays, todayIso } from '../../utils/date'
-import { seedEvents, seedMembers, seedProjects } from './fixtures'
-import type { MockEvent, MockMember, MockProject, MockTier } from './types'
+import {
+  seedCardImports,
+  seedEvents,
+  seedMembers,
+  seedProjects,
+} from './fixtures'
+import type {
+  MockCardImport,
+  MockEvent,
+  MockMember,
+  MockProject,
+  MockTier,
+} from './types'
 
 /**
  * 목 서버가 들고 있는 상태 (KAN-70).
@@ -17,6 +28,16 @@ type Db = {
   projects: MockProject[]
   /** 손으로 넣은 일정만 담는다. 준비 기간 막대는 과제에서 파생된다 (KAN-49). */
   events: MockEvent[]
+  /** 카드 내역 업로드 이력. 최근 것이 앞에 온다 (KAN-60) */
+  cardImports: MockCardImport[]
+  /**
+   * 마지막으로 내준 미리보기 토큰.
+   *
+   * 실제 서버는 파일 해시·대상 월·DB 지문·파서 버전·만료를 서명해 묶지만, 화면이
+   * 갈라져야 하는 지점은 "지금 유효한 미리보기가 아니다" 하나다. 새 미리보기를
+   * 내줄 때마다 앞의 것은 낡은 것이 된다.
+   */
+  lastPreviewToken: string | null
   nextId: number
 }
 
@@ -52,6 +73,8 @@ function freshDb(today: string): Db {
     members: seedMembers(),
     projects: seedProjects(today),
     events: seedEvents(today),
+    cardImports: seedCardImports(today),
+    lastPreviewToken: null,
     nextId: 100,
   }
 }

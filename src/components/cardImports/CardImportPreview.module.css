@@ -1,0 +1,109 @@
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.heading {
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.summary {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.table {
+  width: 100%;
+  font-size: var(--font-size-sm);
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  padding: var(--space-1) var(--space-2);
+  text-align: right;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table thead th,
+.table tbody th {
+  text-align: left;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.table thead th {
+  text-align: right;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+}
+
+.table thead th:first-child {
+  text-align: left;
+}
+
+/*
+ * 사라지는 건이 있는 달을 눈에 띄게 한다 (설계 §6.3).
+ *
+ * 반영하면 그 행들은 달력에서 지워진다. 시트를 잘못 편집한 채 올리면 지난 기록이
+ * 통째로 없어질 수 있어서, 표에서 가장 먼저 눈에 들어와야 하는 숫자다.
+ */
+.table tbody tr[data-removes='yes'] {
+  background: var(--color-surface-muted);
+}
+
+.table tbody tr[data-removes='yes'] .removed {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-danger);
+}
+
+/* 오류로 통째로 보존하는 달. 숫자가 아니라 이유를 읽게 한다 */
+.table tbody tr[data-status='BLOCKED'] {
+  color: var(--color-text-subtle);
+}
+
+.blocked {
+  font-size: var(--font-size-xs);
+  color: var(--color-danger);
+}
+
+.empty {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-subtle);
+}
+
+.subheading {
+  margin: 0 0 var(--space-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+}
+
+.problemList,
+.skippedList {
+  margin: 0;
+  padding-left: var(--space-4);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.problemList li[data-level='ERROR'] {
+  color: var(--color-danger);
+}
+
+.problemWhere {
+  font-family: var(--font-mono);
+}
