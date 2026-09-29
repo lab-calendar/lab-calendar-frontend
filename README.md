@@ -1,12 +1,31 @@
 # lab-calendar-frontend
 
-Frontend web application for Lab Calendar
+Frontend web application for Lab Calendar — the lab's shared calendar for
+schedules, project deadlines and meeting-card expenses.
+
+For the people who *use* the app (not develop it), see the Korean user guide in
+[`docs/user-guide.md`](docs/user-guide.md).
+
+## Screens
+
+| Route | Screen | Notes |
+| --- | --- | --- |
+| `/` | Month calendar | Category filter and event form in the sidebar |
+| `/projects` | Projects | Deadlines; the server derives the preparation bars |
+| `/members` | Members | Name list used for attendees and owners |
+| `/card-expenses` | Card ledger import | Editor tier only — upload, preview, apply |
+| `/login` | Password | Two shared passwords pick the tier (editor / viewer) |
+
+The viewer tier never receives card expense data — the server leaves it out of
+the response, and the screens above hide the entry points accordingly.
 
 ## Tech Stack
 
-- React 19 + TypeScript
-- Vite
-- axios, react-router-dom
+- React 19 + TypeScript, Vite
+- react-router-dom (routes are code-split per screen)
+- TanStack Query over axios adapters — components never touch HTTP
+- FullCalendar (dayGrid + interaction) for the month view
+- MSW for the mock API, shared by the browser and the test suite
 
 ## Getting Started
 
@@ -16,8 +35,20 @@ cp .env.example .env
 npm run dev
 ```
 
-Dev server runs at http://localhost:5173 and expects the backend at
-`VITE_API_BASE_URL` (default `http://localhost:8080`).
+Dev server runs at http://localhost:5173. Requests to `/api` are proxied to the
+backend, so the browser sees a single origin and the session cookie behaves the
+same as in production, where nginx does the same job.
+
+### Environment variables
+
+All are optional — an empty `.env` works when the backend runs on
+`localhost:8080`.
+
+| Variable | Default | When to set it |
+| --- | --- | --- |
+| `VITE_API_BASE_URL` | empty (same origin) | Only to call a backend on another host. That server's `lab-calendar.web.allowed-origins` must then list this frontend |
+| `VITE_API_PROXY_TARGET` | `http://localhost:8080` | Backend listening somewhere other than 8080 |
+| `VITE_ENABLE_MSW` | empty | `true` runs the mock API in the browser. `npm run dev:mock` sets it via `.env.mock`; dev builds only |
 
 ## Mock API server
 
@@ -48,7 +79,22 @@ To exercise the loading and error states, which you would otherwise never see:
 | `mockApi.fail('events')` | same, from the browser console |
 | `mockApi.reset()` | clear delays and failures |
 
-Domains are `auth`, `categories`, `events`, `projects` and `members`.
+Domains are `auth`, `categories`, `events`, `projects`, `members` and
+`cardImports`.
+
+The card ledger import has three outcomes worth seeing, and the mock does not
+parse the uploaded file — parsing is the server's job (POI), and faking it here
+would test a fake parser instead of the screen. Pick the outcome instead:
+
+| How | What you get |
+| --- | --- |
+| `?mockCardImport=blocked` | one month blocked by a row error, one month ready |
+| `?mockCardImport=empty` | no readable month sheets — apply stays disabled |
+| `mockApi.cardImport('blocked')` | same, from the browser console |
+
+Applying twice with the same preview, or applying after a second preview, comes
+back as `PREVIEW_STALE` — the screen then drops the preview and asks for the
+file again.
 
 The mock is enabled by `VITE_ENABLE_MSW=true`, which `dev:mock` supplies through
 `.env.mock`. It is also gated on `import.meta.env.DEV`, so a production build
