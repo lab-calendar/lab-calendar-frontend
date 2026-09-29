@@ -1,6 +1,7 @@
 import { apiClient } from './client'
 import type {
   CardImportHistoryEntry,
+  CardImportHistoryProblem,
   CardImportMonth,
   CardImportProblem,
   CardImportResult,
@@ -97,7 +98,7 @@ type CardImportHistoryDto = {
   skippedRows: number
   errorCode: string | null
   problemCount: number
-  problems: CardImportProblem[] | null
+  problems: CardImportHistoryProblem[] | null
 }
 
 const HISTORY_STATUSES = ['RUNNING', 'SUCCESS', 'PARTIAL', 'FAILED'] as const

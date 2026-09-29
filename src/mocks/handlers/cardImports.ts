@@ -187,7 +187,15 @@ export const cardImportHandlers = [
       skippedRows: preview.totals.skippedRows,
       errorCode: null,
       problemCount: preview.problems.length,
-      problems: preview.problems,
+      /*
+       * 이력의 문제 행은 업로드 응답과 모양이 다르다 — 서버는 sync_log_error 를
+       * 내리므로 시트와 행이 한 문자열로 붙고 문구는 남지 않는다 (KAN-60).
+       */
+      problems: preview.problems.map((problem) => ({
+        locator: `${problem.sheet}:${problem.row}`,
+        code: problem.code,
+        level: problem.level,
+      })),
     }
     mockDb().cardImports.unshift(entry)
     // 한 번 반영한 미리보기는 다시 쓸 수 없다

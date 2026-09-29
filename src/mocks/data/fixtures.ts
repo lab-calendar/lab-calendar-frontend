@@ -208,13 +208,7 @@ export function seedCardImports(today: string): MockCardImport[] {
       errorCode: null,
       problemCount: 1,
       problems: [
-        {
-          sheet: '2026년 9월',
-          row: 14,
-          level: 'ERROR',
-          code: 'PROJECT_MISSING',
-          message: '과제명이 비어 있어 해당 월 전체를 유지합니다.',
-        },
+        { locator: '2026년 9월:14', code: 'PROJECT_MISSING', level: 'ERROR' },
       ],
     },
     /*

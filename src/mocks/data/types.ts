@@ -1,5 +1,5 @@
 import type { CategoryKey } from '../../constants/categories'
-import type { CardImportProblem, EventSource } from '../../types/domain'
+import type { CardImportHistoryProblem, EventSource } from '../../types/domain'
 
 /** 목 서버가 들고 있는 일정. 서버 테이블에 가깝게 두고, 응답 모양은 핸들러가 만든다. */
 export type MockEvent = {
@@ -50,5 +50,5 @@ export type MockCardImport = {
   skippedRows: number
   errorCode: string | null
   problemCount: number
-  problems: CardImportProblem[]
+  problems: CardImportHistoryProblem[]
 }

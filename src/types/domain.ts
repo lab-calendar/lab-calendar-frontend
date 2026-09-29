@@ -243,5 +243,17 @@ export type CardImportHistoryEntry = {
   /** 실패한 회차의 사유 코드 (`NO_APPLICABLE_MONTHS` 등) */
   errorCode: string | null
   problemCount: number
-  problems: CardImportProblem[]
+  /**
+   * 업로드 응답의 `CardImportProblem` 과 모양이 다르다. 이력은 `sync_log_error`
+   * 한 줄이라 시트와 행이 `2026년 9월:8` 처럼 한 문자열로 붙어 있고, 사람이 읽을
+   * 문구는 남지 않는다 — 그 칸에는 등급이 들어 있다.
+   */
+  problems: CardImportHistoryProblem[]
+}
+
+export type CardImportHistoryProblem = {
+  /** `시트명:행번호` */
+  locator: string
+  code: string
+  level: CardImportProblemLevel
 }
