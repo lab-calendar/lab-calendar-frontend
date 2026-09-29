@@ -3,6 +3,10 @@
  *
  * 흐름에서 빼내 달력이 세로를 온전히 쓰게 한다. 자리는 오른쪽 위 — 달력의 요일
  * 머리줄과 첫 주가 가장 덜 가려지는 자리이고, 토스트(오른쪽 아래)와도 겹치지 않는다.
+ *
+ * 담는 판은 두지 않는다. 띠 뒤에 흰 판을 깔면 달력의 그 부분이 통째로 덮여
+ * 가려진 칸이 실제 띠보다 훨씬 넓어 보인다. 각 띠만 스스로 불투명하게 띄워,
+ * 가린 자리가 띠 높이만큼에 머물게 한다.
  */
 .notice {
   position: absolute;
@@ -11,44 +15,37 @@
   z-index: var(--z-notice);
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-1);
   width: min(20rem, calc(100% - var(--space-6)));
-  padding: var(--space-3);
-  background: var(--glass-fill);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
+  background: none;
+  border: none;
 }
 
+/* 판이 없으니 ✕ 도 제 칠을 갖고, 띠와 같은 폭 안에서 오른쪽에 붙는다 */
 .head {
   display: flex;
-  gap: var(--space-2);
-  align-items: baseline;
-  justify-content: space-between;
-}
-
-.title {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text);
+  justify-content: flex-end;
 }
 
 .close {
-  padding: 0 var(--space-1);
-  font-size: var(--font-size-sm);
-  line-height: 1;
-  color: var(--color-text-muted);
-  background: none;
-  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   /* 손가락으로 누를 자리를 확보한다 (WCAG 2.5.8) */
   min-width: 24px;
   min-height: 24px;
+  font-size: var(--font-size-sm);
+  line-height: 1;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-sm);
 }
 
 .close:hover {
   color: var(--color-text);
+  border-color: var(--color-border-strong);
 }
 
 .list {
@@ -72,11 +69,14 @@
   /* 준비 기간 막대와 같은 색으로 과제 항목임을 잇는다 */
   border-left: 3px solid var(--category-project);
   border-radius: var(--radius-md);
+  /* 달력 위에 바로 얹히므로 띠 스스로 떠 있어 보여야 한다 */
+  box-shadow: var(--shadow-sm);
 }
 
 .item:hover {
   border-color: var(--color-border-strong);
   border-left-color: var(--category-project);
+  box-shadow: var(--shadow-md);
 }
 
 .dDay {
@@ -98,6 +98,10 @@
   border-radius: var(--radius-sm);
 }
 
+/*
+ * 임박한 마감은 옅게 칠한다. 판이 없어져 띠가 달력 위에 바로 놓이는데,
+ * soft 는 불투명한 색이라 아래 칸이 비쳐 보이지 않는다.
+ */
 .item[data-urgency='imminent'] {
   background: var(--category-project-soft);
   border-color: var(--category-project-border);
@@ -125,11 +129,6 @@
   color: var(--color-text-muted);
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.note {
-  font-size: var(--font-size-xs);
-  color: var(--color-text-subtle);
 }
 
 /*

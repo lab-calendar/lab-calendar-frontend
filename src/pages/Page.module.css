@@ -1,5 +1,7 @@
 /* 메인 출력 영역 페이지 공통 스타일 */
 .page {
+  /* 달력 위에 얹히는 마감 알림(KAN-80)의 기준점. 없으면 헤더까지 올라간다 */
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
