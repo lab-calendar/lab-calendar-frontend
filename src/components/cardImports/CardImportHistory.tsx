@@ -1,4 +1,5 @@
 import { useCardImports } from '../../queries/useCardImports'
+import type { CardImportHistoryEntry } from '../../types/domain'
 import { formatDateTime } from '../../utils/date'
 import ErrorState from '../common/ErrorState'
 import LoadingState from '../common/LoadingState'
@@ -6,6 +7,7 @@ import styles from './CardImportHistory.module.css'
 
 /** 서버가 준 상태에 우리말을 붙인다. */
 const STATUS_LABELS = {
+  RUNNING: '올리는 중',
   SUCCESS: '반영',
   PARTIAL: '일부 반영',
   FAILED: '실패',
@@ -56,15 +58,10 @@ function CardImportHistory() {
           {imports.map((entry) => (
             <li key={entry.id} className={styles.item} data-status={entry.status}>
               <span className={styles.when}>
-                {formatDateTime(entry.importedAt)}
+                {formatDateTime(entry.finishedAt ?? entry.startedAt)}
               </span>
               <span className={styles.fileName}>{entry.fileName}</span>
-              <span className={styles.counts}>
-                추가 {entry.totals.added} · 사라짐 {entry.totals.removed}
-                {entry.totals.blockedMonths > 0
-                  ? ` · 보존 ${entry.totals.blockedMonths}달`
-                  : ''}
-              </span>
+              <span className={styles.counts}>{describeCounts(entry)}</span>
               <span className={styles.status}>
                 {STATUS_LABELS[entry.status]}
               </span>
@@ -74,6 +71,28 @@ function CardImportHistory() {
       )}
     </section>
   )
+}
+
+/**
+ * 건수 한 줄.
+ *
+ * 이력에는 달별 집계가 없어 회차 합만 쓴다. 사라짐을 늘 적는 이유는 달 단위로
+ * 갈아 끼우는 작업이라서다 — 추가만 보이면 무엇이 없어졌는지 모르고 지나간다.
+ * 끝나지 않은 회차의 숫자는 아직 0 이므로 건수 대신 상태만 말한다.
+ */
+function describeCounts(entry: CardImportHistoryEntry): string {
+  if (entry.status === 'RUNNING') return '처리 중입니다'
+  if (entry.status === 'FAILED') {
+    return entry.errorCode === null
+      ? '반영하지 못했습니다'
+      : `반영하지 못했습니다 (${entry.errorCode})`
+  }
+
+  const parts = [`추가 ${entry.added}`, `사라짐 ${entry.removed}`]
+  if (entry.skippedRows > 0) parts.push(`건너뜀 ${entry.skippedRows}행`)
+  if (entry.problemCount > 0) parts.push(`문제 ${entry.problemCount}건`)
+
+  return parts.join(' · ')
 }
 
 export default CardImportHistory

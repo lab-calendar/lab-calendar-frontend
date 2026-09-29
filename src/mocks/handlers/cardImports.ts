@@ -167,12 +167,27 @@ export const cardImportHandlers = [
       return fail('NO_APPLICABLE_MONTHS')
     }
 
+    /*
+     * 이력은 업로드 응답과 모양이 다르다 — 서버가 sync_log 한 줄을 그대로 내려주므로
+     * 달별 집계가 없고 회차 합만 평평하게 남는다 (KAN-60).
+     */
+    const finishedAt = new Date().toISOString()
     const entry: MockCardImport = {
       id: nextId(),
-      importedAt: new Date().toISOString(),
       fileName,
       status: preview.totals.blockedMonths > 0 ? 'PARTIAL' : 'SUCCESS',
-      totals: preview.totals,
+      startedAt: finishedAt,
+      finishedAt,
+      durationMs: 1200,
+      processed:
+        preview.totals.added + preview.totals.removed + preview.totals.unchanged,
+      added: preview.totals.added,
+      updated: 0,
+      removed: preview.totals.removed,
+      skippedRows: preview.totals.skippedRows,
+      errorCode: null,
+      problemCount: preview.problems.length,
+      problems: preview.problems,
     }
     mockDb().cardImports.unshift(entry)
     // 한 번 반영한 미리보기는 다시 쓸 수 없다

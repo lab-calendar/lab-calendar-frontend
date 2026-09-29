@@ -76,15 +76,59 @@ export async function applyCardImport(
   return toResult(data.data)
 }
 
+/**
+ * 이력 한 줄 (KAN-60).
+ *
+ * 업로드 응답과 달리 `totals` 로 묶여 있지 않고 평평하다. 서버의 `sync_log` 한 줄을
+ * 그대로 내려주기 때문이다 — 두 응답의 모양을 억지로 맞추지 않고 받은 대로 둔다.
+ * 끝나지 않은 회차는 `finishedAt`·`durationMs`·`errorCode` 가 비어 온다.
+ */
+type CardImportHistoryDto = {
+  id: string
+  fileName: string
+  status: string
+  startedAt: string
+  finishedAt: string | null
+  durationMs: number | null
+  processed: number
+  added: number
+  updated: number
+  removed: number
+  skippedRows: number
+  errorCode: string | null
+  problemCount: number
+  problems: CardImportProblem[] | null
+}
+
+const HISTORY_STATUSES = ['RUNNING', 'SUCCESS', 'PARTIAL', 'FAILED'] as const
+
+/**
+ * 모르는 상태는 실패로 본다.
+ *
+ * `sync_log.status` 는 DB 제약으로 네 값만 들어오지만, 제약이 늘어나는 쪽이
+ * 화면보다 빠를 수 있다. 그때 목록이 빈 칸을 그리는 것보다 실패로 보이는 편이
+ * 낫다 — 적어도 사람이 들여다본다.
+ */
+function toStatus(value: string): CardImportHistoryEntry['status'] {
+  return (HISTORY_STATUSES as readonly string[]).includes(value)
+    ? (value as CardImportHistoryEntry['status'])
+    : 'FAILED'
+}
+
 /** 최근 업로드 이력 (KAN-60). */
 export async function fetchCardImports(
   limit = 20,
 ): Promise<CardImportHistoryEntry[]> {
-  const { data } = await apiClient.get<ApiResponse<CardImportHistoryEntry[]>>(
+  const { data } = await apiClient.get<ApiResponse<CardImportHistoryDto[]>>(
     IMPORTS_PATH,
     { params: { limit } },
   )
-  return data.data
+
+  return data.data.map((dto) => ({
+    ...dto,
+    status: toStatus(dto.status),
+    problems: dto.problems ?? [],
+  }))
 }
 
 /** 미리보기를 다시 받아야 하는 거절인지 (설계 §6.2). */

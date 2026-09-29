@@ -302,6 +302,7 @@ describe('카드 내역 가져오기', () => {
 
   it('한 번 반영한 토큰은 다시 쓸 수 없다', async () => {
     await signInAs('editor')
+    const before = await fetchCardImports()
     const preview = await previewCardImport(xlsx('회의록 인원.xlsx'))
     await applyCardImport(xlsx('회의록 인원.xlsx'), preview.previewToken)
 
@@ -311,8 +312,8 @@ describe('카드 내역 가져오기', () => {
     ).catch((error: unknown) => error)
 
     expect(failure).toMatchObject({ code: 'PREVIEW_STALE' })
-    // 거절된 재시도가 이력을 늘리지 않는다
-    expect(await fetchCardImports()).toHaveLength(3)
+    // 거절된 재시도가 이력을 늘리지 않는다 — 성공한 한 건만 늘어 있어야 한다
+    expect(await fetchCardImports()).toHaveLength(before.length + 1)
   })
 
   it('반영할 달이 하나도 없으면 거절한다', async () => {

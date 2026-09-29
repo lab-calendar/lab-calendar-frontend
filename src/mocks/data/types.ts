@@ -1,5 +1,5 @@
 import type { CategoryKey } from '../../constants/categories'
-import type { EventSource } from '../../types/domain'
+import type { CardImportProblem, EventSource } from '../../types/domain'
 
 /** 목 서버가 들고 있는 일정. 서버 테이블에 가깝게 두고, 응답 모양은 핸들러가 만든다. */
 export type MockEvent = {
@@ -38,14 +38,17 @@ export type MockTier = 'EDITOR' | 'VIEWER'
 /** 카드 내역 업로드 한 회차. 서버의 sync_log 한 줄에 해당한다 (KAN-60). */
 export type MockCardImport = {
   id: string
-  importedAt: string
   fileName: string
-  status: 'SUCCESS' | 'PARTIAL' | 'FAILED'
-  totals: {
-    added: number
-    removed: number
-    unchanged: number
-    skippedRows: number
-    blockedMonths: number
-  }
+  status: 'RUNNING' | 'SUCCESS' | 'PARTIAL' | 'FAILED'
+  startedAt: string
+  finishedAt: string | null
+  durationMs: number | null
+  processed: number
+  added: number
+  updated: number
+  removed: number
+  skippedRows: number
+  errorCode: string | null
+  problemCount: number
+  problems: CardImportProblem[]
 }

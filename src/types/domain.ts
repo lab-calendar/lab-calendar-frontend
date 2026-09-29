@@ -217,13 +217,31 @@ export function hasApplicableMonth(result: CardImportResult): boolean {
   return result.months.some((month) => month.status === 'READY')
 }
 
-/** 지난 업로드 한 건 (KAN-60). */
+/**
+ * 지난 업로드 한 건 (KAN-60).
+ *
+ * 서버의 `sync_log` 한 줄을 그대로 내려준다. 업로드 응답(`CardImportResult`)과 달리
+ * 달별 집계가 없고 회차 전체의 합만 있다 — 여기에 `blockedMonths` 를 기대하면 안 된다.
+ */
 export type CardImportHistoryEntry = {
   id: string
-  /** 반영한 시각 */
-  importedAt: string
   fileName: string
-  /** PARTIAL — 정상 월만 반영하고 오류 월은 보존한 경우 */
-  status: 'SUCCESS' | 'PARTIAL' | 'FAILED'
-  totals: CardImportTotals
+  /**
+   * RUNNING 은 아직 끝나지 않은 회차다. 서버가 시작할 때 한 줄을 먼저 적고 끝나면
+   * 고치기 때문에, 올리는 도중에 목록을 열면 이 값이 보인다.
+   */
+  status: 'RUNNING' | 'SUCCESS' | 'PARTIAL' | 'FAILED'
+  startedAt: string
+  /** 아직 끝나지 않았으면 null */
+  finishedAt: string | null
+  durationMs: number | null
+  processed: number
+  added: number
+  updated: number
+  removed: number
+  skippedRows: number
+  /** 실패한 회차의 사유 코드 (`NO_APPLICABLE_MONTHS` 등) */
+  errorCode: string | null
+  problemCount: number
+  problems: CardImportProblem[]
 }
