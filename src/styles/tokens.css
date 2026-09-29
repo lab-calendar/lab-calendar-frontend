@@ -130,6 +130,8 @@
   --layout-sidebar-width: 320px;
 
   /* ── z-index ───────────────────────────────── */
+  /* 달력 위에 얹히는 알림 — 달력보다 위, 헤더보다 아래 (KAN-80) */
+  --z-notice: 5;
   --z-header: 10;
   --z-backdrop: 15;
   --z-drawer: 20;

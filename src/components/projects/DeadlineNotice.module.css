@@ -1,0 +1,146 @@
+/*
+ * 달력 위에 얹히는 알림 (KAN-80).
+ *
+ * 흐름에서 빼내 달력이 세로를 온전히 쓰게 한다. 자리는 오른쪽 위 — 달력의 요일
+ * 머리줄과 첫 주가 가장 덜 가려지는 자리이고, 토스트(오른쪽 아래)와도 겹치지 않는다.
+ */
+.notice {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  z-index: var(--z-notice);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: min(20rem, calc(100% - var(--space-6)));
+  padding: var(--space-3);
+  background: var(--glass-fill);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.head {
+  display: flex;
+  gap: var(--space-2);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.close {
+  padding: 0 var(--space-1);
+  font-size: var(--font-size-sm);
+  line-height: 1;
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  /* 손가락으로 누를 자리를 확보한다 (WCAG 2.5.8) */
+  min-width: 24px;
+  min-height: 24px;
+}
+
+.close:hover {
+  color: var(--color-text);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  width: 100%;
+  padding: var(--space-1) var(--space-2);
+  text-align: left;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  /* 준비 기간 막대와 같은 색으로 과제 항목임을 잇는다 */
+  border-left: 3px solid var(--category-project);
+  border-radius: var(--radius-md);
+}
+
+.item:hover {
+  border-color: var(--color-border-strong);
+  border-left-color: var(--category-project);
+}
+
+.dDay {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--category-project);
+  white-space: nowrap;
+}
+
+/*
+ * 지난 마감은 남은 마감과 같은 무게로 읽히면 안 된다. 글자색만 바꾸면 과제
+ * 카테고리 색이 이미 붉은 계열이라 구별되지 않으므로, 칠을 뒤집는다.
+ */
+.item[data-urgency='overdue'] .dDay {
+  padding: 2px var(--space-1);
+  color: var(--color-text-inverse);
+  background: var(--color-danger);
+  border-radius: var(--radius-sm);
+}
+
+.item[data-urgency='imminent'] {
+  background: var(--category-project-soft);
+  border-color: var(--category-project-border);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  /* 이름이 길어도 칸을 밀어내지 않고 잘리게 한다 */
+  min-width: 0;
+}
+
+.name {
+  overflow: hidden;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stage {
+  overflow: hidden;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+}
+
+/*
+ * 좁은 화면에서는 폭을 거의 다 쓰되 여전히 얹혀 있다. 흐름으로 되돌리면 달력이
+ * 그만큼 아래로 밀려, 이 작업에서 되찾으려던 자리를 다시 내주게 된다.
+ */
+@media (max-width: 767px) {
+  .notice {
+    top: var(--space-2);
+    right: var(--space-2);
+    left: var(--space-2);
+    width: auto;
+  }
+}
