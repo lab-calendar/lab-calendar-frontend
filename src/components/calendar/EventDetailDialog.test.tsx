@@ -96,19 +96,25 @@ describe('EventDetailDialog', () => {
     expect(screen.getByText('제출 단계')).toBeInTheDocument()
   })
 
-  it('구글 연동 일정이면 어디서 고쳐야 하는지 알려준다', () => {
-    renderWithRouter(
-      <EventDetailDialog
-        event={event({ source: 'GOOGLE_SYNC' })}
-        onClose={() => {}}
-      />,
-    )
+  it.each(['GOOGLE_SYNC', 'CARD_IMPORT'] as const)(
+    '카드 내역에서 들여온 일정(%s)이면 어디서 고쳐야 하는지 알려준다',
+    (source) => {
+      /*
+       * 서버가 CARD_IMPORT 로 옮겨 가는 동안에는 두 값이 섞여 온다 (KAN-54 설계 §6.3).
+       * 어느 쪽이든 사람이 고칠 수 없고, 고치려면 엑셀 원본을 손봐야 한다.
+       */
+      renderWithRouter(
+        <EventDetailDialog event={event({ source })} onClose={() => {}} />,
+      )
 
-    expect(
-      screen.getByText(/구글 공유 문서에서 동기화된 일정입니다/),
-    ).toBeInTheDocument()
-    expect(screen.getByText(/원본 문서를 수정해 주세요/)).toBeInTheDocument()
-  })
+      expect(
+        screen.getByText(/카드 내역 파일에서 들여온 일정입니다/),
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(/엑셀 원본을 고친 뒤 다시 올려 주세요/),
+      ).toBeInTheDocument()
+    },
+  )
 
   describe('수정 · 삭제', () => {
     it('직접 만든 일정에는 수정과 삭제를 보여준다', () => {

@@ -27,18 +27,31 @@ export type ApiErrorKind =
 export class ApiError extends Error {
   readonly kind: ApiErrorKind
   readonly status?: number
+  /**
+   * 서버가 붙인 에러 코드 (KAN-29 공통 응답 포맷).
+   *
+   * 상태 코드만으로는 갈라지지 않는 경우에 쓴다 — 같은 409 라도 `PREVIEW_STALE`
+   * 이면 미리보기를 다시 받아야 하고, 그 밖이면 그냥 알리고 만다. 화면이 분기해야
+   * 하는 코드에만 쓰고, 문구는 서버가 준 `message` 를 그대로 보여준다.
+   */
+  readonly code?: string
   /** 필드별 검증 오류 (KAN-29 공통 응답 포맷) */
   readonly fieldErrors?: Record<string, string>
 
   constructor(
     kind: ApiErrorKind,
     message: string,
-    options: { status?: number; fieldErrors?: Record<string, string> } = {},
+    options: {
+      status?: number
+      code?: string
+      fieldErrors?: Record<string, string>
+    } = {},
   ) {
     super(message)
     this.name = 'ApiError'
     this.kind = kind
     this.status = options.status
+    this.code = options.code
     this.fieldErrors = options.fieldErrors
   }
 }
@@ -66,6 +79,7 @@ function kindFromStatus(status: number): ApiErrorKind {
 
 /** 서버 공통 에러 응답 (KAN-29). 형태가 확정되면 여기만 맞추면 된다. */
 type ErrorResponseBody = {
+  code?: string
   message?: string
   fieldErrors?: Record<string, string>
 }
@@ -84,6 +98,7 @@ export function toApiError(error: unknown): ApiError {
 
     return new ApiError(kind, body?.message ?? MESSAGES[kind], {
       status: response.status,
+      code: body?.code,
       fieldErrors: body?.fieldErrors,
     })
   }

@@ -34,3 +34,18 @@ export type MockMember = {
 }
 
 export type MockTier = 'EDITOR' | 'VIEWER'
+
+/** 카드 내역 업로드 한 회차. 서버의 sync_log 한 줄에 해당한다 (KAN-60). */
+export type MockCardImport = {
+  id: string
+  importedAt: string
+  fileName: string
+  status: 'SUCCESS' | 'PARTIAL' | 'FAILED'
+  totals: {
+    added: number
+    removed: number
+    unchanged: number
+    skippedRows: number
+    blockedMonths: number
+  }
+}

@@ -14,4 +14,5 @@ import { lazy } from 'react'
 export const CalendarPage = lazy(() => import('../pages/CalendarPage'))
 export const ProjectsPage = lazy(() => import('../pages/ProjectsPage'))
 export const MembersPage = lazy(() => import('../pages/MembersPage'))
+export const CardImportPage = lazy(() => import('../pages/CardImportPage'))
 export const NotFoundPage = lazy(() => import('../pages/NotFoundPage'))

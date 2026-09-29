@@ -25,6 +25,18 @@ const ERRORS = {
     status: 500,
     message: '서버 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.',
   },
+  /*
+   * 카드 내역 가져오기 전용 (설계 §6.2). 화면이 상태 코드만으로는 갈라지지 않아
+   * 서버가 `code` 로 구분해 준다 — PREVIEW_STALE 은 미리보기부터 다시 받아야 한다.
+   */
+  PREVIEW_STALE: {
+    status: 409,
+    message: '미리보기 이후 파일이나 저장된 내역이 바뀌었습니다.',
+  },
+  NO_APPLICABLE_MONTHS: {
+    status: 422,
+    message: '반영할 수 있는 달이 없습니다.',
+  },
 } as const
 
 export type ErrorCode = keyof typeof ERRORS

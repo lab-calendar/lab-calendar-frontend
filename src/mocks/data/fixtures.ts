@@ -1,5 +1,10 @@
 import { addDays } from '../../utils/date'
-import type { MockEvent, MockMember, MockProject } from './types'
+import type {
+  MockCardImport,
+  MockEvent,
+  MockMember,
+  MockProject,
+} from './types'
 
 /**
  * 목 서버의 초기 데이터 (KAN-70).
@@ -160,6 +165,43 @@ export function seedEvents(today: string): MockEvent[] {
       // 명단에 없는 이름도 섞인다 — 장부의 참석자는 외부 인원을 포함한다
       participants: ['홍길동', '이영희', '박민수', '김철수', '김도연'],
       source: 'GOOGLE_SYNC',
+    },
+  ]
+}
+
+/**
+ * 카드 내역 업로드 이력 (KAN-60).
+ *
+ * 한 회차는 일부만 반영된 것으로 둔다 — 오류가 있는 달을 보존했을 때 목록에서
+ * 그 사실이 눈에 띄는지, 화면을 눌러 보지 않고는 알 수 없다.
+ */
+export function seedCardImports(today: string): MockCardImport[] {
+  return [
+    {
+      id: '90',
+      importedAt: `${today}T09:10:00+09:00`,
+      fileName: '회의록 인원.xlsx',
+      status: 'SUCCESS',
+      totals: {
+        added: 3,
+        removed: 0,
+        unchanged: 32,
+        skippedRows: 0,
+        blockedMonths: 0,
+      },
+    },
+    {
+      id: '89',
+      importedAt: `${addDays(today, -6)}T17:42:00+09:00`,
+      fileName: '회의록 인원(수정).xlsx',
+      status: 'PARTIAL',
+      totals: {
+        added: 2,
+        removed: 1,
+        unchanged: 18,
+        skippedRows: 1,
+        blockedMonths: 1,
+      },
     },
   ]
 }

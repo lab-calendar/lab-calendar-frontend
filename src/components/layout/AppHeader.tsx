@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { useAuth } from '../../contexts/AuthContext'
+import { useAuth, useCanEdit } from '../../contexts/AuthContext'
 import { ROUTES } from '../../router/routes'
 import styles from './AppHeader.module.css'
 
@@ -9,6 +9,16 @@ const NAV_ITEMS = [
   { to: ROUTES.members, label: '구성원', end: false },
 ]
 
+/**
+ * 편집 등급에게만 보이는 메뉴.
+ *
+ * 카드 내역은 조회 등급에 아예 내려오지 않는다(KAN-35). 서버가 막으므로 메뉴를
+ * 감추는 것은 편의일 뿐이지만, 눌러 봐야 거절만 돌아오는 자리를 두지는 않는다.
+ */
+const EDITOR_NAV_ITEMS = [
+  { to: ROUTES.cardImports, label: '카드 내역', end: false },
+]
+
 type AppHeaderProps = {
   isSidebarOpen: boolean
   onToggleSidebar: () => void
@@ -16,7 +26,9 @@ type AppHeaderProps = {
 
 function AppHeader({ isSidebarOpen, onToggleSidebar }: AppHeaderProps) {
   const { session, signOut } = useAuth()
+  const canEdit = useCanEdit()
   const isViewer = session?.authenticated === true && session.tier === 'VIEWER'
+  const navItems = canEdit ? [...NAV_ITEMS, ...EDITOR_NAV_ITEMS] : NAV_ITEMS
 
   return (
     <header className={styles.header}>
@@ -42,7 +54,7 @@ function AppHeader({ isSidebarOpen, onToggleSidebar }: AppHeaderProps) {
       <span className={styles.brand}>Lab Calendar</span>
 
       <nav className={styles.nav} aria-label="주요 메뉴">
-        {NAV_ITEMS.map(({ to, label, end }) => (
+        {navItems.map(({ to, label, end }) => (
           <NavLink
             key={to}
             to={to}
