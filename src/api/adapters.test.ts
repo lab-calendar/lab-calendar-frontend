@@ -57,6 +57,7 @@ const PROJECT_DTO = {
   leadTimeDays: 21,
   active: true,
   dDay: 6,
+  deadlineImminent: true,
   preparationStartDate: '2026-09-05',
 }
 
@@ -149,6 +150,15 @@ describe('fetchProjects', () => {
     expect(project.dDay).toBe(6)
     expect(project.preparationStartDate).toBe('2026-09-05')
     expect(project.leadTimeDays).toBe(21)
+  })
+
+  it('마감 임박 판단도 서버 값을 그대로 쓴다', async () => {
+    // "직전 주간" 의 기준은 서버에 있다 (계약 §7.1). 화면이 다시 재면 기준이 갈린다
+    respondWith({ data: [{ ...PROJECT_DTO, dDay: 9, deadlineImminent: true }] })
+
+    const [project] = await fetchProjects()
+
+    expect(project.deadlineImminent).toBe(true)
   })
 
   it('제출 단계 없음을 undefined 로 바꾼다', async () => {

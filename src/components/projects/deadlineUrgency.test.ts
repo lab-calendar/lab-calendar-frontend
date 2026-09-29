@@ -1,11 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Project } from '../../types/domain'
-import {
-  IMMINENT_WITHIN_DAYS,
-  attentionNeeded,
-  needsAttention,
-  urgencyOf,
-} from './deadlineUrgency'
+import { attentionNeeded, needsAttention, urgencyOf } from './deadlineUrgency'
 
 function project(overrides: Partial<Project> = {}): Project {
   return {
@@ -16,35 +11,50 @@ function project(overrides: Partial<Project> = {}): Project {
     active: true,
     dDay: 3,
     preparationStartDate: '2026-09-05',
+    // 임박 여부는 서버가 정한다. 여기서는 그 규칙(오늘 포함 7일)을 흉내 내 자리를 채운다
+    deadlineImminent: (overrides.dDay ?? 3) >= 0 && (overrides.dDay ?? 3) <= 7,
     ...overrides,
   }
 }
 
 describe('urgencyOf', () => {
-  it('마감 직전 주간은 임박으로 본다', () => {
-    // 기획서 3.1 의 "마감 직전 주간"
-    expect(urgencyOf(0)).toBe('imminent')
-    expect(urgencyOf(3)).toBe('imminent')
-    expect(urgencyOf(IMMINENT_WITHIN_DAYS)).toBe('imminent')
+  it('서버가 임박이라고 하면 임박이다', () => {
+    // "마감 직전 주간" 의 기준은 서버에 있다 (계약 §7.1). 화면은 그 판단을 받아 쓴다
+    expect(urgencyOf({ dDay: 3, deadlineImminent: true })).toBe('imminent')
+    expect(urgencyOf({ dDay: 0, deadlineImminent: true })).toBe('imminent')
   })
 
-  it('한 주를 넘기면 평범하다', () => {
-    expect(urgencyOf(IMMINENT_WITHIN_DAYS + 1)).toBe('normal')
-    expect(urgencyOf(90)).toBe('normal')
+  it('서버가 아니라고 하면 평범하다', () => {
+    expect(urgencyOf({ dDay: 9, deadlineImminent: false })).toBe('normal')
+    expect(urgencyOf({ dDay: 90, deadlineImminent: false })).toBe('normal')
+  })
+
+  it('남은 날짜로 임박을 다시 판단하지 않는다', () => {
+    /*
+     * 서버가 기준을 바꾸면(예: 열흘 전부터) 화면이 그대로 따라가야 한다. dDay 를
+     * 보고 다시 재면 서버가 임박이라 한 과제에 빨간불이 켜지지 않는다.
+     */
+    expect(urgencyOf({ dDay: 9, deadlineImminent: true })).toBe('imminent')
+    expect(urgencyOf({ dDay: 2, deadlineImminent: false })).toBe('normal')
   })
 
   it('지난 마감은 임박과 구분한다', () => {
     // 달력은 둘을 같이 칠하지만, 위젯과 알림은 다르게 보여준다
-    expect(urgencyOf(-1)).toBe('overdue')
-    expect(urgencyOf(-100)).toBe('overdue')
+    expect(urgencyOf({ dDay: -1, deadlineImminent: false })).toBe('overdue')
+    expect(urgencyOf({ dDay: -100, deadlineImminent: false })).toBe('overdue')
+  })
+
+  it('마감이 지났으면 임박 플래그보다 먼저 본다', () => {
+    // 서버는 지난 마감에 임박을 주지 않지만, 순서가 뒤집히면 지난 마감이 묻힌다
+    expect(urgencyOf({ dDay: -2, deadlineImminent: true })).toBe('overdue')
   })
 })
 
 describe('needsAttention', () => {
   it('임박한 것과 지난 것만 챙긴다', () => {
-    expect(needsAttention(3)).toBe(true)
-    expect(needsAttention(-3)).toBe(true)
-    expect(needsAttention(30)).toBe(false)
+    expect(needsAttention({ dDay: 3, deadlineImminent: true })).toBe(true)
+    expect(needsAttention({ dDay: -3, deadlineImminent: false })).toBe(true)
+    expect(needsAttention({ dDay: 30, deadlineImminent: false })).toBe(false)
   })
 })
 

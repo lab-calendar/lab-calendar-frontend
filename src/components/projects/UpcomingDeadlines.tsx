@@ -83,7 +83,7 @@ function UpcomingDeadlines() {
             <button
               type="button"
               className={styles.item}
-              data-urgency={urgencyOf(project.dDay)}
+              data-urgency={urgencyOf(project)}
               onClick={() => focusOn(project.endDate)}
             >
               <span className={styles.dDay}>

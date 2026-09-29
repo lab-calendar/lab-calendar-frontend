@@ -30,6 +30,7 @@ const PROJECT: Project = {
   leadTimeDays: 3,
   preparationStartDate: '2026-09-05',
   dDay: 6,
+  deadlineImminent: true,
   active: true,
 }
 
