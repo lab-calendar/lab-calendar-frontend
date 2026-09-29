@@ -123,7 +123,7 @@ describe('EventForm 등록 모드', () => {
     // 카테고리 목록은 비동기로 채워진다
     await user.click(await screen.findByRole('radio', { name: '카드/경비 사용' }))
 
-    expect(screen.getByLabelText('사용 목적')).toBeInTheDocument()
+    expect(screen.getByLabelText('구분')).toBeInTheDocument()
   })
 
   it('항목 유형은 이름 붙은 한 묶음의 라디오다', async () => {
@@ -176,7 +176,7 @@ describe('EventForm 명단에서 고르기 (KAN-74)', () => {
   it('담당 연구원 칸에는 명단을 이름 제안으로 붙인다', async () => {
     renderForm(EXISTING)
 
-    // 랩실 일정의 부가 정보는 사람 이름이다. 제출 단계·지출 목적에는 붙이지 않는다.
+    // 랩실 일정의 부가 정보는 사람 이름이다. 제출 단계·카드 구분에는 붙이지 않는다.
     const input = screen.getByLabelText('담당 연구원')
     await waitFor(() => expect(input).toHaveAttribute('list'))
 

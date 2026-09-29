@@ -1,0 +1,73 @@
+/*
+ * 달력 위에 얇게 한 줄로 놓인다 (KAN-61).
+ *
+ * 평소에는 눈에 걸리지 않아야 한다 — 매일 보는 화면에서 "정상입니다" 를 크게 띄우면
+ * 정작 실패했을 때의 경고도 같은 무게로 읽힌다. 그래서 유리 배경 위 작은 글씨로
+ * 두고, 실패했을 때만 색을 올린다.
+ */
+.bar {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--glass-fill);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  /* 카드/경비 일정과 같은 색으로 무엇에 대한 줄인지 잇는다 */
+  border-left: 3px solid var(--category-card);
+  box-shadow: var(--glass-shadow);
+}
+
+.status {
+  margin: 0;
+  /* 문구가 길어도 버튼을 밀어내지 않고 줄바꿈되게 한다 */
+  min-width: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+}
+
+/*
+ * 실패는 조용히 지나가면 안 된다. 동기화가 멈춰 있다는 것은 달력이 장부보다
+ * 뒤처져 있다는 뜻이고, 그 상태로 정산을 하면 빠진 지출을 못 본다.
+ */
+.bar[data-state='failed'] {
+  border-color: var(--color-danger);
+  border-left-color: var(--color-danger);
+}
+
+.bar[data-state='failed'] .status {
+  color: var(--color-danger);
+  font-weight: var(--font-weight-medium);
+}
+
+.syncButton {
+  flex: 0 0 auto;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+}
+
+.syncButton:hover:not(:disabled) {
+  border-color: var(--category-card);
+  color: var(--category-card);
+}
+
+.syncButton:disabled {
+  color: var(--color-text-subtle);
+  cursor: progress;
+}
+
+/* 좁은 화면에서는 문구가 두 줄이 되므로 버튼을 아래로 내린다 */
+@media (max-width: 480px) {
+  .bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

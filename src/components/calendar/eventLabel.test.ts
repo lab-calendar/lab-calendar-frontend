@@ -32,12 +32,13 @@ describe('formatEventLabel', () => {
     expect(label).toBe('정기 주간 랩미팅 (홍길동)')
   })
 
-  it('카드는 콜론으로 지출 목적을 잇는다', () => {
+  it('카드는 종류 옆에 구분을 띄어 쓴다', () => {
+    // 장부 B열(카드 종류) + D열(구분). 괄호로 감싸지 않는다
     const label = formatEventLabel(
-      event({ categoryKey: 'card', title: '[법인카드 A]', detail: '다과비' }),
+      event({ categoryKey: 'card', title: '[법인카드 A]', detail: '회의' }),
     )
 
-    expect(label).toBe('[법인카드 A]: 다과비')
+    expect(label).toBe('[법인카드 A] 회의')
   })
 
   it('덧붙일 값이 없으면 제목만 쓴다', () => {
@@ -91,21 +92,21 @@ describe('formatEventHoverText (KAN-61)', () => {
     const hover = formatEventHoverText(
       event({
         categoryKey: 'card',
-        title: 'BRL 과제',
-        detail: '저녁',
+        title: '[법인카드 A]',
+        detail: '회의',
         participants: ['홍길동', '김철수', '이영희'],
       }),
     )
 
-    expect(hover).toBe('BRL 과제: 저녁\n참석 홍길동, 김철수, 이영희 · 총 3명')
+    expect(hover).toBe('[법인카드 A] 회의\n참석 홍길동, 김철수, 이영희 · 총 3명')
   })
 
   it('참석자가 없으면 칩 문구만 쓴다', () => {
     expect(
       formatEventHoverText(
-        event({ categoryKey: 'card', title: 'BRL 과제', detail: '점심' }),
+        event({ categoryKey: 'card', title: '[법인카드 A]', detail: '회의' }),
       ),
-    ).toBe('BRL 과제: 점심')
+    ).toBe('[법인카드 A] 회의')
   })
 
   it('사람이 많으면 앞쪽만 늘어놓고 나머지는 수로 접는다', () => {
@@ -113,7 +114,12 @@ describe('formatEventHoverText (KAN-61)', () => {
     const participants = Array.from({ length: 11 }, (_, index) => `참석자${index + 1}`)
 
     const hover = formatEventHoverText(
-      event({ categoryKey: 'card', title: '컬러 과제', detail: '초과', participants }),
+      event({
+        categoryKey: 'card',
+        title: '[연구비카드 B]',
+        detail: '초과',
+        participants,
+      }),
     )
 
     expect(hover).toContain('참석자8 외 3명')
@@ -121,13 +127,13 @@ describe('formatEventHoverText (KAN-61)', () => {
     expect(hover).not.toContain('참석자9,')
   })
 
-  it('구분이 없으면 과제명만 남고 인원은 그대로 붙는다', () => {
+  it('구분이 없으면 카드 종류만 남고 인원은 그대로 붙는다', () => {
     // 실제 장부에서 구분이 빈 행이 12% 라, 서버가 detail 을 null 로 내려준다
     const hover = formatEventHoverText(
-      event({ categoryKey: 'card', title: 'BRL 과제', participants: ['홍길동'] }),
+      event({ categoryKey: 'card', title: '[법인카드 A]', participants: ['홍길동'] }),
     )
 
-    expect(hover).toBe('BRL 과제\n참석 홍길동 · 총 1명')
+    expect(hover).toBe('[법인카드 A]\n참석 홍길동 · 총 1명')
   })
 
   it('카드가 아닌 일정에도 같은 방식으로 붙는다', () => {

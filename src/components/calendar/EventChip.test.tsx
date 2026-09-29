@@ -74,8 +74,8 @@ describe('EventChip 말풍선 (KAN-61)', () => {
   it('마우스를 올렸을 때 참석 인원이 보인다', () => {
     render(
       <EventChip
-        title="BRL 과제: 저녁"
-        hoverText={'BRL 과제: 저녁\n참석 홍길동, 김철수 · 총 2명'}
+        title="[법인카드 A] 회의"
+        hoverText={'[법인카드 A] 회의\n참석 홍길동, 김철수 · 총 2명'}
         categoryKey="card"
         categoryName="카드/경비 사용"
         onActivate={vi.fn()}
@@ -84,7 +84,7 @@ describe('EventChip 말풍선 (KAN-61)', () => {
 
     expect(screen.getByRole('button')).toHaveAttribute(
       'title',
-      'BRL 과제: 저녁\n참석 홍길동, 김철수 · 총 2명',
+      '[법인카드 A] 회의\n참석 홍길동, 김철수 · 총 2명',
     )
   })
 
@@ -102,8 +102,8 @@ describe('EventChip 말풍선 (KAN-61)', () => {
     // 일정 이름처럼 읽혀 목록을 훑기 어려워진다.
     render(
       <EventChip
-        title="BRL 과제: 저녁"
-        hoverText={'BRL 과제: 저녁\n참석 홍길동 · 총 1명'}
+        title="[법인카드 A] 회의"
+        hoverText={'[법인카드 A] 회의\n참석 홍길동 · 총 1명'}
         categoryKey="card"
         categoryName="카드/경비 사용"
         onActivate={vi.fn()}
@@ -111,7 +111,7 @@ describe('EventChip 말풍선 (KAN-61)', () => {
     )
 
     const chip = screen.getByRole('button')
-    expect(chip).toHaveAccessibleName(/카드\/경비 사용,\s*BRL 과제: 저녁/)
+    expect(chip).toHaveAccessibleName(/카드\/경비 사용,\s*\[법인카드 A\] 회의/)
     expect(chip).not.toHaveAccessibleName(/참석/)
   })
 })

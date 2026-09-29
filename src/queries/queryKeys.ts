@@ -15,4 +15,7 @@ export const queryKeys = {
     all: ['events'] as const,
     list: (range: DateRange | null) => ['events', 'list', range] as const,
   },
+
+  /** 카드 내역 동기화의 마지막 결과 (KAN-60) */
+  cardSync: ['card-sync'] as const,
 } as const

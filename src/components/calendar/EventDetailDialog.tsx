@@ -16,11 +16,11 @@ type EventDetailDialogProps = {
   isDeleting?: boolean
 }
 
-/** 카드/경비는 '사용 목적', 나머지는 카테고리별 의미가 다르다 (기획서 2.2) */
+/** 카드/경비는 장부 D열의 '구분', 나머지는 카테고리별 의미가 다르다 (기획서 2.2) */
 const DETAIL_LABELS: Record<CalendarEvent['categoryKey'], string> = {
   project: '제출 단계',
   lab: '담당 연구원',
-  card: '사용 목적',
+  card: '구분',
 }
 
 /** 사람이 못 고치는 일정은 어디서 바꿔야 하는지까지 알려준다 */

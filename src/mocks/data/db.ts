@@ -1,6 +1,12 @@
 import { addDays, todayIso } from '../../utils/date'
-import { seedEvents, seedMembers, seedProjects } from './fixtures'
-import type { MockEvent, MockMember, MockProject, MockTier } from './types'
+import { seedCardSync, seedEvents, seedMembers, seedProjects } from './fixtures'
+import type {
+  MockCardSync,
+  MockEvent,
+  MockMember,
+  MockProject,
+  MockTier,
+} from './types'
 
 /**
  * 목 서버가 들고 있는 상태 (KAN-70).
@@ -17,6 +23,8 @@ type Db = {
   projects: MockProject[]
   /** 손으로 넣은 일정만 담는다. 준비 기간 막대는 과제에서 파생된다 (KAN-49). */
   events: MockEvent[]
+  /** 카드 내역 동기화의 마지막 결과 (KAN-60) */
+  cardSync: MockCardSync
   nextId: number
 }
 
@@ -52,6 +60,7 @@ function freshDb(today: string): Db {
     members: seedMembers(),
     projects: seedProjects(today),
     events: seedEvents(today),
+    cardSync: seedCardSync(today),
     nextId: 100,
   }
 }

@@ -80,11 +80,11 @@ describe('EventDetailDialog', () => {
   it('카테고리에 따라 부가 정보의 라벨이 달라진다', () => {
     const { unmount } = renderWithRouter(
       <EventDetailDialog
-        event={event({ categoryKey: 'card', detail: '다과비' })}
+        event={event({ categoryKey: 'card', detail: '회의' })}
         onClose={() => {}}
       />,
     )
-    expect(screen.getByText('사용 목적')).toBeInTheDocument()
+    expect(screen.getByText('구분')).toBeInTheDocument()
     unmount()
 
     renderWithRouter(
