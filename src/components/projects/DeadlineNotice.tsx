@@ -34,7 +34,12 @@ function DeadlineNotice() {
   return (
     <aside className={styles.notice} aria-labelledby="deadline-notice-title">
       <div className={styles.head}>
-        <h2 id="deadline-notice-title" className={styles.title}>
+        {/*
+          제목은 소리로만 남긴다. 담는 판을 없앤 뒤로는 글자를 놓을 바닥이 없어,
+          달력 칸 위에 그냥 얹히면 뒤 숫자와 겹쳐 읽힌다. 몇 건인지는 띠 수로
+          보이고, 무엇에 대한 알림인지는 띠마다 들어 있다.
+        */}
+        <h2 id="deadline-notice-title" className="sr-only">
           마감이 임박한 과제 {urgent.length}건
         </h2>
         <button
@@ -42,6 +47,8 @@ function DeadlineNotice() {
           className={styles.close}
           /* 화면에는 ✕ 만 보이지만, 무엇을 닫는지는 이름으로 남긴다 */
           aria-label="마감 알림 닫기"
+          /* 안내문도 판과 함께 내렸다. 정작 궁금할 때는 ✕ 위에 있을 때다 */
+          title="닫으면 오늘은 다시 뜨지 않습니다."
           onClick={dismiss}
         >
           <span aria-hidden="true">✕</span>
@@ -73,8 +80,6 @@ function DeadlineNotice() {
           </li>
         ))}
       </ul>
-
-      <p className={styles.note}>닫으면 오늘은 다시 뜨지 않습니다.</p>
     </aside>
   )
 }
