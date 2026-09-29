@@ -2,7 +2,14 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <!--
+      랩실 로고. .ico 에 16·32·48 을 함께 담아 브라우저가 쓰는 크기를 고르게 하고,
+      큰 화면(탭 미리보기·바로가기)용으로 192·512 를 따로 둔다.
+    -->
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="icon" type="image/png" href="/favicon-192.png" sizes="192x192" />
+    <link rel="icon" type="image/png" href="/favicon-512.png" sizes="512x512" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lab Calendar</title>
   </head>
