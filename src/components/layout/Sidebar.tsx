@@ -43,33 +43,37 @@ function Sidebar({ open, collapsed = false, ref }: SidebarProps) {
         .filter(Boolean)
         .join(' ')}
     >
-      {isCalendar ? (
-        <>
-          <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>카테고리 필터</h2>
-            <CategoryFilter />
-          </section>
-
-          {canEdit ? (
+      {/* 폭이 고정된 안쪽 상자. 바깥이 줄어도 내용은 제 폭을 지킨다 — 접히는 동안
+          글이 다시 줄바꿈되지 않게 하는 장치다 (Sidebar.module.css 참고) */}
+      <div className={styles.inner}>
+        {isCalendar ? (
+          <>
             <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>일정 등록</h2>
-              <EventForm />
+              <h2 className={styles.sectionTitle}>카테고리 필터</h2>
+              <CategoryFilter />
             </section>
-          ) : (
-            <p className={styles.note}>
-              조회 전용으로 접속했습니다. 일정을 등록하거나 고치려면 편집용
-              비밀번호로 다시 접속해 주세요.
-            </p>
-          )}
-        </>
-      ) : (
-        // 캘린더 밖 화면이 과제 관리 하나가 아니게 됐다 (KAN-74 구성원)
-        <p className={styles.note}>
-          {canEdit
-            ? '등록과 수정은 오른쪽 화면에서 합니다.'
-            : '조회 전용으로 접속했습니다. 보기만 할 수 있습니다.'}
-        </p>
-      )}
+
+            {canEdit ? (
+              <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>일정 등록</h2>
+                <EventForm />
+              </section>
+            ) : (
+              <p className={styles.note}>
+                조회 전용으로 접속했습니다. 일정을 등록하거나 고치려면 편집용
+                비밀번호로 다시 접속해 주세요.
+              </p>
+            )}
+          </>
+        ) : (
+          // 캘린더 밖 화면이 과제 관리 하나가 아니게 됐다 (KAN-74 구성원)
+          <p className={styles.note}>
+            {canEdit
+              ? '등록과 수정은 오른쪽 화면에서 합니다.'
+              : '조회 전용으로 접속했습니다. 보기만 할 수 있습니다.'}
+          </p>
+        )}
+      </div>
     </aside>
   )
 }

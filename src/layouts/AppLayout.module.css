@@ -34,10 +34,16 @@
  * 격자 칸과 사이드바가 같은 변수를 보고 있어 한 곳만 바꾸면 둘 다 따라온다. 칸 폭과
  * 요소 폭을 따로 줄이면 한쪽이 내용 최소 폭에 걸려 접어도 자리가 남는다.
  *
- * 폭 전환은 넣지 않는다. grid-template-columns 전환을 브라우저가 중간에 멈춰 세워
- * 접히지 않는 일을 겪었고, 접고 펴는 일은 한 번에 끝나는 편이 덜 헷갈린다.
+ * 전환은 이 **변수 하나에만** 건다. 변수가 길이로 등록돼 있어(tokens.css 의
+ * `@property`) 320px ↔ 0px 사이를 보간하고, 이 값을 보는 쪽 — 격자 칸, 사이드바 폭,
+ * 손잡이 위치 — 이 매 프레임 같이 따라온다. `grid-template-columns` 와 `left` 에
+ * 따로 전환을 걸어 어긋나게 만들 필요가 없다.
  */
 @media (min-width: 1024px) {
+  .body {
+    transition: --layout-sidebar-width var(--layout-sidebar-motion) ease;
+  }
+
   .body[data-sidebar='collapsed'] {
     --layout-sidebar-width: 0px;
   }
@@ -48,11 +54,20 @@
  *
  * 사이드바와 본문의 경계 위에 반쯤 걸쳐 둔다. 접힌 뒤에도 같은 자리(왼쪽 끝)에
  * 남아 있어야 다시 펼 수 있다 — 사이드바 안에 두면 접는 순간 같이 사라진다.
+ *
+ * 세로로는 가운데다. 위쪽 끝에 두었을 때는 헤더 바로 아래라 헤더의 메뉴 버튼과
+ * 섞여 보였고, 달력을 보던 눈에서 멀었다. 가운데면 어느 높이에서 보고 있든 손이
+ * 가는 거리가 가장 짧다.
+ *
+ * 가로 위치는 폭에서 바로 계산한다. 버튼이 24px 이니 `폭 - 12px` 이면 경계 위에
+ * 반씩 걸린다. `max()` 로 바닥을 받쳐 두면 접혀서 폭이 0 이 되어도 왼쪽 끝에 붙어
+ * 온전히 보인다 — 접힌 상태를 위한 별도 규칙이 필요 없고, 그래서 전환 중에 위치가
+ * 튀는 자리도 없다.
  */
 .collapseToggle {
   position: absolute;
-  top: var(--space-4);
-  left: var(--layout-sidebar-width);
+  top: 50%;
+  left: max(var(--space-2), calc(var(--layout-sidebar-width) - 12px));
   z-index: var(--z-header);
   display: grid;
   place-items: center;
@@ -60,17 +75,12 @@
   width: 24px;
   height: 44px;
   padding: 0;
-  transform: translateX(-50%);
+  transform: translateY(-50%);
   color: var(--color-text-muted);
   background: var(--color-surface);
   border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-sm);
-}
-
-.body[data-sidebar='collapsed'] .collapseToggle {
-  left: 0;
-  transform: translateX(var(--space-2));
 }
 
 .collapseToggle:hover {
@@ -79,12 +89,18 @@
 }
 
 /*
- * 손잡이 위치에도 전환을 걸지 않는다.
+ * 화살표는 글자를 바꾸지 않고 돌린다.
  *
- * left 가 사이드바 폭 변수에서 나오는데, 그 값이 바뀔 때 전환이 옛 값에 붙들려
- * 손잡이가 접힌 뒤에도 제자리에 남는 일을 겪었다. 접기 자체가 한 번에 끝나므로
- * 손잡이도 같이 옮겨 가는 편이 자연스럽다.
+ * ‹ 와 › 를 번갈아 넣으면 폭이 미끄러지는 동안 글자만 순간적으로 뒤집혀서, 접히는
+ * 중인지 이미 접힌 것인지 구분이 안 된다. 하나를 돌리면 방향이 도는 동안 계속 보인다.
  */
+.chevron {
+  transition: transform var(--layout-sidebar-motion) ease;
+}
+
+.body[data-sidebar='collapsed'] .chevron {
+  transform: rotate(180deg);
+}
 
 .main {
   min-width: 0;
@@ -121,6 +137,19 @@
 @media (max-width: 767px) {
   .main {
     padding: var(--space-4);
+  }
+}
+
+/*
+ * 움직임을 줄이라고 한 사람에게는 예전처럼 한 번에 접는다.
+ *
+ * 폭이 미끄러지는 동안 달력 격자가 매 프레임 다시 그려지므로, 이 전환은 화면에서
+ * 가장 큰 움직임이다. 끄라고 한 설정을 무시할 자리가 아니다.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .body,
+  .chevron {
+    transition: none;
   }
 }
 

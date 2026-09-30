@@ -121,7 +121,10 @@ function AppLayout() {
             aria-controls="sidebar"
             onClick={toggleCollapsed}
           >
-            <span aria-hidden="true">{collapsed ? '›' : '‹'}</span>
+            {/* 글자를 바꾸지 않고 CSS 로 돌린다 — 접히는 동안 화살표가 끊기지 않는다 */}
+            <span aria-hidden="true" className={styles.chevron}>
+              ‹
+            </span>
           </button>
 
           {isSidebarOpen ? (
