@@ -3,10 +3,17 @@ import { useAuth, useCanEdit } from '../../contexts/AuthContext'
 import { ROUTES } from '../../router/routes'
 import styles from './AppHeader.module.css'
 
+/*
+ * 구성원은 여기 없다 (KAN-85).
+ *
+ * 명단을 쓰는 자리는 일정 등록 폼의 참석 인원 하나뿐이고, 고치는 때도 대개
+ * 일정을 넣다가다. 상단 한 칸을 늘 차지할 무게가 아니라서 그 폼 안으로 옮겼다.
+ * 화면(`/members`)은 그대로 있고 거기서 링크로 간다 — 명단이 길어졌을 때 한
+ * 자리에서 정리할 길은 남겨 둔다.
+ */
 const NAV_ITEMS = [
   { to: ROUTES.calendar, label: '캘린더', end: true },
   { to: ROUTES.projects, label: '과제 관리', end: false },
-  { to: ROUTES.members, label: '구성원', end: false },
 ]
 
 /**
