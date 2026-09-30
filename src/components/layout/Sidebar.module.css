@@ -41,11 +41,24 @@
  * 일정 폼의 입력이 사라진다. visibility 는 탭 이동 대상에서도 빠진다.
  */
 @media (min-width: 1024px) {
+  .sidebar {
+    /* 폭이 미끄러지는 동안 안쪽 여백도 같이 줄어야 내용이 한 번에 튀지 않는다 */
+    transition: padding 200ms ease;
+  }
+
   .collapsed {
     /* 폭은 레이아웃이 변수로 0 을 넘겨 준다. 여기서는 남는 테두리와 여백만 걷는다 */
     padding: 0;
     visibility: hidden;
     border-right: none;
+    /*
+     * visibility 는 중간값이 없어 어느 한 시점에 뒤집힌다. 접을 때는 폭이 다 줄어든
+     * 뒤로 미룬다 — 시작부터 숨겨 버리면 빈 칸만 미끄러져 무엇이 접히는지 안 보인다.
+     * 펼 때는 이 클래스가 떨어져 나가므로 위의 규칙만 남아 곧바로 보인다.
+     */
+    transition:
+      padding 200ms ease,
+      visibility 0s linear 200ms;
   }
 }
 
