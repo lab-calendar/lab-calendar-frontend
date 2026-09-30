@@ -18,7 +18,7 @@ describe('useCategoryFilter', () => {
   it('파라미터가 없으면 전체를 선택한 것으로 본다', () => {
     const { result } = renderFilter('/')
 
-    expect(result.current.selected).toEqual(['project', 'lab', 'card'])
+    expect(result.current.selected).toEqual(['project', 'lab', 'card', 'personal'])
   })
 
   it('빈 값이면 전체 해제로 본다', () => {
@@ -46,7 +46,7 @@ describe('useCategoryFilter', () => {
       result.current.toggle('project')
     })
 
-    expect(result.current.selected).toEqual(['lab', 'card'])
+    expect(result.current.selected).toEqual(['lab', 'card', 'personal'])
   })
 
   it('해제된 항목을 토글하면 정의된 순서 자리에 다시 들어간다', () => {

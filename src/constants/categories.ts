@@ -8,7 +8,7 @@
  * 표시 이름은 `GET /api/categories` 가 내려준다(KAN-38). 키는 서버와 프론트가
  * 공유하는 계약이므로 서버 응답에도 동일한 키가 포함되어야 한다.
  */
-export const CATEGORY_KEYS = ['project', 'lab', 'card'] as const
+export const CATEGORY_KEYS = ['project', 'lab', 'card', 'personal'] as const
 
 export type CategoryKey = (typeof CATEGORY_KEYS)[number]
 
@@ -27,4 +27,6 @@ export const CATEGORY_MARKS: Record<CategoryKey, string> = {
   project: '◆',
   lab: '●',
   card: '■',
+  /* 개인 일정(보라)은 카드(파랑)와 색만으로 갈리지 않을 수 있다 (KAN-84) */
+  personal: '▲',
 }

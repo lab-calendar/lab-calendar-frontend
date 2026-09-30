@@ -19,6 +19,7 @@ export const MOCK_CATEGORIES = [
   { id: '1', key: 'project', name: '과제/연구 관리' },
   { id: '2', key: 'lab', name: '랩실 주기적 일정' },
   { id: '3', key: 'card', name: '카드/경비 사용' },
+  { id: '4', key: 'personal', name: '개인 일정' },
 ] as const
 
 export function seedMembers(): MockMember[] {
@@ -165,6 +166,18 @@ export function seedEvents(today: string): MockEvent[] {
       // 명단에 없는 이름도 섞인다 — 장부의 참석자는 외부 인원을 포함한다
       participants: ['홍길동', '이영희', '박민수', '김철수', '김도연'],
       source: 'GOOGLE_SYNC',
+    },
+    /* 함께 보라고 올려 둔 개인 일정 (KAN-84) — 조회 등급에서도 보인다 */
+    {
+      id: '7',
+      title: '치과 예약',
+      detail: '홍길동',
+      startDate: addDays(today, 3),
+      endDate: addDays(today, 3),
+      categoryKey: 'personal',
+      memo: null,
+      participants: [],
+      source: 'MANUAL',
     },
   ]
 }
