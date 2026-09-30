@@ -4,7 +4,7 @@
  * 로딩과 오류 화면(KAN-63)은 서버가 잘 돌 때는 한순간도 볼 수 없다. 그 화면들을
  * 눈으로 확인할 방법이 없으면, 만들어 놓고 맞는지 모르는 채로 두게 된다.
  *
- * 주소창에서: `?mockDelay=1500`, `?mockFail=events,projects`, `?mockCardImport=blocked`
+ * 주소창에서: `?mockDelay=1500`, `?mockFail=events,projects`, `?mockCardImport=blocked`, `?mockSheetsSync=braked`
  * 콘솔에서: `mockApi.delay(1500)`, `mockApi.fail('events')`,
  *          `mockApi.cardImport('blocked')`, `mockApi.reset()`
  */
@@ -31,6 +31,21 @@ export const CARD_IMPORT_CASES = ['ok', 'blocked', 'empty'] as const
 
 export type CardImportCase = (typeof CARD_IMPORT_CASES)[number]
 
+/**
+ * 시트에서 지금 가져오기의 결과 (KAN-88).
+ *
+ * 목은 구글에 가지 않으므로 갈래를 여기서 고른다. 화면이 달리 다뤄야 하는 경우가
+ * 넷이다 — 그냥 반영되는 경우, 안전장치가 달을 건너뛴 경우, 권한이 끊긴 경우,
+ * 그리고 서버에 연동이 아예 켜져 있지 않은 경우.
+ */
+export const SHEETS_SYNC_CASES = ['ok', 'braked', 'denied', 'disabled'] as const
+
+export type SheetsSyncCase = (typeof SHEETS_SYNC_CASES)[number]
+
+function isSheetsSyncCase(value: string): value is SheetsSyncCase {
+  return (SHEETS_SYNC_CASES as readonly string[]).includes(value)
+}
+
 function isCardImportCase(value: string): value is CardImportCase {
   return (CARD_IMPORT_CASES as readonly string[]).includes(value)
 }
@@ -43,6 +58,7 @@ const scenario = {
   delayMs: 0,
   failing: new Set<MockDomain>(),
   cardImport: 'ok' as CardImportCase,
+  sheetsSync: 'ok' as SheetsSyncCase,
 }
 
 export function scenarioDelay(): number {
@@ -69,10 +85,19 @@ export function setCardImportCase(value: CardImportCase): void {
   scenario.cardImport = value
 }
 
+export function sheetsSyncCase(): SheetsSyncCase {
+  return scenario.sheetsSync
+}
+
+export function setSheetsSyncCase(value: SheetsSyncCase): void {
+  scenario.sheetsSync = value
+}
+
 export function resetScenario(): void {
   scenario.delayMs = 0
   scenario.failing = new Set()
   scenario.cardImport = 'ok'
+  scenario.sheetsSync = 'ok'
 }
 
 /** `?mockDelay=1500&mockFail=events,projects` 를 읽는다. 모르는 이름은 조용히 버린다. */
@@ -90,6 +115,9 @@ export function readScenarioFromSearch(search: string): void {
 
   const cardImport = params.get('mockCardImport') ?? ''
   if (isCardImportCase(cardImport)) setCardImportCase(cardImport)
+
+  const sheetsSync = params.get('mockSheetsSync') ?? ''
+  if (isSheetsSyncCase(sheetsSync)) setSheetsSyncCase(sheetsSync)
 }
 
 /**
@@ -106,11 +134,15 @@ export function exposeScenarioControls(): void {
       cardImport: (value: string) => {
         if (isCardImportCase(value)) setCardImportCase(value)
       },
+      sheetsSync: (value: string) => {
+        if (isSheetsSyncCase(value)) setSheetsSyncCase(value)
+      },
       reset: resetScenario,
       state: () => ({
         delayMs: scenario.delayMs,
         failing: [...scenario.failing],
         cardImport: scenario.cardImport,
+        sheetsSync: scenario.sheetsSync,
       }),
     },
   })
