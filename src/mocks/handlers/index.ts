@@ -4,6 +4,7 @@ import { categoryHandlers } from './categories'
 import { eventHandlers } from './events'
 import { memberHandlers } from './members'
 import { projectHandlers } from './projects'
+import { sheetsSyncHandlers } from './sheetsSync'
 
 /**
  * 목 서버가 가로채는 요청 전부 (KAN-70).
@@ -18,4 +19,5 @@ export const handlers = [
   ...eventHandlers,
   ...projectHandlers,
   ...memberHandlers,
+  ...sheetsSyncHandlers,
 ]

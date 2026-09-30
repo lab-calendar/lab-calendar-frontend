@@ -245,3 +245,29 @@ export type CardImportHistoryEntry = {
   problemCount: number
   problems: CardImportProblem[]
 }
+
+/** 안전장치가 막은 달 하나 (KAN-89). */
+export type SheetsSyncBrakedMonth = {
+  /** `2026-09` */
+  month: string
+  /** 반영했다면 사라졌을 건수 */
+  wouldRemove: number
+  /** 지금 그 달에 살아 있는 건수 */
+  active: number
+}
+
+/**
+ * 시트에서 지금 가져오기의 결과 (KAN-88).
+ *
+ * 업로드와 달리 미리보기·반영 두 단계가 없다 — 서버가 한 번에 읽고, 재고, 반영한다.
+ * 사람이 볼 수 없는 자동 회차와 같은 길을 타기 때문이다.
+ */
+export type SheetsSyncResult = {
+  applied: boolean
+  /** 반영하지 못했을 때의 이유 코드. 반영했으면 null */
+  failure: string | null
+  added: number
+  removed: number
+  unchanged: number
+  braked: SheetsSyncBrakedMonth[]
+}
