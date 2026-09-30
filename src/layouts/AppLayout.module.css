@@ -41,7 +41,7 @@
  */
 @media (min-width: 1024px) {
   .body {
-    transition: --layout-sidebar-width 200ms ease;
+    transition: --layout-sidebar-width var(--layout-sidebar-motion) ease;
   }
 
   .body[data-sidebar='collapsed'] {
@@ -95,7 +95,7 @@
  * 중인지 이미 접힌 것인지 구분이 안 된다. 하나를 돌리면 방향이 도는 동안 계속 보인다.
  */
 .chevron {
-  transition: transform 200ms ease;
+  transition: transform var(--layout-sidebar-motion) ease;
 }
 
 .body[data-sidebar='collapsed'] .chevron {
