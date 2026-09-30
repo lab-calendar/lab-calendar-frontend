@@ -47,12 +47,35 @@
   gap: var(--space-3);
 }
 
+/*
+ * 구획 제목 — 「카테고리 필터」, 「일정 등록」.
+ *
+ * 12px 흐린 회색이라 바로 아래 붙는 입력칸 이름(「항목 유형」, 「제목」)과 크기도
+ * 색도 거의 같았다. 둘이 같아 보이면 제어 영역이 제목 없는 긴 목록 하나로 읽힌다.
+ *
+ * 세 가지로 떼어 놓는다. 한 단계 크게(13px), 확실히 굵게(700), 본문과 같은 진한
+ * 색으로. 그리고 앞에 색 막대를 세운다 — 글자만으로 가르면 굵기 차이에 기대게
+ * 되는데, 그건 화면을 흘려볼 때 가장 먼저 놓치는 신호다.
+ *
+ * 대문자 변환은 걷어냈다. 한글에는 아무 일도 하지 않으면서 섞여 드는 영문만
+ * 들쑤신다.
+ */
 .sectionTitle {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-subtle);
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-strong);
+  color: var(--color-text);
+  letter-spacing: -0.1px;
+}
+
+.sectionTitle::before {
+  content: '';
+  width: 3px;
+  height: 0.95em;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
 }
 
 /*

@@ -98,8 +98,12 @@
   --category-personal-border: #dcc4f4;
 
   /* ── 타이포그래피 ──────────────────────────── */
-  --font-sans: system-ui, -apple-system, 'Segoe UI', 'Apple SD Gothic Neo',
-    'Malgun Gothic', 'Noto Sans KR', sans-serif;
+  /*
+   * Pretendard 를 먼저 쓰고, 못 받아 왔을 때만 시스템 서체로 내려간다.
+   * 가변 글꼴이라 400~700 사이를 파일 하나로 낸다.
+   */
+  --font-sans: 'Pretendard Variable', Pretendard, system-ui, -apple-system,
+    'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
 
   --font-size-xs: 12px;
@@ -112,6 +116,12 @@
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-bold: 600;
+  /*
+   * 제목용. 시스템 서체에는 600 과 700 이 같은 굵기로 그려지는 조합이 있어 600 을
+   * 상한으로 뒀었는데, Pretendard 는 둘이 확실히 다르다. 제목이 본문에서 떨어져
+   * 나와 보이려면 이 굵기가 필요하다.
+   */
+  --font-weight-strong: 700;
 
   --line-height-tight: 1.25;
   --line-height-normal: 1.5;
