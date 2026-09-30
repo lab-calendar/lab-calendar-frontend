@@ -155,7 +155,13 @@
    * 사이드바는 1024px 미만에서 드로어로 전환된다.
    */
   --layout-header-height: 56px;
-  --layout-sidebar-width: 320px;
+  /*
+   * 펼쳤을 때의 폭. 안쪽 내용이 늘 이 폭을 쓰고, 접힐 때 줄어드는 것은 바깥 상자다.
+   * 위 `@property` 의 initial-value 는 값이 깨졌을 때의 대비책이라 여기와 같은
+   * 숫자를 적어 두었다 — 폭을 바꾸려면 두 곳을 같이 본다.
+   */
+  --layout-sidebar-expanded: 320px;
+  --layout-sidebar-width: var(--layout-sidebar-expanded);
   /*
    * 접기·펴기에 걸리는 시간.
    *
