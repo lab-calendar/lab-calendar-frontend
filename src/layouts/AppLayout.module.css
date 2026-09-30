@@ -1,7 +1,17 @@
+/*
+ * 높이를 화면에 못 박는다 (KAN-83).
+ *
+ * `min-height` 로 두면 높이가 "확정"되지 않아 아래로 내려가는 `height: 100%`
+ * 가 줄줄이 풀리지 않는다. 그러면 달력(FullCalendar)이 퍼센트 높이를 포기하고
+ * `aspectRatio` 로 떨어져 **높이를 폭에서** 계산한다 — 사이드바를 접어 폭이
+ * 넓어지면 달력이 길어져 페이지가 스크롤되고, 반대로는 아래가 비었다.
+ *
+ * 넘치는 내용은 `.main` 안에서 스크롤된다.
+ */
 .layout {
   display: flex;
   flex-direction: column;
-  min-height: 100%;
+  height: 100%;
 }
 
 /*
