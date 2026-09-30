@@ -1,0 +1,93 @@
+/* 시트에서 가져오기 (KAN-88). 업로드 패널과 같은 생김새를 쓴다 */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+.guide {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.note {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.button {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-inverse);
+  background: var(--color-primary);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+}
+
+.button:disabled {
+  color: var(--color-text-subtle);
+  background: var(--color-surface-muted);
+  border-color: var(--color-border);
+}
+
+.status {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.result {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: var(--category-card-soft);
+  border: 1px solid var(--category-card-border);
+  border-radius: var(--radius-sm);
+}
+
+.resultTitle {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+}
+
+/* 건너뛴 달은 경고 쪽 색을 쓴다 — 반영된 건수와 같은 무게로 읽히면 안 된다 */
+.brakedTitle {
+  margin: var(--space-2) 0 var(--space-1);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-danger);
+}
+
+.brakedList {
+  padding-left: var(--space-4);
+  margin: 0;
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-normal);
+  color: var(--color-text-muted);
+}
+
+.failure {
+  width: 100%;
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
+  background: var(--category-project-soft);
+  border: 1px solid var(--category-project-border);
+  border-radius: var(--radius-sm);
+}

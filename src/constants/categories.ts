@@ -23,6 +23,20 @@ export function isCategoryKey(value: string): value is CategoryKey {
  * 적록색약이 있으면 과제(빨강)와 랩실(초록) 칩을 색으로는 구분할 수 없다.
  * 모양이 서로 다른 글리프를 색과 함께 붙여 둘 중 하나만으로도 구분되게 한다.
  */
+/**
+ * 아직 모르는 카테고리의 표식 (KAN-90).
+ *
+ * 카테고리 목록은 서버가 준다. 서버에 하나가 늘면, 아직 새 화면 코드를 받지 못한
+ * 브라우저에도 그 칸이 그려진다 — 표식만 없는 채로. 아래 조회들이 빈칸을 만나
+ * 터지면 화면 전체가 내려앉으므로, 모르는 값도 그릴 수 있는 모양으로 받는다.
+ */
+const UNKNOWN_MARK = '◇'
+
+/** 표식. 모르는 카테고리도 터지지 않고 중립적인 모양으로 그려진다. */
+export function categoryMark(key: string): string {
+  return CATEGORY_MARKS[key as CategoryKey] ?? UNKNOWN_MARK
+}
+
 export const CATEGORY_MARKS: Record<CategoryKey, string> = {
   project: '◆',
   lab: '●',

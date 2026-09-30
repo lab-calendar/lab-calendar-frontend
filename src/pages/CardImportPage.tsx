@@ -1,5 +1,6 @@
 import CardImportHistory from '../components/cardImports/CardImportHistory'
 import CardImportPanel from '../components/cardImports/CardImportPanel'
+import SheetsSyncPanel from '../components/cardImports/SheetsSyncPanel'
 import { useCanEdit } from '../contexts/AuthContext'
 import styles from './Page.module.css'
 
@@ -35,6 +36,14 @@ function CardImportPage() {
           오류가 있는 달은 건드리지 않습니다.
         </p>
       </div>
+
+      {/*
+        시트 쪽을 먼저 둔다 (KAN-88). 서버가 매시 스스로 하는 일이라 대부분은 여기서
+        끝나고, 파일 업로드는 시트에 없는 달을 손으로 채울 때만 쓴다.
+      */}
+      <section className={styles.panel}>
+        <SheetsSyncPanel />
+      </section>
 
       <section className={styles.panel}>
         <CardImportPanel />
