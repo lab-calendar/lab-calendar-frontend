@@ -18,6 +18,7 @@ import type { Urgency } from '../projects/deadlineUrgency'
 import { useCanEdit } from '../../contexts/AuthContext'
 import { useEventForm } from '../../contexts/EventFormContext'
 import { useCategoryFilter } from '../../hooks/useCategoryFilter'
+import { useContainerWidthChange } from '../../hooks/useContainerWidthChange'
 import { useFocusDate } from '../../hooks/useFocusDate'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { toEventInput } from '../../api/events'
@@ -76,11 +77,23 @@ function MonthCalendar() {
    */
   const { focusDate } = useFocusDate()
   const calendarRef = useRef<FullCalendar>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!focusDate) return
     calendarRef.current?.getApi().gotoDate(focusDate)
   }, [focusDate])
+
+  /*
+   * 감싼 칸이 넓어지고 좁아지면 다시 재라고 이른다 (KAN-92).
+   *
+   * FullCalendar 는 **창** 크기가 바뀔 때만 스스로 다시 잰다. 그런데 제어 영역을
+   * 접고 펴면 창은 그대로이고 이 칸만 넓어진다 — 그러면 요일 칸 너비를 옛 크기로
+   * 계산해 둔 채 남아, 새로고침하기 전까지 달력이 화면에 맞지 않는다.
+   */
+  useContainerWidthChange(containerRef, () => {
+    calendarRef.current?.getApi().updateSize()
+  })
 
   // FullCalendar 가 알려주는 표시 기간. 뷰를 옮기면 갱신되고 그때마다 다시 조회한다.
   const [range, setRange] = useState<DateRange | null>(null)
@@ -243,7 +256,7 @@ function MonthCalendar() {
   const emptyNote = emptyNoteFor(events, visibleEvents.length)
 
   return (
-    <div className={styles.calendar}>
+    <div ref={containerRef} className={styles.calendar}>
       {isFetching ? (
         <>
           <div className={styles.loadingBar} aria-hidden="true" />
