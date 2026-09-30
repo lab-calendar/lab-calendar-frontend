@@ -1,4 +1,4 @@
-import { CATEGORY_MARKS, type CategoryKey } from '../../constants/categories'
+import { categoryMark, type CategoryKey } from '../../constants/categories'
 import type { Urgency } from '../projects/deadlineUrgency'
 import styles from './MonthCalendar.module.css'
 
@@ -50,7 +50,7 @@ function EventChip({
       }}
     >
       <span className={styles.eventMark} aria-hidden="true">
-        {CATEGORY_MARKS[categoryKey]}
+        {categoryMark(categoryKey)}
       </span>
       {/*
         이름과 제목이 한 덩어리로 읽히지 않도록 쉼표를 함께 넣는다.
