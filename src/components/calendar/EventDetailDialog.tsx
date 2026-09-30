@@ -21,6 +21,7 @@ const DETAIL_LABELS: Record<CalendarEvent['categoryKey'], string> = {
   project: '제출 단계',
   lab: '담당 연구원',
   card: '구분',
+  personal: '올린 사람',
 }
 
 /** 사람이 못 고치는 일정은 어디서 바꿔야 하는지까지 알려준다 */

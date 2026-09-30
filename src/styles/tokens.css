@@ -68,6 +68,14 @@
   --category-card: #2b66da;
   --category-card-soft: #e9f0fe;
   --category-card-border: #b5ccf8;
+  /*
+   * 개인 일정 — Purple (KAN-84).
+   * 흰 면 위 대비 5.21 로 앞의 셋(5.03~5.23)과 같은 무게로 읽힌다. 파랑과는
+   * 색만으로 갈리지 않을 수 있어 ▲ 글리프를 함께 붙인다 (CATEGORY_MARKS).
+   */
+  --category-personal: #8a4ad6;
+  --category-personal-soft: #f6eefd;
+  --category-personal-border: #dcc4f4;
 
   /* ── 타이포그래피 ──────────────────────────── */
   --font-sans: system-ui, -apple-system, 'Segoe UI', 'Apple SD Gothic Neo',
@@ -208,4 +216,10 @@
   --category-color: var(--category-card);
   --category-soft: var(--category-card-soft);
   --category-border: var(--category-card-border);
+}
+
+[data-category='personal'] {
+  --category-color: var(--category-personal);
+  --category-soft: var(--category-personal-soft);
+  --category-border: var(--category-personal-border);
 }

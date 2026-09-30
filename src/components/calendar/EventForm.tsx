@@ -22,6 +22,8 @@ const DETAIL_FIELDS: Record<CategoryKey, { label: string; hint: string }> = {
   project: { label: '제출 단계', hint: '예: 연차보고서, 최종보고서' },
   lab: { label: '담당 연구원', hint: '예: 홍길동' },
   card: { label: '구분', hint: '예: 점심, 저녁, 초과' },
+  /* 함께 보는 개인 일정이라 누구 것인지가 부가 정보다 (KAN-84) */
+  personal: { label: '올린 사람', hint: '예: 홍길동' },
 }
 
 
