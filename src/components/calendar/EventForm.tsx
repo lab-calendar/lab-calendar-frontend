@@ -1,6 +1,6 @@
 import { useId, useState } from 'react'
 import { activeMembers } from '../../api/members'
-import { CATEGORY_MARKS, type CategoryKey } from '../../constants/categories'
+import { categoryMark, type CategoryKey } from '../../constants/categories'
 import { useEventForm } from '../../contexts/EventFormContext'
 import { useCategories } from '../../queries/useCategories'
 import { useSaveEvent } from '../../queries/useEventMutations'
@@ -26,6 +26,9 @@ const DETAIL_FIELDS: Record<CategoryKey, { label: string; hint: string }> = {
   /* 함께 보는 개인 일정이라 누구 것인지가 부가 정보다 (KAN-84) */
   personal: { label: '올린 사람', hint: '예: 홍길동' },
 }
+
+/** 이 화면이 아직 모르는 카테고리를 골랐을 때 (KAN-90) */
+const UNKNOWN_DETAIL_FIELD = { label: '부가 정보', hint: '' }
 
 
 function emptyValues(): EventFormValues {
@@ -81,7 +84,15 @@ function EventForm() {
     setErrors({})
   }
 
-  const detailField = DETAIL_FIELDS[values.categoryKey]
+  /*
+   * 모르는 카테고리를 만나도 그릴 수 있어야 한다 (KAN-90).
+   *
+   * 항목 유형 칸은 서버가 주는 목록으로 그린다. 서버에 카테고리가 하나 늘면, 아직
+   * 새 화면 코드를 받지 못한 브라우저에도 그 칸이 보이고 — 눌리기까지 한다. 그때
+   * 여기서 빈칸이 나오면 `.label` 하나에 폼 전체가 내려앉는다. 실제로 '개인 일정'을
+   * 더했을 때 그렇게 됐다.
+   */
+  const detailField = DETAIL_FIELDS[values.categoryKey] ?? UNKNOWN_DETAIL_FIELD
 
   // 담당 연구원 칸에만 명단을 붙인다. 제출 단계나 카드 구분은 사람 이름이 아니다.
   const ownerListId =
@@ -178,7 +189,7 @@ function EventForm() {
                 onChange={() => update('categoryKey', category.key)}
               />
               <span className={styles.typeMark} aria-hidden="true">
-                {CATEGORY_MARKS[category.key]}
+                {categoryMark(category.key)}
               </span>
               {category.name}
             </label>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { CATEGORY_MARKS } from '../../constants/categories'
+import { categoryMark } from '../../constants/categories'
 import { useCategories } from '../../queries/useCategories'
 import { isEditableEvent, type CalendarEvent } from '../../types/domain'
 import { formatEventPeriod } from '../../utils/date'
@@ -118,7 +118,7 @@ function EventDetailDialog({
                 className={styles.categoryTag}
                 data-category={event.categoryKey}
               >
-                <span aria-hidden="true">{CATEGORY_MARKS[event.categoryKey]}</span>
+                <span aria-hidden="true">{categoryMark(event.categoryKey)}</span>
                 {categoryName}
               </span>
               <h2 id="event-detail-title" className={styles.title}>
@@ -147,7 +147,8 @@ function EventDetailDialog({
             {event.detail ? (
               <div className={styles.row}>
                 <dt className={styles.rowLabel}>
-                  {DETAIL_LABELS[event.categoryKey]}
+                  {/* 모르는 카테고리도 이름 없이 값만 보이는 일이 없게 (KAN-90) */}
+                  {DETAIL_LABELS[event.categoryKey] ?? '부가 정보'}
                 </dt>
                 <dd className={styles.rowValue}>{event.detail}</dd>
               </div>

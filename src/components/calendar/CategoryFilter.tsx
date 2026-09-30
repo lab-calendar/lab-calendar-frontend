@@ -1,4 +1,4 @@
-import { CATEGORY_MARKS } from '../../constants/categories'
+import { categoryMark } from '../../constants/categories'
 import ErrorState from '../common/ErrorState'
 import LoadingState from '../common/LoadingState'
 import { useCategoryFilter } from '../../hooks/useCategoryFilter'
@@ -54,7 +54,7 @@ function CategoryFilter() {
                 onChange={() => toggle(category.key)}
               />
               <span className={styles.badge} aria-hidden="true">
-                {CATEGORY_MARKS[category.key]}
+                {categoryMark(category.key)}
               </span>
               <span className={styles.label}>{category.name}</span>
             </label>

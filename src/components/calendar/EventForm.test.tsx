@@ -264,3 +264,36 @@ describe('EventForm 수정 모드', () => {
     await waitFor(() => expect(startCreate).toHaveBeenCalled())
   })
 })
+
+/**
+ * 서버가 이 화면보다 앞서 있을 때 (KAN-90).
+ *
+ * 카테고리 목록은 서버가 준다. 서버에 하나가 늘면 아직 새 코드를 받지 못한
+ * 브라우저에도 그 칸이 그려지고, 눌리기까지 한다. 실제로 '개인 일정'을 더했을 때
+ * 그 자리에서 폼 전체가 내려앉았다 — 라벨 표를 찾다 빈칸을 만나서였다.
+ */
+describe('EventForm 모르는 카테고리', () => {
+  beforeEach(() => {
+    vi.mocked(fetchCategories).mockResolvedValue([
+      ...CATEGORIES,
+      { id: '9', key: 'unknown-to-this-build' as Category['key'], name: '새 카테고리' },
+    ])
+  })
+
+  it('골라도 폼이 살아 있고 부가 정보 칸에 이름이 붙는다', async () => {
+    const user = userEvent.setup()
+    renderForm()
+
+    await user.click(await screen.findByRole('radio', { name: /새 카테고리/ }))
+
+    expect(screen.getByLabelText('부가 정보')).toBeInTheDocument()
+    // 제목 칸이 살아 있다는 것은 폼이 통째로 죽지 않았다는 뜻이다
+    expect(screen.getByLabelText('제목')).toBeInTheDocument()
+  })
+
+  it('표식이 없어도 칩이 그려진다', async () => {
+    renderForm()
+
+    expect(await screen.findByRole('radio', { name: /새 카테고리/ })).toBeInTheDocument()
+  })
+})
