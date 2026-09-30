@@ -15,6 +15,7 @@ const CATEGORIES: Category[] = [
   { id: '1', key: 'project', name: '과제/연구 관리' },
   { id: '2', key: 'lab', name: '랩실 주기적 일정' },
   { id: '3', key: 'card', name: '카드/경비 사용' },
+  { id: '4', key: 'personal', name: '개인 일정' },
 ]
 
 const EMPTY_HINT = '표시할 카테고리를 하나 이상 선택해 주세요.'
@@ -30,6 +31,7 @@ describe('CategoryFilter', () => {
     expect(await screen.findByRole('checkbox', { name: '과제/연구 관리' })).toBeInTheDocument()
     expect(screen.getByRole('checkbox', { name: '랩실 주기적 일정' })).toBeInTheDocument()
     expect(screen.getByRole('checkbox', { name: '카드/경비 사용' })).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: '개인 일정' })).toBeInTheDocument()
   })
 
   it('불러오는 동안 안내를 보여준다', () => {

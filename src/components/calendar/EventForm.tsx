@@ -6,6 +6,7 @@ import { useCategories } from '../../queries/useCategories'
 import { useSaveEvent } from '../../queries/useEventMutations'
 import { useMembers } from '../../queries/useMembers'
 import MemberPicker from '../members/MemberPicker'
+import RosterEditor from '../members/RosterEditor'
 import type { CalendarEvent } from '../../types/domain'
 import { todayIso } from '../../utils/date'
 import styles from './EventForm.module.css'
@@ -22,6 +23,8 @@ const DETAIL_FIELDS: Record<CategoryKey, { label: string; hint: string }> = {
   project: { label: '제출 단계', hint: '예: 연차보고서, 최종보고서' },
   lab: { label: '담당 연구원', hint: '예: 홍길동' },
   card: { label: '구분', hint: '예: 점심, 저녁, 초과' },
+  /* 함께 보는 개인 일정이라 누구 것인지가 부가 정보다 (KAN-84) */
+  personal: { label: '올린 사람', hint: '예: 홍길동' },
 }
 
 
@@ -310,8 +313,14 @@ function EventForm() {
         <p id={`${fieldId}-participants-hint`} className={styles.hint}>
           {roster.length > 0
             ? '쉼표로 구분해 입력하거나, 명단에서 눌러 넣고 뺍니다. 명단에 없는 외부 인원은 직접 입력합니다.'
-            : '쉼표로 구분해 입력합니다. 구성원 화면에 명단을 등록해 두면 여기서 골라 넣을 수 있습니다.'}
+            : '쉼표로 구분해 입력합니다. 아래에서 명단을 등록해 두면 눌러서 골라 넣을 수 있습니다.'}
         </p>
+
+        {/*
+          명단을 건드리는 때는 대개 일정을 넣다가 없는 사람을 발견했을 때다 (KAN-85).
+          다른 화면으로 갔다 오면 쓰던 일정이 사라지므로 고르는 자리 바로 아래에 둔다.
+        */}
+        <RosterEditor />
       </div>
 
       <div className={styles.field}>
