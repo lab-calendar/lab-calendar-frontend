@@ -8,6 +8,17 @@ import ToastProvider from './components/common/ToastProvider'
 import AppCrashPage from './pages/AppCrashPage'
 import { createQueryClient } from './queries/queryClient'
 import { router } from './router'
+/*
+ * Pretendard 를 싣는다 (KAN-93).
+ *
+ * 자동 부분집합판이다 — 한글 전체를 담은 한 덩어리가 아니라 조각 92 개로 나뉘어
+ * 있고, 브라우저가 화면에 실제로 쓰인 글자가 든 조각만 내려받는다. 한글은 글자
+ * 수가 많아 통으로 받으면 처음 뜰 때 눈에 띄게 느리다.
+ *
+ * 토큰보다 먼저 불러야 한다. 나중에 불러도 글꼴은 적용되지만, 같은 묶음 안에서
+ * 순서가 뒤집히면 @font-face 가 토큰 뒤에 붙어 첫 그림에서 한 번 더 바뀐다.
+ */
+import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css'
 import './styles/tokens.css'
 import './styles/global.css'
 
