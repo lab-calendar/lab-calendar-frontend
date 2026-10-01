@@ -35,45 +35,60 @@
    */
 
   /* ── 표면 & 경계 ───────────────────────────── */
-  --color-bg: #e9edf6;
-
   /*
-   * 유리 너머로 비치는 색 번짐 (KAN-73).
+   * 거의 흰 바탕에 흰 패널을 얹고, 둘을 머리카락 같은 실선으로 가른다 (KAN-93).
    *
-   * 배경이 한 가지 색이면 반투명으로 만들어도 비칠 것이 없어 흰 판으로 보인다
-   * (KAN-72 에서 그랬다). 그래서 패널 뒤에 색을 깐다. 그 대신 이 위에 글자를
-   * 바로 올리지 않는다 — 모든 글자는 유리 면 위에 있고, 유리가 이 색들 위에
-   * 올라간 최악의 경우까지 tokens.contrast.test.ts 가 계산해 확인한다.
+   * 앞서 KAN-72·73 은 반대로 갔다 — 바탕에 색을 깔고 그 위에 반투명 유리를 얹었다.
+   * 재질은 그럴듯했지만 달력처럼 글자가 빽빽한 화면에서는 뒤에 비치는 것이 전부
+   * 방해였다. 벤치마킹 대상(Amie)을 실제로 재 보니 바탕 #fafafa · 패널 #ffffff ·
+   * 경계 #ebebeb 로, 색이 아니라 **경계선**으로 면을 가른다.
    */
-  --backdrop-blue: #b8d0f8;
-  --backdrop-violet: #d4c6f6;
-  --backdrop-teal: #a6dbd2;
+  --color-bg: #fafafa;
   --color-surface: #ffffff;
-  --color-surface-muted: #f1f3f6;
-  --color-border: #dfe3e8;
+  --color-surface-muted: #f4f4f5;
   /*
-   * 유리 표면 위에서도 3:1 을 넘기도록 낮췄다 (KAN-72, KAN-73).
-   * 유리 뒤에 색 번짐이 깔리면서 바탕이 더 어두워질 수 있어, 여유를 두고 한 번 더 내렸다.
+   * 손이 닿은 자리 (KAN-93).
+   *
+   * 유리 시절에는 이런 자리를 **더 밝게** 칠했다 — 반투명 면 위에서는 흰색을 더
+   * 얹는 것이 곧 도드라지는 것이었다. 흰 패널 위에서는 그 방법이 통하지 않는다.
+   * 흰색보다 밝은 색이 없으니 흔적도 없이 사라진다. 그래서 반대로 한 단계 내린다.
    */
-  --color-border-strong: #7e838b;
+  --color-surface-hover: #ededee;
+  --color-border: #ebebeb;
+  /*
+   * 입력 테두리처럼 모양으로 알아봐야 하는 경계. 바탕이 흰색에 가까워지면서
+   * 전보다 밝혀도 3:1 이 나온다 — 그래도 여유는 두고 잡았다.
+   */
+  --color-border-strong: #8a8a8a;
 
   /* ── 텍스트 ────────────────────────────────── */
-  --color-text: #1b2126;
-  --color-text-muted: #5a6672;
-  /* 색 번짐 위 유리에서도 4.5:1 에 여유가 있도록 조금 진하게 했다 (KAN-73) */
-  --color-text-subtle: #636a72;
+  /*
+   * 푸른빛을 뺀 중성 회색 계열로 바꿨다 (KAN-93). 바탕과 패널이 무채색이 되면서
+   * 글자에만 색이 남으면 그 부분이 떠 보인다.
+   */
+  --color-text: #121212;
+  --color-text-muted: #5f5f5f;
+  /* 흐린 표면(#f4f4f5) 위에서도 4.5:1 이 나오는 선까지만 밝혔다 */
+  --color-text-subtle: #6e6e6e;
   --color-text-inverse: #ffffff;
 
   /* ── 강조 & 상태 ───────────────────────────── */
-  --color-primary: #2b66da;
-  --color-primary-hover: #2459c6;
-  --color-primary-soft: #e9f0fe;
   /*
-   * 배경이 흰색에서 연한 푸른빛 회색으로 내려오면서 함께 낮췄다 (KAN-72).
-   * 예전 값(#c74040)은 새 배경 위에서 4.22 로 기준에 미달이었다.
+   * 파랑 하나로 강조한다 (KAN-93).
+   *
+   * Amie 의 강조색은 #11a8ff 인데, 그 색은 흰 글자를 얹으면 2.4:1 밖에 안 나와
+   * 버튼 글자가 읽히지 않는다 — 벤치마킹 대상이 기준을 지키지 않는다고 해서
+   * 따라갈 수는 없다. 그래서 같은 계열에서 흰 글자와 링크 양쪽으로 4.5:1 을
+   * 넘기는 단계(Radix Blue 11)를 주색으로 쓰고, 원래의 밝은 파랑은 글자가
+   * 얹히지 않는 자리 — 초점 테두리, 선택 표시 — 에만 쓴다.
    */
+  --color-primary: #0d74ce;
+  --color-primary-hover: #0a62ae;
+  --color-primary-soft: #e6f4fe;
+  /* 글자를 얹지 않는 장식용. 얹어야 하면 --color-primary 를 쓴다 */
+  --color-accent: #0090ff;
   --color-danger: #bf3a3a;
-  --color-focus-ring: rgb(47 111 237 / 45%);
+  --color-focus-ring: rgb(0 144 255 / 45%);
 
   /* ── 카테고리 (기획서 2.2) ─────────────────── */
   /* 과제/연구 관리 — Red */
@@ -98,9 +113,28 @@
   --category-personal-border: #dcc4f4;
 
   /* ── 타이포그래피 ──────────────────────────── */
-  --font-sans: system-ui, -apple-system, 'Segoe UI', 'Apple SD Gothic Neo',
-    'Malgun Gothic', 'Noto Sans KR', sans-serif;
+  /*
+   * Pretendard 를 싣는다 (KAN-93).
+   *
+   * 전에는 웹폰트가 없어 시스템 글꼴 목록만 적어 두었다. 그래서 보는 사람의 OS 마다
+   * 다른 글꼴로 떴다 — 윈도우는 맑은 고딕, 맥은 Apple SD Gothic Neo. 자간도 굵기도
+   * 달라서, 한쪽에서 맞춰 둔 간격이 다른 쪽에서는 어긋났다.
+   *
+   * Pretendard 의 라틴·숫자는 Inter 를 따르고 있어, 벤치마킹 대상이 쓰는 글꼴과
+   * 숫자 모양이 거의 같다. 달력은 숫자가 화면의 절반이라 이 점이 크다.
+   *
+   * 변수 글꼴을 자동 부분집합(dynamic subset)으로 싣는다 — 한글 전체는 무거우므로
+   * 브라우저가 실제로 쓰인 글자가 든 조각만 내려받는다 (main.tsx 에서 불러온다).
+   */
+  --font-sans: 'Pretendard Variable', Pretendard, system-ui, -apple-system,
+    'Segoe UI', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+
+  /*
+   * 제목은 자간을 좁힌다. 큰 글자는 글자 사이가 실제보다 벌어져 보여서, 좁혀야
+   * 본문과 같은 짜임으로 읽힌다. 본문에는 걸지 않는다 — 한글은 좁히면 금방 뭉갠다.
+   */
+  --tracking-tight: -0.02em;
 
   --font-size-xs: 12px;
   --font-size-sm: 13px;
@@ -112,6 +146,12 @@
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-bold: 600;
+  /*
+   * 한 단계 더 굵은 자리 (KAN-94). 600 은 이미 본문 강조에 쓰고 있어, 그 위에
+   * 올라앉아야 하는 대분류 제목이 쓸 굵기가 없었다. Pretendard 는 변수 글꼴이라
+   * (45~920) 단계를 늘려도 글꼴 파일이 더 늘지 않는다.
+   */
+  --font-weight-strong: 700;
 
   --line-height-tight: 1.25;
   --line-height-normal: 1.5;
@@ -127,24 +167,36 @@
   --space-10: 40px;
 
   /* ── 모서리 & 그림자 ───────────────────────── */
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
+  /*
+   * 전체적으로 한 단계씩 둥글려 잡았다 (KAN-93). 벤치마킹 대상에서 가장 많이 쓰인
+   * 값이 12px 이고, 버튼은 알약형이었다. 카드가 --radius-lg 를 쓰므로 그 자리에 12 를 둔다.
+   */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
   --radius-full: 999px;
 
-  --shadow-sm: 0 1px 2px rgb(16 24 40 / 6%);
-  --shadow-md: 0 4px 12px rgb(16 24 40 / 8%);
-
-  /* ── 유리 표면 (KAN-72) ────────────────── */
   /*
-   * 기본값은 불투명이다. 반투명은 뒷배경을 흐릴 수 있을 때만 올린다 —
-   * 흐림 없는 반투명은 뒷글이 그대로 비쳐 읽힐 수가 없다.
+   * 그림자는 거의 없다시피 둔다. 면을 가르는 일은 위의 --color-border 가 맡고,
+   * 그림자는 떠 있는 것(팝업·토스트)에만 쓴다. 둘 다 쓰면 테두리가 두 겹으로 보인다.
    */
-  --glass-fill: var(--color-surface);
-  --glass-fill-strong: var(--color-surface);
-  --glass-border: var(--color-border);
-  --glass-blur: none;
-  --glass-shadow: var(--shadow-sm);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 5%);
+  --shadow-md: 0 8px 24px rgb(0 0 0 / 8%);
+
+  /* ── 패널 표면 ─────────────────────────────── */
+  /*
+   * 패널이 쓰는 칠·테두리·그림자를 한 곳에 모아 둔다 (KAN-93).
+   *
+   * 원래 이 자리는 `--glass-*` 였다 (KAN-72·73). 유리를 걷어내면서 이름도 같이
+   * 바꿨다 — 유리가 아닌데 유리라고 불러 두면 다음에 보는 사람이 반투명인 줄 안다.
+   * 변수는 남겨 둔다. 패널의 재질을 또 손볼 때 열 군데를 따라다니지 않으려면
+   * 한 겹이 있어야 한다.
+   */
+  --panel-fill: var(--color-surface);
+  --panel-fill-strong: var(--color-surface);
+  --panel-border: var(--color-border);
+  --panel-shadow: var(--shadow-sm);
 
   /* ── 레이아웃 ──────────────────────────────── */
   /*
@@ -178,55 +230,6 @@
   --z-backdrop: 15;
   --z-drawer: 20;
   --z-modal: 100;
-}
-
-/*
- * 반투명 표면은 뒷배경을 흐릴 수 있을 때만 켜진다.
- *
- * 흰색 72% 를 --color-bg 위에 섞으면 #fcfdfe 가 된다. 본문 글자 대비가 흰
- * 바탕과 사실상 같아 KAN-64 기준이 그대로 유지된다 — 합성값은
- * tokens.contrast.test.ts 가 직접 계산해 확인한다.
- */
-@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  :root {
-    /*
-     * 위가 진하고 아래가 연하다. 평평한 반투명은 그냥 흐릿한 흰 판이지만,
-     * 농도가 기울면 빛을 받는 면처럼 읽힌다. 대비 계산은 가장 연한 쪽(72%)을
-     * 기준으로 한다 — 거기서 통하면 위쪽은 저절로 통한다.
-     */
-    --glass-fill: linear-gradient(
-      180deg,
-      rgb(255 255 255 / 86%) 0%,
-      rgb(255 255 255 / 72%) 100%
-    );
-    --glass-fill-strong: linear-gradient(
-      180deg,
-      rgb(255 255 255 / 94%) 0%,
-      rgb(255 255 255 / 86%) 100%
-    );
-    --glass-border: rgb(255 255 255 / 65%);
-    /* 채도를 조금 올려야 흐린 뒷배경이 회색으로 죽지 않는다 */
-    --glass-blur: blur(18px) saturate(160%);
-    /* 안쪽 위 한 줄의 흰 선이 유리 두께의 모서리처럼 보이게 한다 */
-    --glass-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 75%),
-      0 1px 2px rgb(16 24 40 / 4%),
-      0 10px 30px rgb(16 24 40 / 8%);
-  }
-}
-
-/*
- * 반투명을 줄여 달라고 한 사용자에게는 불투명으로 돌려준다.
- * 재질보다 읽히는 것이 먼저다.
- */
-@media (prefers-reduced-transparency: reduce) {
-  :root {
-    --glass-fill: var(--color-surface);
-    --glass-fill-strong: var(--color-surface);
-    --glass-border: var(--color-border);
-    --glass-blur: none;
-    --glass-shadow: var(--shadow-sm);
-  }
 }
 
 /*

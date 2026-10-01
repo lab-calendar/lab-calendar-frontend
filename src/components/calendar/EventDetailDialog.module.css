@@ -4,10 +4,8 @@
   padding: 0;
   overflow: hidden;
   color: var(--color-text);
-  background: var(--glass-fill-strong);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
+  background: var(--panel-fill-strong);
+  border: 1px solid var(--panel-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
 }

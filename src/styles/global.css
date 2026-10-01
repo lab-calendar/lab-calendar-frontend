@@ -19,35 +19,13 @@ body {
   line-height: var(--line-height-normal);
   color: var(--color-text);
   /*
-   * 유리 표면이 비충 바탕 (KAN-72).
+   * 바탕은 한 가지 색이다 (KAN-93).
    *
-   * 뒷배경이 평평한 한 색이면 반투명으로 만들어도 아무것도 비치지 않아
-   * 그냥 회색 판으로 보인다. 다만 업무용 화면이므로 대비는 아주 얇게 둔다 —
-   * 배경이 눈에 띄면 그것만으로 일정을 읽는 데 방해가 된다.
+   * KAN-73 에서는 여기에 색 번짐 세 개를 깔았다 — 위에 얹은 반투명 유리가 받을
+   * 것이 있어야 재질로 보였기 때문이다. 유리를 걷은 지금은 받을 쪽이 없어, 번짐은
+   * 일정 읽기를 방해하기만 한다.
    */
   background: var(--color-bg);
-  /*
-   * 패널 뒤에 색 번짐 세 개를 깐다 (KAN-73). 유리가 이 색을 흐리게 받아야 재질로
-   * 읽힌다. 크기는 화면에 맞춰 늘고 줄되, 좁은 화면에서도 패널 몇 개에는 걸치도록
-   * 하한을 둔다. 위치는 사이드바 위쪽 · 캘린더 오른쪽 · 아래 가운데.
-   */
-  background-image:
-    radial-gradient(
-      clamp(260px, 42vw, 680px) clamp(260px, 42vw, 680px) at 6% 16%,
-      var(--backdrop-blue) 0%,
-      transparent 70%
-    ),
-    radial-gradient(
-      clamp(260px, 40vw, 640px) clamp(260px, 40vw, 640px) at 94% 34%,
-      var(--backdrop-violet) 0%,
-      transparent 70%
-    ),
-    radial-gradient(
-      clamp(240px, 36vw, 580px) clamp(240px, 36vw, 580px) at 48% 104%,
-      var(--backdrop-teal) 0%,
-      transparent 70%
-    );
-  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -67,6 +45,8 @@ h3,
 h4 {
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-tight);
+  /* 큰 글자는 사이가 벌어져 보인다. 제목에만 좁힌다 (KAN-93) */
+  letter-spacing: var(--tracking-tight);
   color: var(--color-text);
 }
 

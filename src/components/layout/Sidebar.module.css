@@ -18,10 +18,8 @@
   min-width: 0;
   /* 안쪽은 제 폭을 지키므로 넘치는 만큼은 여기서 잘린다 */
   overflow: hidden;
-  background: var(--glass-fill);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border-right: 1px solid var(--glass-border);
+  background: var(--panel-fill);
+  border-right: 1px solid var(--panel-border);
 }
 
 /*
@@ -47,12 +45,21 @@
   gap: var(--space-3);
 }
 
+/*
+ * 제어 영역의 대분류 제목 (KAN-94).
+ *
+ * 전에는 주변보다 **연한** 회색(--color-text-subtle)에 12px 이었다. 그래서 바로
+ * 아래 "새 일정"(13px·진한 글자)보다 작고 흐려, 묶는 쪽이 묶이는 쪽보다 뒤로
+ * 물러나 보였다. 위계를 뒤집는다 — 사이드바에서 가장 크고, 가장 굵고, 가장 진하다.
+ *
+ * uppercase 와 자간 벌리기는 걷어냈다. 영문 소제목의 관습인데 한글에는 대문자가
+ * 없어 아무 일도 하지 않고, 자간만 벌어져 오히려 한 덩어리로 안 읽혔다.
+ */
 .sectionTitle {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-subtle);
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-strong);
+  color: var(--color-text);
+  letter-spacing: var(--tracking-tight);
 }
 
 /*
