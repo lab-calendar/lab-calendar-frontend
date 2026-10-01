@@ -146,6 +146,12 @@
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-bold: 600;
+  /*
+   * 한 단계 더 굵은 자리 (KAN-94). 600 은 이미 본문 강조에 쓰고 있어, 그 위에
+   * 올라앉아야 하는 대분류 제목이 쓸 굵기가 없었다. Pretendard 는 변수 글꼴이라
+   * (45~920) 단계를 늘려도 글꼴 파일이 더 늘지 않는다.
+   */
+  --font-weight-strong: 700;
 
   --line-height-tight: 1.25;
   --line-height-normal: 1.5;
