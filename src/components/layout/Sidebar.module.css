@@ -18,10 +18,8 @@
   min-width: 0;
   /* 안쪽은 제 폭을 지키므로 넘치는 만큼은 여기서 잘린다 */
   overflow: hidden;
-  background: var(--glass-fill);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border-right: 1px solid var(--glass-border);
+  background: var(--panel-fill);
+  border-right: 1px solid var(--panel-border);
 }
 
 /*
