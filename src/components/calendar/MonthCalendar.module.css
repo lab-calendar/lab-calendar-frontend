@@ -10,6 +10,32 @@
   height: 100%;
 }
 
+.dayNumberContent {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+}
+
+.holidayName {
+  overflow: hidden;
+  font-size: var(--font-size-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendar :global(.fc .fc-daygrid-day.fc-public-holiday .fc-daygrid-day-number) {
+  width: 100%;
+  min-width: 0;
+  color: #b42318;
+}
+
+.calendar :global(.fc .fc-daygrid-day.fc-public-holiday .fc-daygrid-day-top) {
+  min-width: 0;
+}
+
 /* 다시 불러오는 동안 화면을 밀지 않도록 얇은 막대만 겹쳐 둔다 */
 .loadingBar {
   position: absolute;
