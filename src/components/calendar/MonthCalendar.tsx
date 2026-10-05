@@ -1,5 +1,6 @@
 import type {
   DatesSetArg,
+  DayCellContentArg,
   EventClickArg,
   EventContentArg,
   MoreLinkContentArg,
@@ -43,6 +44,16 @@ import EventDetailDialog from './EventDetailDialog'
 import { formatEventHoverText, formatEventLabel } from './eventLabel'
 import { urgencyForEvent, urgencyLookup } from './projectUrgency'
 import styles from './MonthCalendar.module.css'
+import HolidayDayNumber from './HolidayDayNumber'
+import { calendarDateKey, holidayNamesOn, holidayNotice } from '../../data/publicHolidays'
+
+function renderDayNumber(arg: DayCellContentArg) {
+  return <HolidayDayNumber dayNumberText={arg.dayNumberText} holidayNames={holidayNamesOn(calendarDateKey(arg.date))} />
+}
+
+function holidayDayClasses(arg: DayCellContentArg) {
+  return holidayNamesOn(calendarDateKey(arg.date)).length ? ['fc-public-holiday'] : []
+}
 
 function toFullCalendarEvent(event: CalendarEvent, urgency: Urgency): EventInput {
   return {
@@ -97,6 +108,7 @@ function MonthCalendar() {
 
   // FullCalendar 가 알려주는 표시 기간. 뷰를 옮기면 갱신되고 그때마다 다시 조회한다.
   const [range, setRange] = useState<DateRange | null>(null)
+  const [viewYear, setViewYear] = useState<number | null>(null)
   const {
     data: events,
     isError,
@@ -228,6 +240,7 @@ function MonthCalendar() {
   )
 
   const handleDatesSet = useCallback((arg: DatesSetArg) => {
+    setViewYear(arg.view.currentStart.getFullYear())
     setRange({
       from: arg.startStr.slice(0, 10),
       // endStr 은 배타적이라 하루를 빼면 실제 마지막 표시일이 된다
@@ -278,6 +291,10 @@ function MonthCalendar() {
 
       {emptyNote ? <p className={styles.emptyNote}>{emptyNote}</p> : null}
 
+      {viewYear !== null && holidayNotice(viewYear) ? (
+        <p className={styles.emptyNote} role="status">{holidayNotice(viewYear)}</p>
+      ) : null}
+
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, interactionPlugin]}
@@ -291,6 +308,8 @@ function MonthCalendar() {
             : { left: 'prev,next today', center: 'title', right: '' }
         }
         datesSet={handleDatesSet}
+        dayCellContent={renderDayNumber}
+        dayCellClassNames={holidayDayClasses}
         events={visibleEvents}
         eventContent={renderEventContent}
         moreLinkContent={renderMoreLink}
