@@ -20,9 +20,15 @@
 }
 
 .holidayName {
+  min-width: 0;
   overflow: hidden;
   font-size: var(--font-size-xs);
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dayNumberContent > span:last-child {
+  flex-shrink: 0;
   white-space: nowrap;
 }
 
@@ -358,6 +364,21 @@
 
 /* ── 모바일 ───────────────────────────────── */
 @media (max-width: 767px) {
+  .dayNumberContent {
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    gap: 0;
+  }
+
+  .holidayName {
+    width: 100%;
+    text-align: right;
+  }
+
+  .calendar :global(.fc .fc-day-today.fc-public-holiday .fc-daygrid-day-number) {
+    height: auto;
+  }
+
   .calendar :global(.fc .fc-toolbar) {
     flex-wrap: wrap;
     gap: var(--space-2);
