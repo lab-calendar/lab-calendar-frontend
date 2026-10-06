@@ -10,6 +10,38 @@
   height: 100%;
 }
 
+.dayNumberContent {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px;
+  width: 100%;
+  min-width: 0;
+}
+
+.holidayName {
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--font-size-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dayNumberContent > span:last-child {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.calendar :global(.fc .fc-daygrid-day.fc-public-holiday .fc-daygrid-day-number) {
+  width: 100%;
+  min-width: 0;
+  color: #b42318;
+}
+
+.calendar :global(.fc .fc-daygrid-day.fc-public-holiday .fc-daygrid-day-top) {
+  min-width: 0;
+}
+
 /* 다시 불러오는 동안 화면을 밀지 않도록 얇은 막대만 겹쳐 둔다 */
 .loadingBar {
   position: absolute;
@@ -332,6 +364,21 @@
 
 /* ── 모바일 ───────────────────────────────── */
 @media (max-width: 767px) {
+  .dayNumberContent {
+    flex-direction: column-reverse;
+    align-items: flex-end;
+    gap: 0;
+  }
+
+  .holidayName {
+    width: 100%;
+    text-align: right;
+  }
+
+  .calendar :global(.fc .fc-day-today.fc-public-holiday .fc-daygrid-day-number) {
+    height: auto;
+  }
+
   .calendar :global(.fc .fc-toolbar) {
     flex-wrap: wrap;
     gap: var(--space-2);
