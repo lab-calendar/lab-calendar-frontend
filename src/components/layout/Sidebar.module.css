@@ -56,10 +56,36 @@
  * 없어 아무 일도 하지 않고, 자간만 벌어져 오히려 한 덩어리로 안 읽혔다.
  */
 .sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-strong);
   color: var(--color-text);
   letter-spacing: var(--tracking-tight);
+}
+
+/*
+ * 제목 앞의 색 막대 (KAN-100).
+ *
+ * KAN-94 로 제목이 커지고 굵어졌지만, 가르는 신호가 **크기와 굵기 둘뿐**이었다.
+ * 그 둘은 나란히 두고 비교할 때나 분명하지 14px 과 13px · 700 과 500 은 시선이
+ * 지나갈 때 거의 같아 보인다. 제어 영역은 목록이 길어 훑어보는 일이 많은 자리라,
+ * 글자가 아닌 신호를 하나 더해 윤곽만으로도 잡히게 한다.
+ *
+ * 높이를 em 으로 둔다. 제목 글자 크기를 바꾸면 막대도 따라 자라야 글자 옆에
+ * 어정쩡하게 남지 않는다.
+ *
+ * 장식이라 스크린 리더에는 아무것도 보내지 않는다 — content 가 빈 문자열이라
+ * 읽히는 것이 없고, 제목 글자 자체가 이미 의미를 다 지고 있다.
+ */
+.sectionTitle::before {
+  flex-shrink: 0;
+  width: 3px;
+  height: 0.95em;
+  content: '';
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
 }
 
 /*
