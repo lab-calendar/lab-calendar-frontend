@@ -418,3 +418,56 @@
     border-left-width: 2px;
   }
 }
+
+/*
+ * 인쇄 (KAN-104).
+ *
+ * 종이에서는 누를 것이 없으므로 앞뒤 이동과 "오늘" 단추를 걷고 달 이름만 남긴다.
+ * 어느 달인지는 종이에 반드시 남아야 하는 정보다.
+ */
+@media print {
+  .calendar :global(.fc .fc-toolbar-chunk:first-child),
+  .calendar :global(.fc .fc-toolbar-chunk:last-child),
+  .loadingBar {
+    display: none;
+  }
+
+  .calendar :global(.fc .fc-toolbar-title) {
+    font-size: 14pt;
+  }
+
+  /*
+   * 높이는 CSS 로 건드리지 않는다.
+   *
+   * 처음에는 여기서 `height: auto !important` 로 눌렀는데, 달력이 **빈 채로**
+   * 나왔다 — 날짜 칸 35개가 멀쩡히 있는데 `.fc-view-harness` 높이가 0 이었다.
+   * FullCalendar 는 높이를 JS 로 재서 넣기 때문에, CSS 로만 풀면 잴 사람이
+   * 사라진다. KAN-92 와 같은 뿌리다.
+   *
+   * 그래서 인쇄 직전에 FullCalendar 자체의 height 를 'auto' 로 바꾼다
+   * (MonthCalendar.tsx). 그러면 제가 다시 재서 내용만큼 자란다.
+   */
+  .calendar {
+    overflow: visible;
+  }
+
+  /* 한 달이 두 장으로 갈라지면 쓸모가 없다 */
+  .calendar :global(.fc .fc-daygrid-body),
+  .calendar :global(.fc tr) {
+    break-inside: avoid;
+  }
+
+  .calendar :global(.fc .fc-daygrid-day) {
+    background: none;
+  }
+
+  /*
+   * 오늘 표시는 칠을 빼고 테두리만 남긴다. 꽉 찬 파란 원은 잉크를 먹고, 무엇보다
+   * 뽑은 다음 날부터는 틀린 날을 가리킨다 — 눈에 덜 띄게 둔다.
+   */
+  .calendar :global(.fc .fc-day-today .fc-daygrid-day-number) {
+    color: inherit;
+    background: none;
+    border: 1px solid currentcolor;
+  }
+}

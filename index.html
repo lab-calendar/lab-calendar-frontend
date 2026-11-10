@@ -12,6 +12,38 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lab Calendar</title>
+
+    <!--
+      링크를 보냈을 때 뜨는 미리보기 (KAN-104).
+
+      랩실 안에서 카톡·슬랙으로 주소를 주고받는 일이 잦은데, 이 태그가 없으면
+      제목 한 줄만 덩그러니 뜬다. 받는 쪽은 그게 무슨 링크인지 눌러 봐야 안다.
+
+      og:url 은 운영 주소로 고정한다. 미리보기를 만드는 쪽은 바깥 서버라
+      상대 경로를 해석하지 못한다 — 이미지도 같은 이유로 절대 주소다.
+
+      공개 검색에 걸릴 이유가 없는 내부 도구라 robots 는 막아 둔다. 링크
+      미리보기는 robots 와 무관하게 동작한다.
+    -->
+    <meta name="description" content="랩실 일정과 카드 사용 내역을 한 곳에서 보는 달력입니다." />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#fafafa" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Lab Calendar" />
+    <meta property="og:title" content="Lab Calendar — 랩실 일정·경비 달력" />
+    <meta
+      property="og:description"
+      content="랩실 일정과 카드 사용 내역을 한 곳에서 보는 달력입니다."
+    />
+    <meta property="og:url" content="https://lab-calendar.cloud/" />
+    <meta property="og:image" content="https://lab-calendar.cloud/favicon-512.png" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:locale" content="ko_KR" />
+
+    <!-- 트위터 카드는 og 를 대부분 물려받지만, 이미지를 크게 쓰려면 이 한 줄이 필요하다 -->
+    <meta name="twitter:card" content="summary" />
   </head>
   <body>
     <div id="root"></div>

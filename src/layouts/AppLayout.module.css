@@ -175,3 +175,32 @@
 .skipLink:focus-visible {
   transform: translateY(0);
 }
+
+/*
+ * 인쇄 (KAN-104).
+ *
+ * 제어 영역은 global.css 가 aside 로 걷지만, 격자는 그 자리를 그대로 비워 둔다.
+ * 열 나눔 자체를 풀어야 달력이 지면 폭을 다 쓴다.
+ */
+@media print {
+  .layout,
+  .main {
+    height: auto;
+    overflow: visible;
+  }
+
+  .body {
+    display: block;
+    min-height: 0;
+  }
+
+  /* 접기 손잡이와 드로어 가림막은 누를 수 없는 종이에서는 의미가 없다 */
+  .collapseToggle,
+  .backdrop {
+    display: none;
+  }
+
+  .main {
+    padding: 0;
+  }
+}
