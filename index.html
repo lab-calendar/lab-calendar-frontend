@@ -44,6 +44,32 @@
 
     <!-- 트위터 카드는 og 를 대부분 물려받지만, 이미지를 크게 쓰려면 이 한 줄이 필요하다 -->
     <meta name="twitter:card" content="summary" />
+
+    <!--
+      테마를 첫 그림 전에 정한다 (KAN-106).
+
+      이 일을 번들에 맡기면 어두운 테마 사용자에게 **흰 화면이 한 번 번쩍인다** —
+      스크립트가 내려오고 React 가 뜨기까지 문서는 기본값인 밝은 테마다.
+
+      그래서 여기 inline 으로 둔다. 외부 파일로 빼면 그 요청을 기다리는 동안 같은
+      번쩍임이 생긴다. 읽는 키와 규칙은 src/theme/theme.ts 와 같아야 한다 —
+      둘이 어긋나면 첫 그림과 앱이 다른 테마를 가리킨다.
+    -->
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('lab-calendar.theme')
+          var dark =
+            saved === 'dark' ||
+            (saved !== 'light' &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light'
+        } catch (error) {
+          // 저장소를 막아 둔 브라우저. 테마 때문에 화면이 안 뜨면 안 된다.
+          document.documentElement.dataset.theme = 'light'
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

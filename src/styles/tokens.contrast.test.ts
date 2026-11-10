@@ -21,8 +21,7 @@ const css = readFileSync('src/styles/tokens.css', 'utf8')
  * 파일을 통째로 훑으면 뒤에 오는 어두운 값이 밝은 값을 덮어써, 밝은 쪽은 검증을
  * 안 한 채 지나간다. 그래서 어두운 블록을 먼저 잘라 내고 두 벌로 가른다.
  */
-const DARK_BLOCK =
-  /@media screen and \(prefers-color-scheme: dark\)\s*\{([\s\S]*)\}\s*$/
+const DARK_BLOCK = /@media screen\s*\{\s*:root\[data-theme='dark'\]([\s\S]*)\}\s*$/
 const darkSource = DARK_BLOCK.exec(css)?.[1] ?? ''
 const lightSource = css.replace(DARK_BLOCK, '')
 
