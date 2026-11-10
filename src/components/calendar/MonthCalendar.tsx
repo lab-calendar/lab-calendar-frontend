@@ -106,6 +106,40 @@ function MonthCalendar() {
     calendarRef.current?.getApi().updateSize()
   })
 
+  /*
+   * 인쇄 직전에 높이 묶음을 푼다 (KAN-104).
+   *
+   * 화면에서는 height="100%" 라 달력이 창에 맞춰 들어가고 안쪽이 스크롤된다.
+   * 종이에는 스크롤이 없으니 그 높이에 그대로 잘린다.
+   *
+   * CSS 로 풀어 보려다 **빈 달력**이 나왔다 — 날짜 칸은 다 있는데 높이가 0 이었다.
+   * FullCalendar 는 높이를 JS 로 재서 넣으므로, CSS 가 값을 치워도 다시 잴 사람이
+   * 없다. 그래서 제 손으로 'auto' 를 쥐여 준다. 그러면 내용만큼 자란다.
+   *
+   * 두 가지 신호를 다 듣는다. beforeprint 는 크롬·파이어폭스가, matchMedia 는
+   * 사파리가 확실히 준다. 같은 값을 두 번 넣는 것은 해가 없다.
+   */
+  useEffect(() => {
+    const api = () => calendarRef.current?.getApi()
+    const forPaper = () => api()?.setOption('height', 'auto')
+    const forScreen = () => api()?.setOption('height', '100%')
+
+    const query = window.matchMedia('print')
+    const onQueryChange = (event: MediaQueryListEvent) => {
+      if (event.matches) forPaper()
+      else forScreen()
+    }
+
+    window.addEventListener('beforeprint', forPaper)
+    window.addEventListener('afterprint', forScreen)
+    query.addEventListener('change', onQueryChange)
+    return () => {
+      window.removeEventListener('beforeprint', forPaper)
+      window.removeEventListener('afterprint', forScreen)
+      query.removeEventListener('change', onQueryChange)
+    }
+  }, [])
+
   // FullCalendar 가 알려주는 표시 기간. 뷰를 옮기면 갱신되고 그때마다 다시 조회한다.
   const [range, setRange] = useState<DateRange | null>(null)
   const [viewYear, setViewYear] = useState<number | null>(null)

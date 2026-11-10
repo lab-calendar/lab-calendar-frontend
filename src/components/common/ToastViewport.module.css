@@ -58,3 +58,10 @@
     max-width: none;
   }
 }
+
+/* 잠깐 떴다 사라지는 알림이라 종이에 남길 것이 아니다 (KAN-104) */
+@media print {
+  .viewport {
+    display: none;
+  }
+}
