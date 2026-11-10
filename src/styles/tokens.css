@@ -264,3 +264,89 @@
   --category-soft: var(--category-personal-soft);
   --category-border: var(--category-personal-border);
 }
+
+/*
+ * 어두운 테마 (KAN-105).
+ *
+ * 기기 설정을 따라간다. 화면에 토글은 두지 않는다 — 헤더가 480px 에서 이미
+ * 빠듯하고(KAN-104), 안 그래도 되는 조작을 늘릴 이유가 없다.
+ *
+ * 값만 바꾼다. 컴포넌트는 색을 직접 쓰지 않고 이 변수들만 보므로 손댈 곳이 없다 —
+ * KAN-93 에서 유리를 걷어낼 때 이 구조가 이미 증명됐다.
+ *
+ * 대비는 tokens.contrast.test.ts 가 밝은 쪽과 **같은 표로** 여기도 검증한다.
+ *
+ * **`screen and` 가 중요하다.** 이것이 없으면 어두운 테마로 인쇄할 때 종이가
+ * 빈 장으로 나온다 — KAN-104 가 종이 바탕을 흰색으로 고정하는데 글자색은 여기
+ * 값(거의 흰색)을 그대로 들고 가기 때문이다. 실제로 재 보니 흰 종이에
+ * rgb(237,237,240) 글자였다. 화면으로 한정하면 인쇄는 저절로 위의 밝은 한 벌로
+ * 떨어진다 — 종이는 언제나 밝은 테마다.
+ */
+@media screen and (prefers-color-scheme: dark) {
+  :root {
+    /*
+     * 스크롤바와 기본 폼 컨트롤까지 같이 어두워진다. 이게 없으면 달력은 어두운데
+     * 날짜 입력칸만 하얗게 남는다.
+     */
+    color-scheme: dark;
+
+    /* ── 표면 & 경계 ───────────────────────────── */
+    /*
+     * 순검정을 쓰지 않는다. 검정 위의 흰 글자는 번져 보이고, 면을 더 올릴 여지도
+     * 없어진다 — 패널이 바탕보다 밝아야 떠 보인다.
+     */
+    --color-bg: #101012;
+    --color-surface: #18181b;
+    --color-surface-muted: #1f1f23;
+    --color-surface-hover: #27272c;
+    --color-border: #2b2b31;
+    --color-border-strong: #85858d;
+
+    /* ── 텍스트 ────────────────────────────────── */
+    --color-text: #ededf0;
+    --color-text-muted: #a8a8b0;
+    --color-text-subtle: #9a9aa3;
+    /*
+     * 뒤집힌다. 이 값은 주색·위험색 **위에** 얹히는 글자인데, 어두운 테마에서는
+     * 그 칠이 밝아지므로 글자가 어두워야 읽힌다.
+     */
+    --color-text-inverse: #101012;
+
+    /* ── 강조 & 상태 ───────────────────────────── */
+    --color-primary: #6fb3ff;
+    --color-primary-hover: #8cc3ff;
+    --color-primary-soft: #15253a;
+    --color-accent: #0090ff;
+    --color-danger: #ff9090;
+    --color-focus-ring: rgb(111 179 255 / 50%);
+
+    /* ── 카테고리 ──────────────────────────────── */
+    /*
+     * 밝은 쪽의 짜임을 뒤집는다 — 글자로 쓰는 색은 **밝게**, 칠은 **어둡게**.
+     * 밝은 쪽의 연한 칠(#fdeded 같은)을 그대로 두면 어두운 화면에서 혼자 타오른다.
+     */
+    --category-project: #ff9b9b;
+    --category-project-soft: #35201f;
+    --category-project-border: #5a2f2e;
+
+    --category-lab: #5fd9a0;
+    --category-lab-soft: #10291e;
+    --category-lab-border: #1f4a35;
+
+    --category-card: #7fbaff;
+    --category-card-soft: #13243a;
+    --category-card-border: #26456b;
+
+    --category-personal: #cda3f7;
+    --category-personal-soft: #261b34;
+    --category-personal-border: #3f2d55;
+
+    /* ── 그림자 ────────────────────────────────── */
+    /*
+     * 어두운 바탕에서 옅은 그림자는 보이지 않는다. 진하게 올리되, 면을 가르는 일은
+     * 경계선이 더 맡는다.
+     */
+    --shadow-sm: 0 1px 2px rgb(0 0 0 / 40%);
+    --shadow-md: 0 8px 24px rgb(0 0 0 / 55%);
+  }
+}
