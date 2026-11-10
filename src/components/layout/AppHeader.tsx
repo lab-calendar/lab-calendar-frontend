@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import { useAuth, useCanEdit } from '../../contexts/AuthContext'
 import { ROUTES } from '../../router/routes'
+import ThemeToggle from './ThemeToggle'
 import styles from './AppHeader.module.css'
 
 /*
@@ -84,6 +85,8 @@ function AppHeader({ isSidebarOpen, onToggleSidebar }: AppHeaderProps) {
           권한이 없어서인지 기능이 없어서인지 알 수 없다.
         */}
         {isViewer ? <span className={styles.tierBadge}>조회 전용</span> : null}
+
+        <ThemeToggle />
 
         {session?.authenticated ? (
           <button
